@@ -1,0 +1,39 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    // Keep this list in sync with REACT_APP_ADMIN_EMAILS and firestore.rules.
+    function isAdmin() {
+      return request.auth != null
+             && request.auth.token.email_verified == true
+             && request.auth.token.email in [
+               'francoismeiring0203@gmail.com',
+               'lombardsunika@gmail.com'
+             ];
+    }
+
+    // Gallery artwork images live under gallery/ to coexist with the portfolio
+    // app in the shared bucket. Public read, owner-only write (max 15 MB, images).
+    match /gallery/artworks/{artworkId}/{fileName} {
+      allow read: if true;
+      allow write: if isAdmin()
+                   && request.resource.size < 15 * 1024 * 1024
+                   && request.resource.contentType.matches('image/.*');
+      allow delete: if isAdmin();
+    }
+
+    // Portfolio files (project images + profile photo) live under portfolio/.
+    // Public read, owner-only write (max 15 MB, images).
+    match /portfolio/{allPaths=**} {
+      allow read: if true;
+      allow write: if isAdmin()
+                   && request.resource.size < 15 * 1024 * 1024
+                   && request.resource.contentType.matches('image/.*');
+      allow delete: if isAdmin();
+    }
+
+    // Default deny
+    match /{allPaths=**} { allow read, write: if false; }
+  }
+}

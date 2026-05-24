@@ -1,41 +1,49 @@
 :root {
+    color-scheme: light;
+
     /* ─── GENERAL SETTINGS ──────────────────────────────────────────────────── */
-    --font-size-xs: 0.875rem;
-    --font-size-sm: 0.9375rem;
-    --font-size-base: 1rem;
-    --font-size-md: 1.125rem;
-    --font-size-lg: 1.25rem;
-    --font-size-xl: 1.5rem;
-    --font-size-2xl: 1.875rem;
-    --font-size-3xl: 2.25rem;
-    --font-size-4xl: 3rem;
+    /* Font Sizes - Responsive Typography */
+    --font-size-xs: 0.875rem;     /* 14px */
+    --font-size-sm: 0.9375rem;    /* 15px */
+    --font-size-base: 1rem;       /* 16px */
+    --font-size-md: 1.125rem;     /* 18px */
+    --font-size-lg: 1.25rem;      /* 20px */
+    --font-size-xl: 1.5rem;       /* 24px */
+    --font-size-2xl: 1.875rem;    /* 30px */
+    --font-size-3xl: 2.25rem;     /* 36px */
+    --font-size-4xl: 3rem;        /* 48px */
 
-    --spacing-xs: 0.25rem;
-    --spacing-sm: 0.5rem;
-    --spacing-md: 1rem;
-    --spacing-lg: 1.5rem;
-    --spacing-xl: 2rem;
-    --spacing-2xl: 3rem;
-    --spacing-3xl: 4rem;
-    --spacing-4xl: 5rem;
-    --spacing-5xl: 6rem;
-    --spacing-6xl: 8rem;
+    /* Spacing System */
+    --spacing-xs: 0.25rem;        /* 4px */
+    --spacing-sm: 0.5rem;         /* 8px */
+    --spacing-md: 1rem;           /* 16px */
+    --spacing-lg: 1.5rem;         /* 24px */
+    --spacing-xl: 2rem;           /* 32px */
+    --spacing-2xl: 3rem;          /* 48px */
+    --spacing-3xl: 4rem;          /* 64px */
+    --spacing-4xl: 5rem;          /* 80px */
+    --spacing-5xl: 6rem;          /* 96px */
+    --spacing-6xl: 8rem;          /* 128px */
 
-    --radius-sm: 0.375rem;
-    --radius-md: 0.5rem;
-    --radius-lg: 0.75rem;
-    --radius-xl: 1rem;
+    /* Border Radius */
+    --radius-sm: 0.375rem;        /* 6px */
+    --radius-md: 0.5rem;          /* 8px */
+    --radius-lg: 0.75rem;         /* 12px */
+    --radius-xl: 1rem;            /* 16px */
     --radius-full: 9999px;
 
+    /* Transitions */
     --transition-fast: 150ms ease;
     --transition-base: 250ms ease;
     --transition-slow: 350ms ease;
 
-    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.09), 0 2px 4px -1px rgba(0, 0, 0, 0.05);
-    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
-    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.08), 0 10px 10px -5px rgba(0, 0, 0, 0.03);
+    /* Shadows — soft, gallery-like elevation */
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.04);
+    --shadow-md: 0 4px 12px -2px rgba(0, 0, 0, 0.08), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
+    --shadow-lg: 0 12px 28px -6px rgba(0, 0, 0, 0.12), 0 4px 8px -2px rgba(0, 0, 0, 0.06);
+    --shadow-xl: 0 24px 48px -12px rgba(0, 0, 0, 0.16), 0 8px 16px -4px rgba(0, 0, 0, 0.08);
 
+    /* Z-Index Scale */
     --z-base: 1;
     --z-dropdown: 1000;
     --z-sticky: 1020;
@@ -45,97 +53,95 @@
     --z-popover: 1060;
     --z-tooltip: 1070;
 
-    /* ─── COLOR PALETTE ─────────────────────────────────────────────────────── */
+    /* ─── COLOR PALETTE — GALLERY NEUTRAL ───────────────────────────────────── */
 
-    /* Text: Light Mode (deep plum -> warm purple-grey) */
-    --primary-text-color-light:   #2d1b2e;
-    --secondary-text-color-light: #6b4c7a;
-    --tertiary-text-color-light:  #9b7cac;
-    --disabled-color-light:       #c9b8d8;
+    /* — Text: Light Mode (near-black → soft gray) — */
+    --primary-text-color-light: #1a1a1a;         /* Near-black */
+    --secondary-text-color-light: #4a4a4a;       /* Soft charcoal */
+    --tertiary-text-color-light: #6b6b6b;        /* Muted gray */
+    --disabled-color-light: #a8a8a3;             /* Light gray */
 
-    /* Text: Dark Mode (lavender-white -> muted) */
-    --primary-text-color-dark:   #fdf0ff;
-    --secondary-text-color-dark: #d4b8f0;
-    --tertiary-text-color-dark:  #a888cc;
-    --disabled-color-dark:       #5a4070;
+    /* — Text: Dark Mode (off-white → gray) — */
+    --primary-text-color-dark: #f0f0f0;          /* Off-white */
+    --secondary-text-color-dark: #c4c4c4;        /* Light gray */
+    --tertiary-text-color-dark: #9a9a9a;         /* Muted gray */
+    --disabled-color-dark: #5a5a5a;              /* Dim gray */
 
-    /* Status Colors */
-    --error-color:   #e63946;
-    --warning-color: #f4a261;
-    --success-color: #2dc653;
-    --info-color:    #4895ef;
+    /* — Status Colors — */
+    --error-color: #c0392b;
+    --warning-color: #d68910;
+    --success-color: #4a8b3a;
+    --info-color: #5a7d9a;
 
-    /* Status Backgrounds: Light */
-    --success-background-color-light: #e8faee;
-    --warning-background-color-light: #fef3e2;
-    --error-background-color-light:   #fde8ea;
-    --info-background-color-light:    #e3f0ff;
+    /* — Sold badge — */
+    --sold-color-light: #b03434;                 /* Deep red — "sold" marker */
+    --sold-color-dark:  #e06464;
+    --sold-color: var(--sold-color-light);
 
-    /* Status Backgrounds: Dark */
-    --success-background-color-dark: #0a2814;
-    --warning-background-color-dark: #271608;
-    --error-background-color-dark:   #280a0d;
-    --info-background-color-dark:    #091830;
+    /* — Status Backgrounds: Light Mode — */
+    --success-background-color-light: #eef5ec;
+    --warning-background-color-light: #fdf4e3;
+    --error-background-color-light: #faecea;
+    --info-background-color-light: #ecf1f5;
 
-    /* Accent: Coral & Teal (Light) */
-    --accent-1-light:     #f25f5c;
-    --accent-2-light:     #50c9c3;
-    --accent-3-light:     #c059c0;
-    --accent-hover-light: #e04a47;
+    /* — Status Backgrounds: Dark Mode — */
+    --success-background-color-dark: #15201a;
+    --warning-background-color-dark: #211a0d;
+    --error-background-color-dark: #211210;
+    --info-background-color-dark: #121a21;
 
-    /* Accent: Coral & Cyan (Dark) */
-    --accent-1-dark:     #ff8080;
-    --accent-2-dark:     #6ed8d3;
-    --accent-3-dark:     #d97dd9;
-    --accent-hover-dark: #ff6060;
+    /* — Accent: Muted Taupe (Light Mode) — */
+    --accent-1-light: #8a7355;        /* Muted taupe — primary action */
+    --accent-2-light: #a68b68;        /* Lighter taupe — highlight */
+    --accent-3-light: #6b5a42;        /* Deep taupe — pressed / deep */
+    --accent-hover-light: #6b5a42;    /* Deep taupe — hover state */
 
-    /* Accent RGB (for rgba() animated blobs) */
-    --accent-1-rgb-light: 242, 95, 92;
-    --accent-2-rgb-light: 80, 201, 195;
-    --accent-3-rgb-light: 192, 89, 192;
+    /* — Accent: Warm Sand (Dark Mode) — */
+    --accent-1-dark: #b49b78;         /* Warm sand — primary on dark */
+    --accent-2-dark: #c9b391;         /* Light sand — highlights */
+    --accent-3-dark: #8a7355;         /* Taupe — mid tone */
+    --accent-hover-dark: #c9b391;     /* Light sand — hover brightness */
 
-    --accent-1-rgb-dark: 255, 128, 128;
-    --accent-2-rgb-dark: 110, 216, 211;
-    --accent-3-rgb-dark: 217, 125, 217;
+    /* — Accent RGB (for rgba() usage) — */
+    --accent-1-rgb-light: 138, 115, 85;
+    --accent-2-rgb-light: 166, 139, 104;
+    --accent-3-rgb-light: 107, 90, 66;
 
-    /* Paint/ink decorative color (replaces leaf-color) */
-    --paint-color-light: #f25f5c;
-    --paint-color-dark:  #ff8080;
-    --paint-color: var(--paint-color-light);
+    --accent-1-rgb-dark: 180, 155, 120;
+    --accent-2-rgb-dark: 201, 179, 145;
+    --accent-3-rgb-dark: 138, 115, 85;
 
-    /* Accent Backgrounds: Light */
-    --accent-1-background-light: #fff0ef;
-    --accent-2-background-light: #e8faf9;
-    --accent-3-background-light: #f8eaf8;
+    /* — Accent Backgrounds: Light Mode — */
+    --accent-1-background-light: #f4f1ea;
+    --accent-2-background-light: #ebe5d9;
+    --accent-3-background-light: #ddd3c2;
 
-    /* Accent Backgrounds: Dark */
-    --accent-1-background-dark: #1e0808;
-    --accent-2-background-dark: #081e1d;
-    --accent-3-background-dark: #1e0820;
+    /* — Accent Backgrounds: Dark Mode — */
+    --accent-1-background-dark: #201d16;
+    --accent-2-background-dark: #2a261d;
+    --accent-3-background-dark: #353026;
 
-    /* Backgrounds: Light (warm art-paper whites) */
-    --background-0-light: #fffcf7;
-    --background-1-light: #fff9f4;
-    --background-2-light: #fef3ec;
-    --background-3-light: #fde8df;
-    --background-4-light: #fbd8ca;
-    --frosted-background-light: #ffffff;
-    --surface-light:            #ffffff;
-    --border-color-light:       #f0ddd8;
-    --border-color-hover-light: #e8c4bb;
+    /* — Backgrounds: Light Mode (off-white gallery walls) — */
+    --background-0-light: #fafaf8;               /* Off-white — page canvas */
+    --background-1-light: #ffffff;               /* Pure white — primary surface */
+    --background-2-light: #f4f4f1;               /* Faint gray — elevated surface */
+    --background-3-light: #ededE9;               /* Light gray */
+    --background-4-light: #e5e5e0;               /* Gray — dividers, subtle cards */
+    --frosted-background-light: rgba(255, 255, 255, 0.82);
+    --border-color-light: #e5e5e0;               /* Soft gray border */
+    --border-color-hover-light: #d0d0ca;         /* Mid gray border hover */
 
-    /* Backgrounds: Dark (studio-night plum) */
-    --background-0-dark: #0f0b16;
-    --background-1-dark: #17122a;
-    --background-2-dark: #201835;
-    --background-3-dark: #2a2040;
-    --background-4-dark: #36294e;
-    --frosted-background-dark: #1b1430;
-    --surface-dark:            #1b1430;
-    --border-color-dark:       #3d2f55;
-    --border-color-hover-dark: #5a4470;
+    /* — Backgrounds: Dark Mode (dark gallery walls) — */
+    --background-0-dark: #121212;                /* Near-black — page canvas */
+    --background-1-dark: #1a1a1a;                /* Charcoal — primary surface */
+    --background-2-dark: #1e1e1e;                /* Elevated surface */
+    --background-3-dark: #262626;                /* Raised surface */
+    --background-4-dark: #2e2e2e;                /* High-elevation card */
+    --frosted-background-dark: rgba(26, 26, 26, 0.86);
+    --border-color-dark: #2e2e2e;                /* Subtle dark border */
+    --border-color-hover-dark: #3d3d3d;          /* Slightly visible */
 
-    /* Applied Colors (Default: Light) */
+    /* — Applied Colors (Default: Light Mode) — */
     --primary-text-color: var(--primary-text-color-light);
     --secondary-text-color: var(--secondary-text-color-light);
     --tertiary-text-color: var(--tertiary-text-color-light);
@@ -147,7 +153,6 @@
     --background-3: var(--background-3-light);
     --background-4: var(--background-4-light);
     --frosted-background: var(--frosted-background-light);
-    --surface: var(--surface-light);
     --border-color: var(--border-color-light);
     --border-color-hover: var(--border-color-hover-light);
 
@@ -166,14 +171,16 @@
 
     --success-background-color: var(--success-background-color-light);
     --warning-background-color: var(--warning-background-color-light);
-    --error-background-color:   var(--error-background-color-light);
-    --info-background-color:    var(--info-background-color-light);
+    --error-background-color: var(--error-background-color-light);
+    --info-background-color: var(--info-background-color-light);
 }
 
 
 /* ─── THEME OVERRIDES ───────────────────────────────────────────────────────── */
 
 [data-theme="dark"] {
+    color-scheme: dark;
+
     --primary-text-color: var(--primary-text-color-dark);
     --secondary-text-color: var(--secondary-text-color-dark);
     --tertiary-text-color: var(--tertiary-text-color-dark);
@@ -185,7 +192,6 @@
     --background-3: var(--background-3-dark);
     --background-4: var(--background-4-dark);
     --frosted-background: var(--frosted-background-dark);
-    --surface: var(--surface-dark);
     --border-color: var(--border-color-dark);
     --border-color-hover: var(--border-color-hover-dark);
 
@@ -204,15 +210,16 @@
 
     --success-background-color: var(--success-background-color-dark);
     --warning-background-color: var(--warning-background-color-dark);
-    --error-background-color:   var(--error-background-color-dark);
-    --info-background-color:    var(--info-background-color-dark);
+    --error-background-color: var(--error-background-color-dark);
+    --info-background-color: var(--info-background-color-dark);
 
-    --paint-color: var(--paint-color-dark);
+    --sold-color: var(--sold-color-dark);
 
+    /* Deeper shadows for dark surfaces */
     --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.4);
-    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.4);
-    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.6), 0 4px 6px -2px rgba(0, 0, 0, 0.5);
-    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.7), 0 10px 10px -5px rgba(0, 0, 0, 0.6);
+    --shadow-md: 0 4px 12px -2px rgba(0, 0, 0, 0.5), 0 2px 4px -1px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 12px 28px -6px rgba(0, 0, 0, 0.6), 0 4px 8px -2px rgba(0, 0, 0, 0.5);
+    --shadow-xl: 0 24px 48px -12px rgba(0, 0, 0, 0.7), 0 8px 16px -4px rgba(0, 0, 0, 0.6);
 }
 
 
@@ -231,41 +238,52 @@ body {
 html, body, #root {
     min-height: 100%;
     margin: 0;
-    background:
-        radial-gradient(ellipse 70% 55% at 8% -5%,   rgba(var(--accent-1-rgb), 0.16) 0%, transparent 55%),
-        radial-gradient(ellipse 65% 55% at 95% 8%,   rgba(var(--accent-2-rgb), 0.15) 0%, transparent 55%),
-        radial-gradient(ellipse 75% 60% at 50% 108%, rgba(var(--accent-3-rgb), 0.13) 0%, transparent 60%),
-        linear-gradient(
-            160deg,
-            var(--background-0) 0%,
-            var(--background-1) 55%,
-            var(--background-2) 100%
-        );
-    background-attachment: fixed;
+    background: var(--background-0);
     transition: background var(--transition-slow);
 }
 
-html { overflow-y: auto; }
-body, #root { overflow: visible; }
+html {
+    overflow-y: auto;
+}
+
+body, #root {
+    overflow: visible;
+}
 
 
 /* ─── RESPONSIVE BREAKPOINTS ────────────────────────────────────────────────── */
 
 @media (min-width: 576px) {
-    :root { --font-size-3xl: 2.5rem; --font-size-4xl: 3.5rem; }
+    :root {
+        --font-size-3xl: 2.5rem;
+        --font-size-4xl: 3.5rem;
+    }
 }
+
 @media (min-width: 768px) {
-    :root { --font-size-3xl: 2.75rem; --font-size-4xl: 4rem; --spacing-3xl: 5rem; }
+    :root {
+        --font-size-3xl: 2.75rem;
+        --font-size-4xl: 4rem;
+        --spacing-3xl: 5rem;
+    }
 }
+
 @media (min-width: 992px) {
-    :root { --font-size-3xl: 3rem; --font-size-4xl: 4.5rem; --spacing-3xl: 6rem; }
+    :root {
+        --font-size-3xl: 3rem;
+        --font-size-4xl: 4.5rem;
+        --spacing-3xl: 6rem;
+    }
 }
+
 @media (min-width: 1200px) {
-    :root { --font-size-4xl: 5rem; }
+    :root {
+        --font-size-4xl: 5rem;
+    }
 }
 
 
-/* ─── REDUCED MOTION ────────────────────────────────────────────────────────── */
+/* ==================== REDUCED MOTION SUPPORT ==================== */
 @media (prefers-reduced-motion: reduce) {
     * {
         animation-duration: 0.01ms !important;
@@ -275,6 +293,7 @@ body, #root { overflow: visible; }
     }
 }
 
+/* Manual animation override */
 [data-no-animations="true"] * {
     transition: none !important;
     animation: none !important;
@@ -282,9 +301,9 @@ body, #root { overflow: visible; }
 }
 
 
-/* ─── PRINT ─────────────────────────────────────────────────────────────────── */
-@media print {
-    :root { --background-1: #ffffff; --background-2: #ffffff; --primary-text-color: #000000; }
-    body { background: white !important; }
-    [data-print-hide="true"] { display: none !important; }
+/* ==================== CONTAINER QUERIES SUPPORT ==================== */
+@supports (container-type: inline-size) {
+    .container {
+        container-type: inline-size;
+    }
 }

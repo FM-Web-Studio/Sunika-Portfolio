@@ -266,24 +266,6 @@ button[type="submit"] {
         0 1px 2px rgba(0, 0, 0, 0.06);
 }
 
-/* Primary — solid coral CTA (bold, happy, no glass) */
-button.btn-primary {
-    --_btn-bg: var(--accent-1);
-    --_btn-border: var(--accent-1);
-    --_btn-color: #fff;
-    --_btn-hover-bg: var(--accent-hover);
-    --_btn-hover-border: var(--accent-hover);
-    --_btn-glow: rgba(var(--accent-1-rgb), 0.28);
-    --_btn-shadow: 0 6px 18px rgba(var(--accent-1-rgb), 0.30);
-    font-weight: 600;
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
-}
-
-button.btn-primary:hover:not(:disabled) {
-    color: #fff;
-}
-
 
 /* ─── LABELS ─────────────────────────────────────────────────────────────── */
 

@@ -1,5 +1,5 @@
 {
-  "name": "frontend",
+  "name": "sunika-portfolio",
   "version": "1.0.0",
   "private": true,
   "dependencies": {
@@ -13,20 +13,17 @@
     "react-icons": "^5.5.0",
     "react-router-dom": "^7.9.4",
     "react-scripts": "5.0.1",
-    "react-select": "^5.10.2",
     "web-vitals": "^2.1.4"
   },
   "devDependencies": {
     "cross-env": "^7.0.3",
-    "env-cmd": "^10.1.0"
+    "firebase-admin": "^12.7.0"
   },
   "scripts": {
-    "seed": "node scripts/seedFirestore.mjs",
     "start": "react-scripts start",
-    "dev": "npm install && cross-env BROWSER=none react-scripts start",
+    "dev": "cross-env BROWSER=none react-scripts start",
     "build": "cross-env GENERATE_SOURCEMAP=false react-scripts build",
     "test": "react-scripts test",
-    "analyze": "cross-env GENERATE_SOURCEMAP=true ANALYZE=true react-app-rewired build",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {

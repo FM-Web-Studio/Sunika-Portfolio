@@ -3,31 +3,94 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Portfolio sections — public read, no writes
-    match /portfolio/{docId} {
-      allow read: if true;
-      allow write: if false;
+    // ── Admin allowlist ───────────────────────────────────────────────────
+    // Keep this list in sync with REACT_APP_ADMIN_EMAILS and storage.rules.
+    function isAdmin() {
+      return request.auth != null
+             && request.auth.token.email_verified == true
+             && request.auth.token.email in [
+               'francoismeiring0203@gmail.com',
+               'lombardsunika@gmail.com'
+             ];
     }
 
-    // Education collection — public read
-    match /education/{docId} {
+    // ── Gallery artworks ──────────────────────────────────────────────────
+    match /gallery_artworks/{artworkId} {
       allow read: if true;
-      allow write: if false;
+
+      // Owner has full control.
+      allow create, delete: if isAdmin();
+      allow update: if isAdmin()
+        // Anonymous rating: only ratingSum/ratingCount change, count +1, sum +1..5.
+        || (
+          request.resource.data.diff(resource.data).affectedKeys()
+            .hasOnly(['ratingSum', 'ratingCount'])
+          && request.resource.data.ratingCount == resource.data.ratingCount + 1
+          && request.resource.data.ratingSum >= resource.data.ratingSum + 1
+          && request.resource.data.ratingSum <= resource.data.ratingSum + 5
+        )
+        // Anonymous like toggle: only likeCount changes by exactly ±1, stays >= 0.
+        || (
+          request.resource.data.diff(resource.data).affectedKeys()
+            .hasOnly(['likeCount'])
+          && (request.resource.data.likeCount == resource.data.likeCount + 1
+              || request.resource.data.likeCount == resource.data.likeCount - 1)
+          && request.resource.data.likeCount >= 0
+        );
     }
 
-    // Design projects collection — public read
-    match /projects/{docId} {
-      allow read: if true;
-      allow write: if false;
+    // ── Gallery contact messages ──────────────────────────────────────────
+    // Visitors may submit; only the owner may read/manage entries.
+    match /gallery_messages/{doc} {
+      allow create: if request.resource.data.keys().hasAll(['name', 'email', 'message', 'createdAt'])
+                    && request.resource.data.name is string
+                    && request.resource.data.email is string
+                    && request.resource.data.message is string
+                    && request.resource.data.message.size() <= 5000;
+      allow read, update, delete: if isAdmin();
     }
 
-    // Contact form submissions — write-only (no read)
-    match /contacts/{docId} {
-      allow create: if request.resource.data.keys().hasAll(['name', 'email', 'message'])
-        && request.resource.data.name is string
-        && request.resource.data.email is string
-        && request.resource.data.message is string;
-      allow read, update, delete: if false;
+    // ── Gallery site settings (socials + contact details) ─────────────────
+    match /gallery_settings/{doc} {
+      allow read: if true;
+      allow write: if isAdmin();
     }
+
+    // ── Portfolio: projects ───────────────────────────────────────────────
+    match /portfolio_projects/{id} {
+      allow read: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    // ── Portfolio: education & experience timelines ───────────────────────
+    match /education/{id} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    match /experience/{id} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // ── Portfolio: singleton settings docs (personal, contact, interests,
+    //    skills, socials) ─────────────────────────────────────────────────
+    match /portfolio/{doc} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // ── Portfolio: contact-form messages ──────────────────────────────────
+    // Visitors may submit; only an admin may read/manage entries.
+    match /portfolio_messages/{doc} {
+      allow create: if request.resource.data.keys().hasAll(['name', 'email', 'message', 'createdAt'])
+                    && request.resource.data.name is string
+                    && request.resource.data.email is string
+                    && request.resource.data.message is string
+                    && request.resource.data.message.size() <= 5000;
+      allow read, update, delete: if isAdmin();
+    }
+
+    // Default deny
+    match /{document=**} { allow read, write: if false; }
   }
 }

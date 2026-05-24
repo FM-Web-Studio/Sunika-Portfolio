@@ -1,102 +1,77 @@
-import React, { useState } from 'react';
-import { LuArrowUpRight } from 'react-icons/lu';
-import { useDesignProjects } from '../../hooks';
-import { Modal } from '../../components';
-import { getProjectCover, getProjectMedia } from '../../data/projectImages';
+import React, { useState, useEffect, useMemo } from 'react';
+import { ProjectCard, ProjectLightbox } from '../../components';
+import { subscribeProjects } from '../../firebase';
 import Loading from '../Loading';
 import styles from './Projects.module.css';
 
 const Projects = () => {
-  const { projects, loading } = useDesignProjects();
+  const [projects, setProjects] = useState([]);
+  const [loading, setLoading]   = useState(true);
+  const [error, setError]       = useState(null);
+  const [activeCategory, setActiveCategory] = useState('All');
   const [selected, setSelected] = useState(null);
 
-  if (loading) return <Loading />;
+  useEffect(() => {
+    const unsub = subscribeProjects(
+      (items) => { setProjects(items); setLoading(false); },
+      (err)   => { setError(err);     setLoading(false); },
+    );
+    return unsub;
+  }, []);
 
-  const list = projects || [];
-  const media = selected ? getProjectMedia(selected.imageFolder) : [];
+  const categories = useMemo(() => {
+    const set = new Set(projects.map((p) => p.category).filter(Boolean));
+    return ['All', ...Array.from(set)];
+  }, [projects]);
+
+  const filtered = useMemo(() => (
+    activeCategory === 'All'
+      ? projects
+      : projects.filter((p) => p.category === activeCategory)
+  ), [projects, activeCategory]);
+
+  // Keep the open lightbox in sync with live data.
+  const selectedLive = selected ? projects.find((p) => p.id === selected.id) || selected : null;
+
+  if (loading) return <Loading message="Loading projects" showVerse={false} />;
 
   return (
-    <main className={styles.page}>
-      <header className={styles.head}>
-        <p className={styles.kicker}>Portfolio</p>
-        <h1 className={styles.title}>Projects &amp; design work</h1>
-        <p className={styles.subtitle}>
-          A selection of branding, illustration, editorial, and motion design pieces.
-          Tap any project to explore the full set.
-        </p>
+    <div className={styles.page}>
+      <header className={styles.header}>
+        <h1 className={styles.heading}>Projects</h1>
+        <p className={styles.subtitle}>A selection of design &amp; illustration work.</p>
       </header>
 
-      <div className={styles.grid}>
-        {list.map((project, i) => {
-          const cover = getProjectCover(project.imageFolder);
-          const count = getProjectMedia(project.imageFolder).length;
-          return (
+      {categories.length > 1 && (
+        <div className={styles.filters}>
+          {categories.map((c) => (
             <button
-              key={project.id}
+              key={c}
               type="button"
-              className={`${styles.card} ${styles[`accent${(i % 3) + 1}`]}`}
-              onClick={() => setSelected(project)}
+              className={`${styles.filter} ${activeCategory === c ? styles.filterActive : ''}`}
+              onClick={() => setActiveCategory(c)}
             >
-              <span className={styles.media}>
-                {cover && <img src={cover} alt={project.title} loading="lazy" />}
-                <span className={styles.count}>{count} {count === 1 ? 'item' : 'items'}</span>
-              </span>
-              <span className={styles.body}>
-                <span className={styles.cardCategory}>{project.category} · {project.year}</span>
-                <span className={styles.cardName}>
-                  {project.title}
-                  <LuArrowUpRight className={styles.cardArrow} aria-hidden="true" />
-                </span>
-              </span>
+              {c}
             </button>
-          );
-        })}
+          ))}
+        </div>
+      )}
+
+      {error && <p className={styles.empty}>Something went wrong loading projects.</p>}
+      {!error && filtered.length === 0 && <p className={styles.empty}>No projects to show yet.</p>}
+
+      <div className={styles.grid}>
+        {filtered.map((project) => (
+          <ProjectCard key={project.id} project={project} onOpen={setSelected} />
+        ))}
       </div>
 
-      <Modal open={!!selected} onClose={() => setSelected(null)} title={selected?.title} size="lg">
-        {selected && (
-          <div className={styles.detail}>
-            <div className={styles.detailMeta}>
-              <span className={styles.metaPill}>{selected.category}</span>
-              <span className={styles.metaPill}>{selected.year}</span>
-            </div>
-
-            {selected.description && <p className={styles.detailDesc}>{selected.description}</p>}
-
-            {selected.tags?.length > 0 && (
-              <ul className={styles.tagList}>
-                {selected.tags.map((tag) => (
-                  <li key={tag} className={styles.tag}>{tag}</li>
-                ))}
-              </ul>
-            )}
-
-            <div className={styles.gallery}>
-              {media.map((m) =>
-                m.video ? (
-                  <video
-                    key={m.src}
-                    className={styles.galleryItem}
-                    src={m.src}
-                    controls
-                    playsInline
-                    preload="metadata"
-                  />
-                ) : (
-                  <img
-                    key={m.src}
-                    className={styles.galleryItem}
-                    src={m.src}
-                    alt={selected.title}
-                    loading="lazy"
-                  />
-                ),
-              )}
-            </div>
-          </div>
-        )}
-      </Modal>
-    </main>
+      <ProjectLightbox
+        project={selectedLive}
+        open={!!selected}
+        onClose={() => setSelected(null)}
+      />
+    </div>
   );
 };
 

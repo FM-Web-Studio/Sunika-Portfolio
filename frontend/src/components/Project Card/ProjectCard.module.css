@@ -1,0 +1,116 @@
+.card {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  background: var(--background-1);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  padding: 0;
+  cursor: pointer;
+  min-width: 0;
+  font-family: inherit;
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--transition-base), box-shadow var(--transition-base),
+              border-color var(--transition-base);
+}
+
+.card:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--border-color-hover);
+  z-index: 1;
+}
+
+.imageWrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  background: var(--background-2);
+}
+
+.image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform var(--transition-slow);
+}
+
+.card:hover .image { transform: scale(1.04); }
+
+.noImage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  color: var(--tertiary-text-color);
+  font-size: var(--font-size-sm);
+}
+
+.count {
+  position: absolute;
+  top: var(--spacing-sm);
+  right: var(--spacing-sm);
+  min-width: 1.6rem;
+  height: 1.6rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 0.45rem;
+  background: var(--frosted-background);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-full);
+  color: var(--secondary-text-color);
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: var(--spacing-md);
+  min-width: 0;
+}
+
+.category {
+  font-size: var(--font-size-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--accent-1);
+  font-weight: 600;
+}
+
+.title {
+  margin: 0;
+  font-size: var(--font-size-md);
+  font-weight: 600;
+  color: var(--primary-text-color);
+  line-height: 1.3;
+  overflow-wrap: break-word;
+}
+
+.year {
+  font-size: var(--font-size-xs);
+  color: var(--tertiary-text-color);
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: var(--spacing-xs);
+}
+
+.tag {
+  font-size: 0.7rem;
+  padding: 2px 8px;
+  background: var(--accent-1-background);
+  color: var(--secondary-text-color);
+  border-radius: var(--radius-full);
+}

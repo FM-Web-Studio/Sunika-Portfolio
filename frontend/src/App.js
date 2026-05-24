@@ -1,15 +1,14 @@
 import React, { Suspense, useCallback, useMemo, useTransition, useEffect } from 'react';
 import { Routes, Route, useNavigate, Outlet, useLocation } from 'react-router-dom';
-import { NotFound, Loading, Connect, Projects, Bio, Home } from './pages';
+import { NotFound, Loading, Home, Projects, Contact, Admin } from './pages';
 import { NavigationBar, Settings, ToastProvider } from './components';
 import { useTheme, useAnimations } from './hooks';
 import styles from './App.module.css';
 
 const NAVIGATION_PAGES = [
-  { label: 'Home',     to: '/'        },
-  { label: 'Bio',      to: '/bio'     },
-  { label: 'Projects', to: '/projects'},
-  { label: 'Contact',  to: '/connect' },
+  { label: 'Home',     to: '/'         },
+  { label: 'Projects', to: '/projects' },
+  { label: 'Contact',  to: '/contact'  },
 ];
 
 const ScrollToTop = () => {
@@ -55,11 +54,11 @@ const AppContent = () => (
   <>
     <ScrollToTop />
     <Routes>
+      <Route path="/admin" element={<Admin />} />
       <Route path="/" element={<AppLayout />}>
         <Route index             element={<Home />} />
-        <Route path="bio"        element={<Bio />} />
-        <Route path="connect"    element={<Connect />} />
         <Route path="projects"   element={<Projects />} />
+        <Route path="contact"    element={<Contact />} />
         <Route path="loading"    element={<Loading />} />
         <Route path="*"          element={<NotFound />} />
       </Route>
