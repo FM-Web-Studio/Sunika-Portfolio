@@ -1,6 +1,6 @@
 {
   "hosting": {
-    "site": "sunika-gallery",
+    "site": "sunika-portfolio",
     "public": "frontend/build",
     "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
     "rewrites": [
