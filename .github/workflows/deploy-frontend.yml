@@ -45,4 +45,4 @@ jobs:
           echo "GOOGLE_APPLICATION_CREDENTIALS=$RUNNER_TEMP/firebase-sa.json" >> "$GITHUB_ENV"
 
       - name: Deploy to Firebase Hosting, Firestore & Storage Rules
-        run: firebase deploy --only hosting:sunika-project,firestore:rules,storage --project sunika-project
+        run: firebase deploy --only hosting:portfolio,firestore:rules,storage --project sunika-project
