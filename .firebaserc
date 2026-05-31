@@ -1,5 +1,13 @@
 {
   "projects": {
     "default": "sunika-project"
+  },
+  "targets": {
+    "sunika-project": {
+      "hosting": {
+        "portfolio": ["sunika-project"],
+        "gallery": ["sunika-gallery"]
+      }
+    }
   }
 }
