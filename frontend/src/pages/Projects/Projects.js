@@ -14,7 +14,7 @@ const Projects = () => {
   useEffect(() => {
     const unsub = subscribeProjects(
       (items) => { setProjects(items); setLoading(false); },
-      (err)   => { setError(err);     setLoading(false); },
+      (err)   => { console.error('[Projects] subscribeProjects error:', err); setError(err); setLoading(false); },
     );
     return unsub;
   }, []);

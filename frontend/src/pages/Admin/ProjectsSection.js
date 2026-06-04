@@ -11,8 +11,10 @@ const ProjectsSection = () => {
   const [editing, setEditing] = useState(null);
   const [saving, setSaving] = useState(false);
 
-  useEffect(() => subscribeProjects(setProjects, () => showToast?.('error', 'Load failed', 'Could not load projects.')),
-    [showToast]);
+  useEffect(() => subscribeProjects(setProjects, (err) => {
+    console.error('[Admin] subscribeProjects error:', err);
+    showToast?.('error', 'Load failed', 'Could not load projects.');
+  }), [showToast]);
 
   const openAdd  = () => { setEditing(null); setOpen(true); };
   const openEdit = (p) => { setEditing(p); setOpen(true); };

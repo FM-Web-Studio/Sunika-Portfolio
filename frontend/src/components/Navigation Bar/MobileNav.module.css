@@ -1,40 +1,21 @@
-﻿/* ================================================================
+/* ================================================================
    MOBILE NAV — MobileNav.module.css
-   Floating circular launcher at bottom-center + radial arc menu.
-   Container is sized to the trigger (via --trigger-size) so bubble
-   anchors can use top:50%;left:50% exactly like Settings.module.css.
+   Hamburger trigger (top-left) + full-screen editorial overlay.
+   Both portalled to <body> — no stacking-context issues.
    All colors strictly from Theme.css variables.
    ================================================================ */
 
 /* ----------------------------------------------------------------
-   CONTAINER
-   Fixed at the bottom-center of the viewport. Sized to the trigger
-   button so bubble anchors have a real 50%/50% origin point.
-   overflow: visible lets the arc extend outward freely.
-   ---------------------------------------------------------------- */
-.container {
-  position: fixed;
-  /* env() keeps the trigger above the home-indicator bar on iOS */
-  bottom: max(24px, calc(env(safe-area-inset-bottom, 0px) + 8px));
-  left: 50%;
-  /* translate3d forces a GPU compositing layer — prevents the iOS Safari bug
-     where position:fixed elements with backdrop-filter flicker during scroll */
-  transform: translate3d(-50%, 0, 0);
-  will-change: transform;
-  z-index: var(--z-modal);
-  overflow: visible;
-  width:  var(--trigger-size, 64px);
-  height: var(--trigger-size, 64px);
-}
-
-/* ----------------------------------------------------------------
-   TRIGGER BUTTON
-   Fills the container completely. No additional translate needed.
+   TRIGGER
+   Fixed top-left, mirrors Settings position on the right.
    ---------------------------------------------------------------- */
 .trigger {
-  position: relative;
-  width:  100%;
-  height: 100%;
+  position: fixed;
+  top: 16px;
+  left: 20px;
+  z-index: calc(var(--z-modal) + 2); /* above overlay (modal+1) and Settings (modal) */
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
   border: 1px solid var(--border-color-hover);
   background: var(--frosted-background);
@@ -42,45 +23,26 @@
   -webkit-backdrop-filter: blur(14px) saturate(150%);
   box-shadow:
     var(--shadow-md),
-    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
   cursor: pointer;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 4px;
+  gap: 5px;
   padding: 0;
   outline: none;
-  z-index: 2;
   transition:
-    border-color 0.28s ease,
-    box-shadow   0.28s ease,
-    transform    0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-/* Cursor-following rim glow (same trick as Settings trigger) */
-.trigger::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  border: 1.5px solid transparent;
-  background:
-    linear-gradient(var(--frosted-background), var(--frosted-background)) padding-box,
-    radial-gradient(
-      circle at var(--glow-x, 50%) var(--glow-y, 50%),
-      var(--accent-1) 0%,
-      transparent 65%
-    ) border-box;
-  opacity: var(--glow-show, 0);
-  transition: opacity 0.22s ease;
-  pointer-events: none;
-  z-index: 0;
+    border-color 0.25s ease,
+    background   0.25s ease,
+    box-shadow   0.25s ease;
 }
 
 .trigger:hover {
   border-color: var(--accent-1);
-  transform: scale(1.07);
+  box-shadow:
+    var(--shadow-lg),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
 }
 
 .trigger:focus-visible {
@@ -90,303 +52,177 @@
 
 .triggerOpen {
   border-color: var(--accent-1);
-  box-shadow:
-    var(--shadow-lg),
-    0 0 0 3px var(--accent-1-background),
-    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  background: var(--accent-1-background);
 }
 
 /* ----------------------------------------------------------------
-   HAMBURGER BARS
-   Three lines that morph into an X when open.
+   HAMBURGER BARS  →  X morph
    ---------------------------------------------------------------- */
 .bar {
   display: block;
-  width: 20px;
-  height: 2px;
-  border-radius: 2px;
-  background: var(--accent-1);
+  width: 18px;
+  height: 1.5px;
+  border-radius: 1px;
+  background: var(--primary-text-color);
   transform-origin: center;
   transition:
-    transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
-    opacity   0.2s ease;
+    transform  0.32s cubic-bezier(0.34, 1.56, 0.64, 1),
+    opacity    0.2s  ease,
+    background 0.25s ease;
 }
 
-.barTop { transform: translateY(0);  }
-.barMid { opacity: 1;                }
-.barBot { transform: translateY(0);  }
+.triggerOpen .bar {
+  background: var(--accent-1);
+}
 
-.barTopOpen { transform: translateY(6px)  rotate(45deg);  }
-.barMidOpen { opacity: 0; transform: scaleX(0);           }
-.barBotOpen { transform: translateY(-6px) rotate(-45deg); }
+.barTopOpen { transform: translateY(6.5px)  rotate(45deg);  }
+.barMidOpen { opacity: 0; transform: scaleX(0);             }
+.barBotOpen { transform: translateY(-6.5px) rotate(-45deg); }
 
 /* ----------------------------------------------------------------
-   BUBBLE ANCHOR
-   Zero-size anchor at the trigger center (top:50%; left:50%).
-   Translates outward along the arc when open — same pattern as
-   Settings.module.css for perfect behavioral parity.
+   FULL-SCREEN OVERLAY
+   z-index sits one below the trigger so the trigger always reads.
    ---------------------------------------------------------------- */
-.bubbleAnchor {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 5px;
-  /* Start collapsed at center; -50% self-centers the anchor on (0,0) */
-  transform: translate(-50%, -50%) scale(0.35);
-  opacity: 0;
-  pointer-events: none;
-  z-index: 1;
-  /* Closing: fast collapse */
-  transition:
-    transform 0.28s cubic-bezier(0.4, 0, 1, 1),
-    opacity   0.18s ease-in;
-}
-
-.bubbleAnchorOpen {
-  transform: translate(
-    calc(-50% + var(--tx, 0px)),
-    calc(-50% + var(--ty, 0px))
-  ) scale(1);
-  opacity: 1;
-  pointer-events: auto;
-  /* Opening: spring with per-bubble stagger */
-  transition:
-    transform 0.58s cubic-bezier(0.34, 1.56, 0.64, 1),
-    opacity   0.32s ease;
-  transition-delay: var(--delay, 0s);
-}
-
-/* ----------------------------------------------------------------
-   LINK BUBBLE BUTTON
-   ---------------------------------------------------------------- */
-.bubble {
-  position: relative;
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  border: 1px solid var(--border-color-hover);
-  background: var(--frosted-background);
-  backdrop-filter: blur(24px) saturate(200%);
-  -webkit-backdrop-filter: blur(24px) saturate(200%);
-  box-shadow:
-    var(--shadow-lg),
-    inset 0 1px 0 rgba(255, 255, 255, 0.4);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  padding: 0;
-  outline: none;
-  transition:
-    transform    0.28s cubic-bezier(0.34, 1.56, 0.64, 1),
-    border-color 0.2s  ease,
-    box-shadow   0.2s  ease,
-    background   0.2s  ease;
-}
-
-/* Rim glow on each bubble */
-.bubble::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  border: 1.5px solid transparent;
-  background:
-    linear-gradient(var(--frosted-background), var(--frosted-background)) padding-box,
-    radial-gradient(
-      circle at var(--glow-x, 50%) var(--glow-y, 50%),
-      var(--accent-1) 0%,
-      transparent 65%
-    ) border-box;
-  opacity: var(--glow-show, 0);
-  transition: opacity 0.22s ease;
-  pointer-events: none;
-  z-index: 0;
-}
-
-.bubble:hover,
-.bubbleHovered {
-  transform: scale(1.12) translateY(-3px);
-  border-color: var(--accent-1);
-  box-shadow:
-    var(--shadow-xl),
-    0 0 0 2px var(--accent-1-background),
-    inset 0 1px 0 rgba(255, 255, 255, 0.45);
-}
-
-.bubbleActive {
-  border-color: var(--accent-1);
-  background: var(--accent-1-background);
-  box-shadow:
-    var(--shadow-md),
-    0 0 0 1.5px var(--accent-1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.4);
-}
-
-.bubbleActive:hover {
-  transform: scale(1.08);
-}
-
-.bubble:focus-visible {
-  outline: 2px solid var(--accent-1);
-  outline-offset: 3px;
-}
-
-.bubble:active {
-  transform: scale(0.94);
-}
-
-.bubbleIcon {
-  font-size: 1.25rem;
-  color: var(--accent-1);
-  display: block;
-  position: relative;
-  z-index: 1;
-  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.bubble:hover .bubbleIcon {
-  transform: scale(1.15);
-}
-
-/* ----------------------------------------------------------------
-   BUBBLE LABEL
-   Always-visible frosted pill below each icon button.
-   Styled exactly like Settings' .bubbleLabel.
-   ---------------------------------------------------------------- */
-.bubbleLabel {
-  font-size: 0.62rem;
-  font-weight: 600;
-  letter-spacing: 0.07em;
-  text-transform: uppercase;
-  color: var(--secondary-text-color);
-  background: var(--frosted-background);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-full);
-  padding: 2px 8px;
-  white-space: nowrap;
-  box-shadow: var(--shadow-sm);
-  pointer-events: none;
-}
-
-/* ----------------------------------------------------------------
-   SCROLL ARROW ANCHORS
-   Use the same origin pattern as bubble anchors.
-   Fixed offsets place them at the far ends of the arc.
-   ---------------------------------------------------------------- */
-.arrowAnchor {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(calc(-50% + var(--ax)), calc(-50% + var(--ay))) scale(0);
-  opacity: 0;
-  pointer-events: none;
-  z-index: 1;
-  transition:
-    transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
-    opacity   0.25s ease;
-}
-
-.arrowLeft  { --ax: -130px; --ay: -30px; }
-.arrowRight { --ax:  130px; --ay: -30px; }
-
-.arrowAnchorOpen {
-  transform: translate(calc(-50% + var(--ax)), calc(-50% + var(--ay))) scale(1);
-  opacity: 1;
-  pointer-events: auto;
-  transition-delay: 0.18s;
-}
-
-.arrow {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  border: 1px solid var(--border-color-hover);
-  background: var(--frosted-background);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  color: var(--secondary-text-color);
-  font-size: 18px;
-  line-height: 1;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  outline: none;
-  box-shadow: var(--shadow-sm);
-  transition:
-    border-color 0.22s ease,
-    color        0.22s ease,
-    transform    0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.arrow:hover {
-  border-color: var(--accent-1);
-  color: var(--accent-1);
-  transform: scale(1.08);
-}
-
-.arrow:focus-visible {
-  outline: 2px solid var(--accent-1);
-  outline-offset: 2px;
-}
-
-/* ----------------------------------------------------------------
-   BACKDROP
-   Portalled to <body>. Sits at modal-backdrop z-index (1040) which
-   is below the nav container (modal: 1050) but above page content.
-   ---------------------------------------------------------------- */
-.backdrop {
+.overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.18);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
-  z-index: var(--z-modal-backdrop);
-  animation: backdropIn 0.3s ease forwards;
+  z-index: calc(var(--z-modal) + 1); /* above Settings (modal) — full capture when open */
+  background: var(--background-0);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 80px var(--spacing-2xl) var(--spacing-2xl);
+  padding-bottom: max(var(--spacing-2xl), env(safe-area-inset-bottom, 0px));
+  overscroll-behavior: contain;
+
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-6px);
+  transition:
+    opacity   0.28s ease,
+    transform 0.32s ease;
 }
 
-@keyframes backdropIn {
-  from {
-    opacity: 0;
-    backdrop-filter: blur(0px);
-    -webkit-backdrop-filter: blur(0px);
-  }
-  to {
-    opacity: 1;
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
-  }
+.overlayOpen {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
 }
 
 /* ----------------------------------------------------------------
-   MOBILE: drop backdrop-filter on trigger + bubbles.
-   backdrop-filter on position:fixed elements is the primary cause of
-   the iOS Safari "element disappears during scroll" rendering bug.
-   Use a solid opaque background instead — visually equivalent.
+   LINK LIST
    ---------------------------------------------------------------- */
-@media (max-width: 768px) {
+.linkList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ----------------------------------------------------------------
+   LINK ITEM  — stagger in on open
+   ---------------------------------------------------------------- */
+.linkItem {
+  opacity: 0;
+  transform: translateY(14px);
+  transition:
+    opacity   0.38s ease,
+    transform 0.38s cubic-bezier(0.22, 1, 0.36, 1);
+  transition-delay: 0s;
+}
+
+.linkItemVisible {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: calc(0.06s + var(--i, 0) * 0.07s);
+}
+
+/* ----------------------------------------------------------------
+   NAV LINK BUTTON
+   ---------------------------------------------------------------- */
+.navLink {
+  display: flex;
+  align-items: baseline;
+  gap: var(--spacing-md);
+  padding: var(--spacing-md) 0;
+  width: 100%;
+  border: none;
+  border-bottom: 1px solid var(--border-color);
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  cursor: pointer;
+  text-align: left;
+  outline: none;
+  transition: border-color 0.22s ease;
+
+  /* Hard-reset global button vars */
+  --_btn-bg:           transparent;
+  --_btn-border:       transparent;
+  --_btn-hover-bg:     transparent;
+  --_btn-hover-border: transparent;
+  --_btn-glow:         transparent;
+  --_btn-shadow:       none;
+}
+
+.linkList li:last-child .navLink {
+  border-bottom: none;
+}
+
+.navLink:hover {
+  box-shadow: none;
+  border-color: var(--accent-1);
+}
+
+.navLink:focus-visible {
+  outline: 2px solid var(--accent-1);
+  outline-offset: 4px;
+}
+
+/* ----------------------------------------------------------------
+   INDEX NUMBER  (01, 02, 03…)
+   ---------------------------------------------------------------- */
+.linkIndex {
+  font-size: var(--font-size-xs);
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  color: var(--tertiary-text-color);
+  min-width: 1.75rem;
+  transition: color 0.22s ease;
+}
+
+/* ----------------------------------------------------------------
+   LINK LABEL
+   ---------------------------------------------------------------- */
+.linkLabel {
+  font-size: clamp(2.2rem, 9vw, 3.5rem);
+  font-weight: 300;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  color: var(--secondary-text-color);
+  transition: color 0.22s ease;
+}
+
+.navLink:hover .linkLabel  { color: var(--primary-text-color); }
+.navLink:hover .linkIndex  { color: var(--accent-1); }
+
+.navLinkActive .linkLabel  { color: var(--accent-1); font-weight: 400; }
+.navLinkActive .linkIndex  { color: var(--accent-1); }
+
+/* ----------------------------------------------------------------
+   MOBILE: drop backdrop-filter on trigger to fix iOS Safari flicker.
+   ---------------------------------------------------------------- */
+@media (max-width: 480px) {
   .trigger {
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
     background: var(--background-1);
-    box-shadow:
-      0 4px 16px rgba(0, 0, 0, 0.18),
-      inset 0 1px 0 rgba(255, 255, 255, 0.35);
   }
-  .bubble {
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
-    background: var(--background-1);
-  }
-  .backdrop {
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
-    background: rgba(0, 0, 0, 0.32);
+
+  .overlay {
+    padding-left: var(--spacing-lg);
+    padding-right: var(--spacing-lg);
   }
 }

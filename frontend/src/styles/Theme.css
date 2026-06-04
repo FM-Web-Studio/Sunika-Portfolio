@@ -55,17 +55,17 @@
 
     /* ─── COLOR PALETTE — GALLERY NEUTRAL ───────────────────────────────────── */
 
-    /* — Text: Light Mode (near-black → soft gray) — */
-    --primary-text-color-light: #1a1a1a;         /* Near-black */
-    --secondary-text-color-light: #4a4a4a;       /* Soft charcoal */
-    --tertiary-text-color-light: #6b6b6b;        /* Muted gray */
-    --disabled-color-light: #a8a8a3;             /* Light gray */
+    /* — Text: Light Mode (warm ink → warm gray) — */
+    --primary-text-color-light: #1A1714;         /* Warm near-black */
+    --secondary-text-color-light: #3D3830;       /* Warm charcoal */
+    --tertiary-text-color-light: #7A7265;        /* Warm mid-tone */
+    --disabled-color-light: #B8B0A6;             /* Warm light gray */
 
-    /* — Text: Dark Mode (off-white → gray) — */
-    --primary-text-color-dark: #f0f0f0;          /* Off-white */
-    --secondary-text-color-dark: #c4c4c4;        /* Light gray */
-    --tertiary-text-color-dark: #9a9a9a;         /* Muted gray */
-    --disabled-color-dark: #5a5a5a;              /* Dim gray */
+    /* — Text: Dark Mode (warm off-white → warm gray) — */
+    --primary-text-color-dark: #F2EDE5;          /* Warm off-white */
+    --secondary-text-color-dark: #C4BAB0;        /* Warm light */
+    --tertiary-text-color-dark: #8A8278;         /* Warm mid */
+    --disabled-color-dark: #5A544E;              /* Warm dim */
 
     /* — Status Colors — */
     --error-color: #c0392b;
@@ -74,8 +74,8 @@
     --info-color: #5a7d9a;
 
     /* — Sold badge — */
-    --sold-color-light: #b03434;                 /* Deep red — "sold" marker */
-    --sold-color-dark:  #e06464;
+    --sold-color-light: #A03030;                 /* Deep red — "sold" marker */
+    --sold-color-dark:  #D86060;
     --sold-color: var(--sold-color-light);
 
     /* — Status Backgrounds: Light Mode — */
@@ -85,61 +85,61 @@
     --info-background-color-light: #ecf1f5;
 
     /* — Status Backgrounds: Dark Mode — */
-    --success-background-color-dark: #15201a;
-    --warning-background-color-dark: #211a0d;
-    --error-background-color-dark: #211210;
-    --info-background-color-dark: #121a21;
+    --success-background-color-dark: #141F19;
+    --warning-background-color-dark: #1E1A0D;
+    --error-background-color-dark: #1E1210;
+    --info-background-color-dark: #11181F;
 
-    /* — Accent: Muted Taupe (Light Mode) — */
-    --accent-1-light: #8a7355;        /* Muted taupe — primary action */
-    --accent-2-light: #a68b68;        /* Lighter taupe — highlight */
-    --accent-3-light: #6b5a42;        /* Deep taupe — pressed / deep */
-    --accent-hover-light: #6b5a42;    /* Deep taupe — hover state */
+    /* — Accent: Deep Brick (Light Mode) — */
+    --accent-1-light: #8B3A2F;        /* Deep brick — primary action */
+    --accent-2-light: #A34839;        /* Mid brick — highlight */
+    --accent-3-light: #6B2D24;        /* Dark brick — pressed / deep */
+    --accent-hover-light: #6B2D24;    /* Dark brick — hover state */
 
-    /* — Accent: Warm Sand (Dark Mode) — */
-    --accent-1-dark: #b49b78;         /* Warm sand — primary on dark */
-    --accent-2-dark: #c9b391;         /* Light sand — highlights */
-    --accent-3-dark: #8a7355;         /* Taupe — mid tone */
-    --accent-hover-dark: #c9b391;     /* Light sand — hover brightness */
+    /* — Accent: Warm Amber (Dark Mode) — */
+    --accent-1-dark: #C49060;         /* Warm amber — primary on dark */
+    --accent-2-dark: #D8A87A;         /* Light amber — highlights */
+    --accent-3-dark: #A07248;         /* Deep amber — mid tone */
+    --accent-hover-dark: #D8A87A;     /* Light amber — hover brightness */
 
     /* — Accent RGB (for rgba() usage) — */
-    --accent-1-rgb-light: 138, 115, 85;
-    --accent-2-rgb-light: 166, 139, 104;
-    --accent-3-rgb-light: 107, 90, 66;
+    --accent-1-rgb-light: 139, 58, 47;
+    --accent-2-rgb-light: 163, 72, 57;
+    --accent-3-rgb-light: 107, 45, 36;
 
-    --accent-1-rgb-dark: 180, 155, 120;
-    --accent-2-rgb-dark: 201, 179, 145;
-    --accent-3-rgb-dark: 138, 115, 85;
+    --accent-1-rgb-dark: 196, 144, 96;
+    --accent-2-rgb-dark: 216, 168, 122;
+    --accent-3-rgb-dark: 160, 114, 72;
 
     /* — Accent Backgrounds: Light Mode — */
-    --accent-1-background-light: #f4f1ea;
-    --accent-2-background-light: #ebe5d9;
-    --accent-3-background-light: #ddd3c2;
+    --accent-1-background-light: #F5EDE9;
+    --accent-2-background-light: #EDD9D1;
+    --accent-3-background-light: #E3C8BF;
 
     /* — Accent Backgrounds: Dark Mode — */
-    --accent-1-background-dark: #201d16;
-    --accent-2-background-dark: #2a261d;
-    --accent-3-background-dark: #353026;
+    --accent-1-background-dark: #201A14;
+    --accent-2-background-dark: #2A2218;
+    --accent-3-background-dark: #35291E;
 
-    /* — Backgrounds: Light Mode (off-white gallery walls) — */
-    --background-0-light: #fafaf8;               /* Off-white — page canvas */
-    --background-1-light: #ffffff;               /* Pure white — primary surface */
-    --background-2-light: #f4f4f1;               /* Faint gray — elevated surface */
-    --background-3-light: #ededE9;               /* Light gray */
-    --background-4-light: #e5e5e0;               /* Gray — dividers, subtle cards */
-    --frosted-background-light: rgba(255, 255, 255, 0.82);
-    --border-color-light: #e5e5e0;               /* Soft gray border */
-    --border-color-hover-light: #d0d0ca;         /* Mid gray border hover */
+    /* — Backgrounds: Light Mode (warm parchment) — */
+    --background-0-light: #F8F5F0;               /* Warm parchment — page canvas */
+    --background-1-light: #FFFFFF;               /* Pure white — primary surface */
+    --background-2-light: #F2EDE5;               /* Warm linen — elevated surface */
+    --background-3-light: #E8E1D4;               /* Warm bone */
+    --background-4-light: #D9D1C0;               /* Warm tan — dividers, subtle cards */
+    --frosted-background-light: rgba(248, 245, 240, 0.88);
+    --border-color-light: #DDD5C8;               /* Warm border */
+    --border-color-hover-light: #C9BFB0;         /* Warm border hover */
 
-    /* — Backgrounds: Dark Mode (dark gallery walls) — */
-    --background-0-dark: #121212;                /* Near-black — page canvas */
-    --background-1-dark: #1a1a1a;                /* Charcoal — primary surface */
-    --background-2-dark: #1e1e1e;                /* Elevated surface */
-    --background-3-dark: #262626;                /* Raised surface */
-    --background-4-dark: #2e2e2e;                /* High-elevation card */
-    --frosted-background-dark: rgba(26, 26, 26, 0.86);
-    --border-color-dark: #2e2e2e;                /* Subtle dark border */
-    --border-color-hover-dark: #3d3d3d;          /* Slightly visible */
+    /* — Backgrounds: Dark Mode (warm atelier dark) — */
+    --background-0-dark: #0F0C0A;                /* Warm near-black — page canvas */
+    --background-1-dark: #1A1612;                /* Warm very dark — primary surface */
+    --background-2-dark: #23201B;                /* Warm dark — elevated surface */
+    --background-3-dark: #2F2A23;                /* Warm medium dark */
+    --background-4-dark: #3D372E;                /* Warm raised — high-elevation card */
+    --frosted-background-dark: rgba(26, 22, 18, 0.90);
+    --border-color-dark: #3D372E;                /* Warm dark border */
+    --border-color-hover-dark: #524A40;          /* Warm visible border hover */
 
     /* — Applied Colors (Default: Light Mode) — */
     --primary-text-color: var(--primary-text-color-light);

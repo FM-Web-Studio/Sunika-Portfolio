@@ -14,8 +14,10 @@ const RecordSection = ({
   const [editing, setEditing] = useState(null);
   const [saving, setSaving] = useState(false);
 
-  useEffect(() => subscribe(setRecords, () => showToast?.('error', 'Load failed', `Could not load ${title.toLowerCase()}.`)),
-    [subscribe, title, showToast]);
+  useEffect(() => subscribe(setRecords, (err) => {
+    console.error(`[Admin] subscribe(${title}) error:`, err);
+    showToast?.('error', 'Load failed', `Could not load ${title.toLowerCase()}.`);
+  }), [subscribe, title, showToast]);
 
   const openAdd  = () => { setEditing(null); setOpen(true); };
   const openEdit = (r) => { setEditing(r); setOpen(true); };
