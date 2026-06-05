@@ -24,7 +24,7 @@ export const STORAGE_PREFIX = 'portfolio';
 
 // Comma-separated allowlist of admin Google account emails (client-side UX gate).
 // Real enforcement lives in firestore.rules / storage.rules (managed separately).
-export const ADMIN_EMAILS = (process.env.REACT_APP_ADMIN_EMAILS || '')
+export const ADMIN_EMAILS = (import.meta.env.ADMIN_EMAILS || '')
   .split(',')
   .map((s) => s.trim().toLowerCase())
   .filter(Boolean);
