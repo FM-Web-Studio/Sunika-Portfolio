@@ -16,7 +16,7 @@ export const PORTFOLIO_DOCS = {
   contact:   'contact',
   interests: 'interests',
   skills:    'skills',
-  socials:   'socials',
+  socials:   'social',
 };
 
 // Storage folder for all portfolio files (projects/, profile/).

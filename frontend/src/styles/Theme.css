@@ -1,6 +1,29 @@
 :root {
     color-scheme: light;
 
+    /* ─── FONTS ─────────────────────────────────────────────────────────────── */
+    --font-heading: 'Syne', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-body:    'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+
+    /* ─── HERO SECTION (full-bleed dark panel) ───────────────────────────────── */
+    --hero-bg:            #161210;
+    --hero-text:          #F2EDE5;
+    --hero-text-sub:      rgba(242, 237, 229, 0.65);
+    --hero-border:        rgba(242, 237, 229, 0.16);
+
+    /* ─── SECONDARY ACCENT — Complementary Teal ─────────────────────────────── */
+    --accent-sec-light:               #1C7A8A;
+    --accent-sec-dark:                #3EC8DC;
+    --accent-sec-rgb-light:           28, 122, 138;
+    --accent-sec-rgb-dark:            62, 200, 220;
+    --accent-sec-background-light:    #EBF6F8;
+    --accent-sec-background-dark:     #0F2226;
+
+    /* Applied (default: light) */
+    --accent-sec:                     var(--accent-sec-light);
+    --accent-sec-rgb:                 var(--accent-sec-rgb-light);
+    --accent-sec-background:          var(--accent-sec-background-light);
+
     /* ─── GENERAL SETTINGS ──────────────────────────────────────────────────── */
     /* Font Sizes - Responsive Typography */
     --font-size-xs: 0.875rem;     /* 14px */
@@ -90,36 +113,36 @@
     --error-background-color-dark: #1E1210;
     --info-background-color-dark: #11181F;
 
-    /* — Accent: Deep Brick (Light Mode) — */
-    --accent-1-light: #8B3A2F;        /* Deep brick — primary action */
-    --accent-2-light: #A34839;        /* Mid brick — highlight */
-    --accent-3-light: #6B2D24;        /* Dark brick — pressed / deep */
-    --accent-hover-light: #6B2D24;    /* Dark brick — hover state */
+    /* — Accent: Vivid Terracotta (Light Mode) — */
+    --accent-1-light: #C4391C;        /* Vivid terracotta — primary action */
+    --accent-2-light: #DC4F2E;        /* Brighter terracotta — highlight */
+    --accent-3-light: #9E2E14;        /* Deep terracotta — pressed / deep */
+    --accent-hover-light: #9E2E14;    /* Deep terracotta — hover state */
 
-    /* — Accent: Warm Amber (Dark Mode) — */
-    --accent-1-dark: #C49060;         /* Warm amber — primary on dark */
-    --accent-2-dark: #D8A87A;         /* Light amber — highlights */
-    --accent-3-dark: #A07248;         /* Deep amber — mid tone */
-    --accent-hover-dark: #D8A87A;     /* Light amber — hover brightness */
+    /* — Accent: Bright Coral (Dark Mode) — */
+    --accent-1-dark: #F26040;         /* Bright coral — primary on dark */
+    --accent-2-dark: #FF7A5C;         /* Light coral — highlights */
+    --accent-3-dark: #D04830;         /* Deep coral — mid tone */
+    --accent-hover-dark: #FF7A5C;     /* Light coral — hover brightness */
 
     /* — Accent RGB (for rgba() usage) — */
-    --accent-1-rgb-light: 139, 58, 47;
-    --accent-2-rgb-light: 163, 72, 57;
-    --accent-3-rgb-light: 107, 45, 36;
+    --accent-1-rgb-light: 196, 57, 28;
+    --accent-2-rgb-light: 220, 79, 46;
+    --accent-3-rgb-light: 158, 46, 20;
 
-    --accent-1-rgb-dark: 196, 144, 96;
-    --accent-2-rgb-dark: 216, 168, 122;
-    --accent-3-rgb-dark: 160, 114, 72;
+    --accent-1-rgb-dark: 242, 96, 64;
+    --accent-2-rgb-dark: 255, 122, 92;
+    --accent-3-rgb-dark: 208, 72, 48;
 
     /* — Accent Backgrounds: Light Mode — */
-    --accent-1-background-light: #F5EDE9;
-    --accent-2-background-light: #EDD9D1;
-    --accent-3-background-light: #E3C8BF;
+    --accent-1-background-light: #FAF0EE;
+    --accent-2-background-light: #F5E2DC;
+    --accent-3-background-light: #EDD4CC;
 
     /* — Accent Backgrounds: Dark Mode — */
-    --accent-1-background-dark: #201A14;
-    --accent-2-background-dark: #2A2218;
-    --accent-3-background-dark: #35291E;
+    --accent-1-background-dark: #1E1410;
+    --accent-2-background-dark: #271B15;
+    --accent-3-background-dark: #32231B;
 
     /* — Backgrounds: Light Mode (warm parchment) — */
     --background-0-light: #F8F5F0;               /* Warm parchment — page canvas */
@@ -180,6 +203,17 @@
 
 [data-theme="dark"] {
     color-scheme: dark;
+
+    /* Hero — slightly lighter than page bg so the section reads as distinct */
+    --hero-bg:            #1C1814;
+    --hero-text:          var(--primary-text-color-dark);
+    --hero-text-sub:      var(--secondary-text-color-dark);
+    --hero-border:        var(--border-color-dark);
+
+    /* Secondary accent */
+    --accent-sec:            var(--accent-sec-dark);
+    --accent-sec-rgb:        var(--accent-sec-rgb-dark);
+    --accent-sec-background: var(--accent-sec-background-dark);
 
     --primary-text-color: var(--primary-text-color-dark);
     --secondary-text-color: var(--secondary-text-color-dark);

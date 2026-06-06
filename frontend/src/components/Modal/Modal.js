@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useCallback } from 'react';
+import ReactDOM from 'react-dom';
 import styles from './Modal.module.css';
 
 // ─── CONSTANTS ────────────────────────────────────────────────────────────────
@@ -13,7 +14,7 @@ const FOCUSABLE_SELECTORS = [
 
 // ─── COMPONENT ────────────────────────────────────────────────────────────────
 // Liquid-glass modal dialog. Traps focus, locks scroll, restores focus on close.
-const Modal = ({ open, onClose, children, title, size = 'md' }) => {
+const Modal = ({ open, onClose, children, title, size = 'md', compact = false }) => {
   const dialogRef = useRef(null);
   const previousFocusRef = useRef(null);
 
@@ -21,21 +22,23 @@ const Modal = ({ open, onClose, children, title, size = 'md' }) => {
   useEffect(() => {
     if (!open) return;
 
-    // Remember the element that opened the modal so focus can be restored.
     previousFocusRef.current = document.activeElement;
 
-    // Compensate for scrollbar disappearing so the backdrop doesn't shift.
+    // Compensate for the scrollbar disappearing so the layout doesn't shift.
     const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
-    document.body.style.overflow = 'hidden';
-    document.body.style.paddingRight = `${scrollbarWidth}px`;
 
-    // Move focus into the dialog after it has painted.
+    // Lock scroll on <html>, not <body>. Using position:fixed on body makes it
+    // a containing block for position:fixed children in Chrome, which breaks
+    // the backdrop's inset:0 positioning (modal appears offset by scrollY).
+    document.documentElement.style.overflow  = 'hidden';
+    document.body.style.paddingRight         = `${scrollbarWidth}px`;
+
     const raf = requestAnimationFrame(() => dialogRef.current?.focus());
 
     return () => {
       cancelAnimationFrame(raf);
-      document.body.style.overflow = '';
-      document.body.style.paddingRight = '';
+      document.documentElement.style.overflow = '';
+      document.body.style.paddingRight        = '';
       previousFocusRef.current?.focus();
     };
   }, [open]);
@@ -80,8 +83,9 @@ const Modal = ({ open, onClose, children, title, size = 'md' }) => {
 
   if (!open) return null;
 
-  return (
-    /* Backdrop — dims and blurs the page */
+  return ReactDOM.createPortal(
+    /* Backdrop — renders directly in document.body via portal,
+       bypassing any ancestor transform/filter containing blocks. */
     <div className={styles.backdrop} onClick={handleBackdropClick}>
       {/* Dialog — glass panel */}
       <div
@@ -121,11 +125,12 @@ const Modal = ({ open, onClose, children, title, size = 'md' }) => {
         )}
 
         {/* Body — scrolls independently on overflow */}
-        <div className={styles.body}>
+        <div className={compact ? styles.bodyCompact : styles.body}>
           {children}
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };
 

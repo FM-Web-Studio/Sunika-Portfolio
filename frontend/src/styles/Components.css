@@ -2,11 +2,17 @@
 
 body {
     font-size: var(--font-size-base);
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-        'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+    font-family: var(--font-body);
     color: var(--primary-text-color);
     line-height: 1.6;
     transition: color var(--transition-base), background-color var(--transition-base);
+}
+
+
+/* ─── FONT FAMILIES ──────────────────────────────────────────────────────── */
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
 }
 
 

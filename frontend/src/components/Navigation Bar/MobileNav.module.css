@@ -185,9 +185,10 @@
    INDEX NUMBER  (01, 02, 03…)
    ---------------------------------------------------------------- */
 .linkIndex {
+  font-family: var(--font-heading);
   font-size: var(--font-size-xs);
-  font-weight: 500;
-  letter-spacing: 0.05em;
+  font-weight: 600;
+  letter-spacing: 0.08em;
   color: var(--tertiary-text-color);
   min-width: 1.75rem;
   transition: color 0.22s ease;
@@ -197,10 +198,11 @@
    LINK LABEL
    ---------------------------------------------------------------- */
 .linkLabel {
+  font-family: var(--font-heading);
   font-size: clamp(2.2rem, 9vw, 3.5rem);
-  font-weight: 300;
-  letter-spacing: -0.02em;
-  line-height: 1.1;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
   color: var(--secondary-text-color);
   transition: color 0.22s ease;
 }

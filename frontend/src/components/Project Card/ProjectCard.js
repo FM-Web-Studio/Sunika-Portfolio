@@ -15,19 +15,22 @@ const ProjectCard = ({ project, onOpen }) => {
       <div className={styles.imageWrap}>
         {coverUrl
           ? <img src={coverUrl} alt={title} className={styles.image} loading="lazy" />
-          : <span className={styles.noImage}>No image</span>}
-        {count > 1 && <span className={styles.count}>{count}</span>}
+          : <div className={styles.noImage}>No image</div>}
       </div>
 
-      <div className={styles.body}>
+      {count > 1 && <span className={styles.count}>{count}</span>}
+
+      <div className={styles.overlay}>
         {category && <span className={styles.category}>{category}</span>}
         <h3 className={styles.title}>{title || 'Untitled'}</h3>
-        {year && <span className={styles.year}>{year}</span>}
-        {tags.length > 0 && (
-          <div className={styles.tags}>
-            {tags.slice(0, 3).map((t) => <span key={t} className={styles.tag}>{t}</span>)}
-          </div>
-        )}
+        <div className={styles.meta}>
+          {year && <span className={styles.year}>{year}</span>}
+          {tags.length > 0 && (
+            <div className={styles.tags}>
+              {tags.slice(0, 2).map((t) => <span key={t} className={styles.tag}>{t}</span>)}
+            </div>
+          )}
+        </div>
       </div>
     </button>
   );

@@ -1,30 +1,36 @@
 .links {
   display: flex;
-  flex-wrap: wrap;
-  gap: var(--spacing-md);
+  flex-direction: column;
+  gap: var(--spacing-xs);
 }
 
 .link {
   display: inline-flex;
   align-items: center;
-  gap: var(--spacing-sm);
-  padding: 0.65rem 1.1rem;
-  background: var(--background-1);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-full);
+  gap: var(--spacing-md);
+  padding: 0.7rem var(--spacing-md);
+  border: 1.5px solid var(--border-color);
+  border-radius: var(--radius-md);
   color: var(--secondary-text-color);
   text-decoration: none;
   font-size: var(--font-size-sm);
   font-weight: 500;
-  transition: all var(--transition-fast);
+  font-family: var(--font-heading);
+  letter-spacing: 0.02em;
+  transition: border-color var(--transition-fast), color var(--transition-fast),
+              transform var(--transition-fast), background var(--transition-fast);
+  background: transparent;
 }
 
 .link:hover {
-  border-color: var(--accent-1);
-  color: var(--accent-1);
-  transform: translateY(-2px);
+  border-color: var(--accent-sec);
+  color: var(--accent-sec);
+  transform: translateX(5px);
+  background: var(--accent-sec-background);
+  text-decoration: none;
 }
 
 .link svg {
   font-size: 1.1em;
+  flex-shrink: 0;
 }

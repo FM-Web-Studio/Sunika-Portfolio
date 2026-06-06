@@ -28,8 +28,7 @@
 }
 
 .input,
-.textarea,
-.select {
+.textarea {
   width: 100%;
   box-sizing: border-box;
   padding: 0.6rem 0.8rem;
@@ -39,6 +38,35 @@
   color: var(--primary-text-color);
   font-size: var(--font-size-base);
   font-family: inherit;
+}
+
+/* Custom-styled select — strips browser chrome and draws its own arrow */
+.select {
+  width: 100%;
+  box-sizing: border-box;
+  /* extra right padding so text never runs under the custom arrow */
+  padding: 0.6rem 2.4rem 0.6rem 0.8rem;
+  background-color: var(--background-1);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  color: var(--primary-text-color);
+  font-size: var(--font-size-base);
+  font-family: inherit;
+  cursor: pointer;
+  /* strip ALL browser-rendered arrows (Chrome, Firefox, Safari, Edge) */
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  /* single custom chevron — neutral grey works in both light and dark */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23888888' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.75rem center;
+  background-size: 14px;
+}
+
+.select option {
+  background: var(--background-1);
+  color: var(--primary-text-color);
 }
 
 .input:focus,

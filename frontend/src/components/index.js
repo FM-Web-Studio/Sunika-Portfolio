@@ -9,3 +9,4 @@ export { default as SocialLinks }       from './Social Links';
 export { default as ContactForm }       from './Contact Form';
 export { default as ProjectCard }       from './Project Card';
 export { default as ProjectLightbox }   from './Project Lightbox';
+export { default as Skeleton, SkeletonText, SkeletonCard } from './Skeleton/Skeleton';
