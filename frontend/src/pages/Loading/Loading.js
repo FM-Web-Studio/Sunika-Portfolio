@@ -14,7 +14,7 @@ const BIBLE_VERSES = [
   { verse: 'He will cover you with his feathers, and under his wings you will find refuge.',                                        reference: 'Psalm 91:4'       },
 ];
 
-const DOT_COUNT = 4;
+const BALL_COUNT = 3;
 
 const Loading = ({ message = 'Loading', showVerse = true }) => {
   const [currentVerse, setCurrentVerse] = useState(0);
@@ -35,14 +35,18 @@ const Loading = ({ message = 'Loading', showVerse = true }) => {
 
   return (
     <div className={styles.wrapper}>
-      <div className={styles.glassCard}>
-        <p className={styles.message}>{message}</p>
+      <span className={styles.blob} data-b="1" aria-hidden="true" />
+      <span className={styles.blob} data-b="2" aria-hidden="true" />
+      <span className={styles.blob} data-b="3" aria-hidden="true" />
 
-        <div className={styles.dotsRow} role="status" aria-label="Loading">
-          {Array.from({ length: DOT_COUNT }).map((_, i) => (
-            <span key={i} className={styles.dot} style={{ animationDelay: `${i * 0.4}s` }} />
+      <div className={styles.card}>
+        <div className={styles.balls} role="status" aria-label="Loading">
+          {Array.from({ length: BALL_COUNT }).map((_, i) => (
+            <span key={i} className={styles.ball} style={{ animationDelay: `${i * 0.16}s` }} />
           ))}
         </div>
+
+        <p className={styles.message}>{message}</p>
 
         {showVerse && (
           <div className={`${styles.verseBlock} ${verseVisible ? styles.verseVisible : styles.verseHidden}`}>

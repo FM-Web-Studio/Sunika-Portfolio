@@ -13,8 +13,6 @@
   border-radius: var(--radius-md);
   color: var(--secondary-text-color);
   text-decoration: none;
-  font-size: var(--font-size-sm);
-  font-weight: 500;
   font-family: var(--font-heading);
   letter-spacing: 0.02em;
   transition: border-color var(--transition-fast), color var(--transition-fast),
@@ -30,7 +28,34 @@
   text-decoration: none;
 }
 
-.link svg {
-  font-size: 1.1em;
+.icon {
+  font-size: 1.3rem;
   flex-shrink: 0;
+}
+
+.text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.25;
+  min-width: 0;
+}
+
+.name {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+}
+
+.handle {
+  font-size: var(--font-size-xs);
+  font-weight: 400;
+  color: var(--tertiary-text-color);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* On hover the whole row takes the accent colour — keep the handle legible */
+.link:hover .handle {
+  color: var(--accent-sec);
+  opacity: 0.85;
 }

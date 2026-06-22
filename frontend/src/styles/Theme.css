@@ -5,19 +5,19 @@
     --font-heading: 'Syne', -apple-system, BlinkMacSystemFont, sans-serif;
     --font-body:    'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 
-    /* ─── HERO SECTION (full-bleed dark panel) ───────────────────────────────── */
-    --hero-bg:            #161210;
-    --hero-text:          #F2EDE5;
-    --hero-text-sub:      rgba(242, 237, 229, 0.65);
-    --hero-border:        rgba(242, 237, 229, 0.16);
+    /* ─── HERO SECTION (full-bleed espresso panel) ───────────────────────────── */
+    --hero-bg:            #1C1611;
+    --hero-text:          #F4EFE6;
+    --hero-text-sub:      rgba(244, 239, 230, 0.66);
+    --hero-border:        rgba(244, 239, 230, 0.15);
 
-    /* ─── SECONDARY ACCENT — Complementary Teal ─────────────────────────────── */
-    --accent-sec-light:               #1C7A8A;
-    --accent-sec-dark:                #3EC8DC;
-    --accent-sec-rgb-light:           28, 122, 138;
-    --accent-sec-rgb-dark:            62, 200, 220;
-    --accent-sec-background-light:    #EBF6F8;
-    --accent-sec-background-dark:     #0F2226;
+    /* ─── SECONDARY ACCENT — Deep Plum ──────────────────────────────────────── */
+    --accent-sec-light:               #6E3A52;
+    --accent-sec-dark:                #C58BA4;
+    --accent-sec-rgb-light:           110, 58, 82;
+    --accent-sec-rgb-dark:            197, 139, 164;
+    --accent-sec-background-light:    #F2E7EC;
+    --accent-sec-background-dark:     #271922;
 
     /* Applied (default: light) */
     --accent-sec:                     var(--accent-sec-light);
@@ -60,11 +60,11 @@
     --transition-base: 250ms ease;
     --transition-slow: 350ms ease;
 
-    /* Shadows — soft, gallery-like elevation */
-    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.04);
-    --shadow-md: 0 4px 12px -2px rgba(0, 0, 0, 0.08), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
-    --shadow-lg: 0 12px 28px -6px rgba(0, 0, 0, 0.12), 0 4px 8px -2px rgba(0, 0, 0, 0.06);
-    --shadow-xl: 0 24px 48px -12px rgba(0, 0, 0, 0.16), 0 8px 16px -4px rgba(0, 0, 0, 0.08);
+    /* Shadows — soft, warm gallery-like elevation (espresso-tinted) */
+    --shadow-sm: 0 1px 2px 0 rgba(48, 36, 26, 0.05);
+    --shadow-md: 0 4px 14px -2px rgba(48, 36, 26, 0.10), 0 2px 4px -1px rgba(48, 36, 26, 0.05);
+    --shadow-lg: 0 14px 32px -6px rgba(48, 36, 26, 0.14), 0 4px 8px -2px rgba(48, 36, 26, 0.07);
+    --shadow-xl: 0 28px 56px -12px rgba(48, 36, 26, 0.20), 0 8px 16px -4px rgba(48, 36, 26, 0.09);
 
     /* Z-Index Scale */
     --z-base: 1;
@@ -78,17 +78,17 @@
 
     /* ─── COLOR PALETTE — GALLERY NEUTRAL ───────────────────────────────────── */
 
-    /* — Text: Light Mode (warm ink → warm gray) — */
-    --primary-text-color-light: #1A1714;         /* Warm near-black */
-    --secondary-text-color-light: #3D3830;       /* Warm charcoal */
-    --tertiary-text-color-light: #7A7265;        /* Warm mid-tone */
-    --disabled-color-light: #B8B0A6;             /* Warm light gray */
+    /* — Text: Light Mode (espresso ink → warm gray) — */
+    --primary-text-color-light: #211C18;         /* Espresso near-black */
+    --secondary-text-color-light: #463E35;       /* Warm charcoal */
+    --tertiary-text-color-light: #847969;        /* Warm mid-tone */
+    --disabled-color-light: #B5AA99;             /* Warm light gray */
 
     /* — Text: Dark Mode (warm off-white → warm gray) — */
-    --primary-text-color-dark: #F2EDE5;          /* Warm off-white */
-    --secondary-text-color-dark: #C4BAB0;        /* Warm light */
-    --tertiary-text-color-dark: #8A8278;         /* Warm mid */
-    --disabled-color-dark: #5A544E;              /* Warm dim */
+    --primary-text-color-dark: #F1EADF;          /* Warm off-white */
+    --secondary-text-color-dark: #C8BCAD;        /* Warm light */
+    --tertiary-text-color-dark: #8E8274;         /* Warm mid */
+    --disabled-color-dark: #5C554C;              /* Warm dim */
 
     /* — Status Colors — */
     --error-color: #c0392b;
@@ -113,56 +113,56 @@
     --error-background-color-dark: #1E1210;
     --info-background-color-dark: #11181F;
 
-    /* — Accent: Vivid Terracotta (Light Mode) — */
-    --accent-1-light: #C4391C;        /* Vivid terracotta — primary action */
-    --accent-2-light: #DC4F2E;        /* Brighter terracotta — highlight */
-    --accent-3-light: #9E2E14;        /* Deep terracotta — pressed / deep */
-    --accent-hover-light: #9E2E14;    /* Deep terracotta — hover state */
+    /* — Accent: Burnt Sienna (Light Mode) — */
+    --accent-1-light: #B0532E;        /* Burnt sienna — primary action */
+    --accent-2-light: #C8633B;        /* Brighter sienna — highlight */
+    --accent-3-light: #8E3F20;        /* Deep sienna — pressed / deep */
+    --accent-hover-light: #8E3F20;    /* Deep sienna — hover state */
 
-    /* — Accent: Bright Coral (Dark Mode) — */
-    --accent-1-dark: #F26040;         /* Bright coral — primary on dark */
-    --accent-2-dark: #FF7A5C;         /* Light coral — highlights */
-    --accent-3-dark: #D04830;         /* Deep coral — mid tone */
-    --accent-hover-dark: #FF7A5C;     /* Light coral — hover brightness */
+    /* — Accent: Warm Clay (Dark Mode) — */
+    --accent-1-dark: #E27B4E;         /* Warm clay — primary on dark */
+    --accent-2-dark: #F2946C;         /* Light clay — highlights */
+    --accent-3-dark: #C0623A;         /* Deep clay — mid tone */
+    --accent-hover-dark: #F2946C;     /* Light clay — hover brightness */
 
     /* — Accent RGB (for rgba() usage) — */
-    --accent-1-rgb-light: 196, 57, 28;
-    --accent-2-rgb-light: 220, 79, 46;
-    --accent-3-rgb-light: 158, 46, 20;
+    --accent-1-rgb-light: 176, 83, 46;
+    --accent-2-rgb-light: 200, 99, 59;
+    --accent-3-rgb-light: 142, 63, 32;
 
-    --accent-1-rgb-dark: 242, 96, 64;
-    --accent-2-rgb-dark: 255, 122, 92;
-    --accent-3-rgb-dark: 208, 72, 48;
+    --accent-1-rgb-dark: 226, 123, 78;
+    --accent-2-rgb-dark: 242, 148, 108;
+    --accent-3-rgb-dark: 192, 98, 58;
 
     /* — Accent Backgrounds: Light Mode — */
-    --accent-1-background-light: #FAF0EE;
-    --accent-2-background-light: #F5E2DC;
-    --accent-3-background-light: #EDD4CC;
+    --accent-1-background-light: #F5E8E0;
+    --accent-2-background-light: #EFDACE;
+    --accent-3-background-light: #E7CBBC;
 
     /* — Accent Backgrounds: Dark Mode — */
-    --accent-1-background-dark: #1E1410;
-    --accent-2-background-dark: #271B15;
-    --accent-3-background-dark: #32231B;
+    --accent-1-background-dark: #241712;
+    --accent-2-background-dark: #2E1E16;
+    --accent-3-background-dark: #38251B;
 
-    /* — Backgrounds: Light Mode (warm parchment) — */
-    --background-0-light: #F8F5F0;               /* Warm parchment — page canvas */
-    --background-1-light: #FFFFFF;               /* Pure white — primary surface */
-    --background-2-light: #F2EDE5;               /* Warm linen — elevated surface */
-    --background-3-light: #E8E1D4;               /* Warm bone */
-    --background-4-light: #D9D1C0;               /* Warm tan — dividers, subtle cards */
-    --frosted-background-light: rgba(248, 245, 240, 0.88);
-    --border-color-light: #DDD5C8;               /* Warm border */
-    --border-color-hover-light: #C9BFB0;         /* Warm border hover */
+    /* — Backgrounds: Light Mode (soft cream) — */
+    --background-0-light: #F6F2EB;               /* Soft cream — page canvas */
+    --background-1-light: #FFFDF9;               /* Warm white — primary surface */
+    --background-2-light: #F1EBE0;               /* Warm linen — elevated surface */
+    --background-3-light: #E8E0D2;               /* Warm bone */
+    --background-4-light: #DAD0BE;               /* Warm tan — dividers, subtle cards */
+    --frosted-background-light: rgba(246, 242, 235, 0.88);
+    --border-color-light: #E2D9C9;               /* Warm border */
+    --border-color-hover-light: #CEC1AD;         /* Warm border hover */
 
     /* — Backgrounds: Dark Mode (warm atelier dark) — */
-    --background-0-dark: #0F0C0A;                /* Warm near-black — page canvas */
-    --background-1-dark: #1A1612;                /* Warm very dark — primary surface */
-    --background-2-dark: #23201B;                /* Warm dark — elevated surface */
-    --background-3-dark: #2F2A23;                /* Warm medium dark */
-    --background-4-dark: #3D372E;                /* Warm raised — high-elevation card */
-    --frosted-background-dark: rgba(26, 22, 18, 0.90);
-    --border-color-dark: #3D372E;                /* Warm dark border */
-    --border-color-hover-dark: #524A40;          /* Warm visible border hover */
+    --background-0-dark: #14110D;                /* Warm near-black — page canvas */
+    --background-1-dark: #1D1812;                /* Warm very dark — primary surface */
+    --background-2-dark: #26201A;                /* Warm dark — elevated surface */
+    --background-3-dark: #332B22;                /* Warm medium dark */
+    --background-4-dark: #41372C;                /* Warm raised — high-elevation card */
+    --frosted-background-dark: rgba(29, 24, 18, 0.90);
+    --border-color-dark: #382F26;                /* Warm dark border */
+    --border-color-hover-dark: #4E4338;          /* Warm visible border hover */
 
     /* — Applied Colors (Default: Light Mode) — */
     --primary-text-color: var(--primary-text-color-light);
@@ -205,7 +205,7 @@
     color-scheme: dark;
 
     /* Hero — slightly lighter than page bg so the section reads as distinct */
-    --hero-bg:            #1C1814;
+    --hero-bg:            #221A14;
     --hero-text:          var(--primary-text-color-dark);
     --hero-text-sub:      var(--secondary-text-color-dark);
     --hero-border:        var(--border-color-dark);

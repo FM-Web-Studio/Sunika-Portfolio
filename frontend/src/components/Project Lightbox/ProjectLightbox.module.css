@@ -124,10 +124,10 @@
 }
 
 .nav:hover {
-  background: var(--accent-1, #C4391C);
+  background: var(--accent-1, #B0532E);
   border-color: transparent;
   transform: translateY(-50%) scale(1.1);
-  box-shadow: 0 6px 28px rgba(196, 57, 28, 0.55);
+  box-shadow: 0 6px 28px rgba(176, 83, 46, 0.55);
 }
 
 .nav:active {
@@ -165,7 +165,7 @@
 .dotActive {
   width: 22px;
   border-radius: 4px;
-  background: var(--accent-1, #C4391C);
+  background: var(--accent-1, #B0532E);
 }
 
 .dot:hover:not(.dotActive) {
@@ -189,7 +189,7 @@
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.14em;
-  color: var(--accent-1, #C4391C);
+  color: var(--accent-1, #B0532E);
 }
 
 .title {

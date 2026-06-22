@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { FaEnvelope, FaPhone, FaMapMarkerAlt } from 'react-icons/fa';
-import { ContactForm, SocialLinks } from '../../components';
+import { ContactForm, SocialLinks, Reveal } from '../../components';
 import { subscribeContact, subscribeSocials, DEFAULT_CONTACT } from '../../firebase';
 import styles from './Contact.module.css';
 
@@ -19,8 +19,11 @@ const Contact = () => {
   return (
     <div className={styles.page}>
       <div className={styles.headerWrapper}>
+        <span className={styles.blob} data-b="1" aria-hidden="true" />
+        <span className={styles.blob} data-b="2" aria-hidden="true" />
         <header className={styles.header}>
-          <h1 className={styles.heading}>Let's work<br />together</h1>
+          <p className={styles.kicker}>Say hello</p>
+          <h1 className={styles.heading}>Let&rsquo;s work<br />together</h1>
           <p className={styles.subtitle}>
             Interested in collaborating or have a question? Drop a message below or find me online.
           </p>
@@ -28,12 +31,12 @@ const Contact = () => {
       </div>
 
       <div className={styles.layout}>
-        <section className={styles.formSection}>
+        <Reveal as="section" variant="up" className={styles.formSection}>
           <p className={styles.formLabel}>Send a message</p>
           <ContactForm />
-        </section>
+        </Reveal>
 
-        <aside className={styles.socialSection}>
+        <Reveal as="aside" variant="up" delay={120} className={styles.socialSection}>
           <p className={styles.socialLabel}>Find me online</p>
           <SocialLinks socials={socials} />
 
@@ -59,7 +62,7 @@ const Contact = () => {
               )}
             </ul>
           )}
-        </aside>
+        </Reveal>
       </div>
     </div>
   );

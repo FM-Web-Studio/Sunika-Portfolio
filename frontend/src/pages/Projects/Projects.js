@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { ProjectCard, ProjectLightbox, SkeletonCard } from '../../components';
+import { ProjectCard, ProjectLightbox, SkeletonCard, Reveal } from '../../components';
 import { subscribeProjects } from '../../firebase';
 import styles from './Projects.module.css';
 
@@ -34,40 +34,47 @@ const Projects = () => {
   return (
     <div className={styles.page}>
       <div className={styles.headerWrapper}>
+        <span className={styles.blob} data-b="1" aria-hidden="true" />
+        <span className={styles.blob} data-b="2" aria-hidden="true" />
         <header className={styles.header}>
+          <p className={styles.kicker}>The Portfolio</p>
           <h1 className={styles.heading}>Projects</h1>
-          <p className={styles.subtitle}>A selection of design &amp; illustration work.</p>
+          <p className={styles.subtitle}>A selection of design &amp; illustration work — tap any piece to take a closer look.</p>
         </header>
       </div>
 
-      {!loading && categories.length > 1 && (
-        <div className={styles.filters}>
-          {categories.map((c) => (
-            <button
-              key={c}
-              type="button"
-              className={`${styles.filter} ${activeCategory === c ? styles.filterActive : ''}`}
-              onClick={() => setActiveCategory(c)}
-            >
-              {c}
-            </button>
-          ))}
+      <div className={styles.body}>
+        {!loading && categories.length > 1 && (
+          <div className={styles.filters}>
+            {categories.map((c) => (
+              <button
+                key={c}
+                type="button"
+                className={`${styles.filter} ${activeCategory === c ? styles.filterActive : ''}`}
+                onClick={() => setActiveCategory(c)}
+              >
+                {c}
+              </button>
+            ))}
+          </div>
+        )}
+
+        {error && <p className={styles.empty}>Something went wrong loading projects.</p>}
+
+        {!error && !loading && filtered.length === 0 && (
+          <p className={styles.empty}>No projects to show yet.</p>
+        )}
+
+        <div className={styles.grid}>
+          {loading
+            ? Array.from({ length: 6 }, (_, i) => <SkeletonCard key={i} />)
+            : filtered.map((project, i) => (
+                <Reveal key={project.id} variant="up" delay={(i % 3) * 80}>
+                  <ProjectCard project={project} onOpen={setSelected} />
+                </Reveal>
+              ))
+          }
         </div>
-      )}
-
-      {error && <p className={styles.empty}>Something went wrong loading projects.</p>}
-
-      {!error && !loading && filtered.length === 0 && (
-        <p className={styles.empty}>No projects to show yet.</p>
-      )}
-
-      <div className={styles.grid}>
-        {loading
-          ? Array.from({ length: 6 }, (_, i) => <SkeletonCard key={i} />)
-          : filtered.map((project) => (
-              <ProjectCard key={project.id} project={project} onOpen={setSelected} />
-            ))
-        }
       </div>
 
       <ProjectLightbox

@@ -30,7 +30,7 @@ export const ADMIN_EMAILS = (import.meta.env.ADMIN_EMAILS || '')
   .filter(Boolean);
 
 // Known social platform keys → used to pick an icon in SocialLinks.
-export const SOCIAL_KEYS = ['instagram', 'linkedin', 'facebook', 'behance', 'dribbble', 'tiktok', 'whatsapp', 'email'];
+export const SOCIAL_KEYS = ['instagram', 'linkedin', 'facebook', 'behance', 'dribbble', 'tiktok', 'whatsapp', 'website', 'email'];
 
 // ── Defaults ─────────────────────────────────────────────────────────────────
 // Used as fallbacks when a portfolio doc is missing, and to seed admin forms.

@@ -16,10 +16,36 @@
   align-items: center;
   justify-content: center;
   padding: var(--spacing-xl) var(--spacing-md);
-  background: var(--background-0);
+  background:
+    radial-gradient(110% 90% at 85% 12%, rgba(var(--accent-1-rgb), 0.16) 0%, transparent 55%),
+    radial-gradient(90% 90% at 10% 100%, rgba(var(--accent-sec-rgb), 0.16) 0%, transparent 55%),
+    var(--background-0);
   position: relative;
   overflow: hidden;
 }
+
+/* ── On-brand floating blobs ── */
+.blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(60px);
+  opacity: 0.42;
+  pointer-events: none;
+  z-index: 0;
+  animation: blobDrift 15s ease-in-out infinite;
+}
+.blob[data-b="1"] { width: 380px; height: 380px; top: -90px; left: -60px; background: radial-gradient(circle, rgba(var(--accent-1-rgb), 0.6), transparent 70%); }
+.blob[data-b="2"] { width: 320px; height: 320px; bottom: -80px; right: -50px; animation-duration: 19s; background: radial-gradient(circle, rgba(var(--accent-sec-rgb), 0.55), transparent 70%); }
+.blob[data-b="3"] { width: 240px; height: 240px; top: 16%; right: 14%; animation-duration: 17s; background: radial-gradient(circle, rgba(var(--accent-2-rgb), 0.5), transparent 70%); }
+@keyframes blobDrift {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33%      { transform: translate(30px, -22px) scale(1.1); }
+  66%      { transform: translate(-20px, 20px) scale(0.94); }
+}
+[data-no-animations="true"] .blob { animation: none !important; }
+
+/* Keep the card above the blobs */
+.root > .card { position: relative; z-index: 1; }
 
 
 /* ========== BLOB FIELD ========== */

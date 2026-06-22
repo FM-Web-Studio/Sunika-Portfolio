@@ -36,6 +36,9 @@ const NotFound = () => {
 
   return (
     <div className={styles.root}>
+      <span className={styles.blob} data-b="1" aria-hidden="true" />
+      <span className={styles.blob} data-b="2" aria-hidden="true" />
+      <span className={styles.blob} data-b="3" aria-hidden="true" />
       <main className={styles.card}>
         <div className={styles.statusBadge} aria-label="HTTP Error 404">
           <span className={styles.statusDot} aria-hidden="true" />
