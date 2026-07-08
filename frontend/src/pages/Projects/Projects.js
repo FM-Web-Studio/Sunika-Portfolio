@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { ProjectCard, ProjectLightbox, SkeletonCard, Reveal } from '../../components';
+import { ProjectCard, ProjectLightbox, SkeletonCard, Reveal, Botanical } from '../../components';
 import { subscribeProjects } from '../../firebase';
 import styles from './Projects.module.css';
 
@@ -36,6 +36,7 @@ const Projects = () => {
       <div className={styles.headerWrapper}>
         <span className={styles.blob} data-b="1" aria-hidden="true" />
         <span className={styles.blob} data-b="2" aria-hidden="true" />
+        <span className={`${styles.botanical} ${styles.botHeader}`} aria-hidden="true"><Botanical variant="sprig" /></span>
         <header className={styles.header}>
           <p className={styles.kicker}>The Portfolio</p>
           <h1 className={styles.heading}>Projects</h1>

@@ -2,27 +2,39 @@
     color-scheme: light;
 
     /* ─── FONTS ─────────────────────────────────────────────────────────────── */
-    --font-heading: 'Syne', -apple-system, BlinkMacSystemFont, sans-serif;
-    --font-body:    'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-heading: 'Fredoka', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-body:    'Nunito', -apple-system, BlinkMacSystemFont, sans-serif;
 
-    /* ─── HERO SECTION (full-bleed espresso panel) ───────────────────────────── */
-    --hero-bg:            #1C1611;
-    --hero-text:          #F4EFE6;
-    --hero-text-sub:      rgba(244, 239, 230, 0.66);
-    --hero-border:        rgba(244, 239, 230, 0.15);
+    /* ─── HERO SECTION (light, airy blush panel) ─────────────────────────────── */
+    --hero-bg:            #FCEEF1;
+    --hero-text:          #3A2A31;
+    --hero-text-sub:      rgba(58, 42, 49, 0.62);
+    --hero-border:        rgba(58, 42, 49, 0.14);
 
-    /* ─── SECONDARY ACCENT — Deep Plum ──────────────────────────────────────── */
-    --accent-sec-light:               #6E3A52;
-    --accent-sec-dark:                #C58BA4;
-    --accent-sec-rgb-light:           110, 58, 82;
-    --accent-sec-rgb-dark:            197, 139, 164;
-    --accent-sec-background-light:    #F2E7EC;
-    --accent-sec-background-dark:     #271922;
+    /* ─── SECONDARY ACCENT — Sage Green ──────────────────────────────────────── */
+    --accent-sec-light:               #4A7A5C;
+    --accent-sec-dark:                #8FCBA3;
+    --accent-sec-rgb-light:           74, 122, 92;
+    --accent-sec-rgb-dark:            143, 203, 163;
+    --accent-sec-background-light:    #E4F1E8;
+    --accent-sec-background-dark:     #17271D;
 
     /* Applied (default: light) */
     --accent-sec:                     var(--accent-sec-light);
     --accent-sec-rgb:                 var(--accent-sec-rgb-light);
     --accent-sec-background:          var(--accent-sec-background-light);
+
+    /* ─── TERTIARY ACCENT — Lilac (decorative: chips, blobs, petals) ─────────── */
+    --accent-ter-light:               #8A67B3;
+    --accent-ter-dark:                #C3A6E4;
+    --accent-ter-rgb-light:           138, 103, 179;
+    --accent-ter-rgb-dark:            195, 166, 228;
+    --accent-ter-background-light:    #EFE7F7;
+    --accent-ter-background-dark:     #241A30;
+
+    --accent-ter:                     var(--accent-ter-light);
+    --accent-ter-rgb:                 var(--accent-ter-rgb-light);
+    --accent-ter-background:          var(--accent-ter-background-light);
 
     /* ─── GENERAL SETTINGS ──────────────────────────────────────────────────── */
     /* Font Sizes - Responsive Typography */
@@ -48,11 +60,11 @@
     --spacing-5xl: 6rem;          /* 96px */
     --spacing-6xl: 8rem;          /* 128px */
 
-    /* Border Radius */
-    --radius-sm: 0.375rem;        /* 6px */
-    --radius-md: 0.5rem;          /* 8px */
-    --radius-lg: 0.75rem;         /* 12px */
-    --radius-xl: 1rem;            /* 16px */
+    /* Border Radius — rounded & friendly */
+    --radius-sm: 0.5rem;          /* 8px */
+    --radius-md: 0.75rem;         /* 12px */
+    --radius-lg: 1rem;            /* 16px */
+    --radius-xl: 1.5rem;          /* 24px */
     --radius-full: 9999px;
 
     /* Transitions */
@@ -60,11 +72,11 @@
     --transition-base: 250ms ease;
     --transition-slow: 350ms ease;
 
-    /* Shadows — soft, warm gallery-like elevation (espresso-tinted) */
-    --shadow-sm: 0 1px 2px 0 rgba(48, 36, 26, 0.05);
-    --shadow-md: 0 4px 14px -2px rgba(48, 36, 26, 0.10), 0 2px 4px -1px rgba(48, 36, 26, 0.05);
-    --shadow-lg: 0 14px 32px -6px rgba(48, 36, 26, 0.14), 0 4px 8px -2px rgba(48, 36, 26, 0.07);
-    --shadow-xl: 0 28px 56px -12px rgba(48, 36, 26, 0.20), 0 8px 16px -4px rgba(48, 36, 26, 0.09);
+    /* Shadows — soft, rose-tinted petal-light elevation */
+    --shadow-sm: 0 1px 2px 0 rgba(140, 70, 100, 0.06);
+    --shadow-md: 0 4px 16px -2px rgba(140, 70, 100, 0.12), 0 2px 4px -1px rgba(140, 70, 100, 0.06);
+    --shadow-lg: 0 16px 36px -6px rgba(140, 70, 100, 0.16), 0 4px 8px -2px rgba(140, 70, 100, 0.08);
+    --shadow-xl: 0 30px 60px -12px rgba(140, 70, 100, 0.22), 0 8px 16px -4px rgba(140, 70, 100, 0.10);
 
     /* Z-Index Scale */
     --z-base: 1;
@@ -76,19 +88,19 @@
     --z-popover: 1060;
     --z-tooltip: 1070;
 
-    /* ─── COLOR PALETTE — GALLERY NEUTRAL ───────────────────────────────────── */
+    /* ─── COLOR PALETTE — PASTEL FLORAL ─────────────────────────────────────── */
 
-    /* — Text: Light Mode (espresso ink → warm gray) — */
-    --primary-text-color-light: #211C18;         /* Espresso near-black */
-    --secondary-text-color-light: #463E35;       /* Warm charcoal */
-    --tertiary-text-color-light: #847969;        /* Warm mid-tone */
-    --disabled-color-light: #B5AA99;             /* Warm light gray */
+    /* — Text: Light Mode (deep plum-cocoa → soft mauve gray) — */
+    --primary-text-color-light: #3A2A31;         /* Deep plum-cocoa near-black */
+    --secondary-text-color-light: #6B535E;       /* Soft mauve */
+    --tertiary-text-color-light: #9C8791;        /* Muted mauve gray */
+    --disabled-color-light: #C3B2B9;             /* Pale mauve */
 
-    /* — Text: Dark Mode (warm off-white → warm gray) — */
-    --primary-text-color-dark: #F1EADF;          /* Warm off-white */
-    --secondary-text-color-dark: #C8BCAD;        /* Warm light */
-    --tertiary-text-color-dark: #8E8274;         /* Warm mid */
-    --disabled-color-dark: #5C554C;              /* Warm dim */
+    /* — Text: Dark Mode (warm blush-white → muted mauve) — */
+    --primary-text-color-dark: #F3E7EC;          /* Warm blush-white */
+    --secondary-text-color-dark: #D2BEC7;        /* Soft blush gray */
+    --tertiary-text-color-dark: #9E8892;         /* Muted mauve */
+    --disabled-color-dark: #665560;              /* Dim plum */
 
     /* — Status Colors — */
     --error-color: #c0392b;
@@ -113,56 +125,56 @@
     --error-background-color-dark: #1E1210;
     --info-background-color-dark: #11181F;
 
-    /* — Accent: Burnt Sienna (Light Mode) — */
-    --accent-1-light: #B0532E;        /* Burnt sienna — primary action */
-    --accent-2-light: #C8633B;        /* Brighter sienna — highlight */
-    --accent-3-light: #8E3F20;        /* Deep sienna — pressed / deep */
-    --accent-hover-light: #8E3F20;    /* Deep sienna — hover state */
+    /* — Accent: Raspberry Rose (Light Mode) — */
+    --accent-1-light: #B83B63;        /* Raspberry rose — primary action */
+    --accent-2-light: #D9628A;        /* Bright petal pink — highlight */
+    --accent-3-light: #8F2C4C;        /* Deep rose — pressed / deep */
+    --accent-hover-light: #8F2C4C;    /* Deep rose — hover state */
 
-    /* — Accent: Warm Clay (Dark Mode) — */
-    --accent-1-dark: #E27B4E;         /* Warm clay — primary on dark */
-    --accent-2-dark: #F2946C;         /* Light clay — highlights */
-    --accent-3-dark: #C0623A;         /* Deep clay — mid tone */
-    --accent-hover-dark: #F2946C;     /* Light clay — hover brightness */
+    /* — Accent: Warm Blossom Pink (Dark Mode) — */
+    --accent-1-dark: #F08AAC;         /* Soft blossom — primary on dark */
+    --accent-2-dark: #F7A6C1;         /* Light petal — highlights */
+    --accent-3-dark: #C9648A;         /* Deep blossom — mid tone */
+    --accent-hover-dark: #F7A6C1;     /* Light petal — hover brightness */
 
     /* — Accent RGB (for rgba() usage) — */
-    --accent-1-rgb-light: 176, 83, 46;
-    --accent-2-rgb-light: 200, 99, 59;
-    --accent-3-rgb-light: 142, 63, 32;
+    --accent-1-rgb-light: 184, 59, 99;
+    --accent-2-rgb-light: 217, 98, 138;
+    --accent-3-rgb-light: 143, 44, 76;
 
-    --accent-1-rgb-dark: 226, 123, 78;
-    --accent-2-rgb-dark: 242, 148, 108;
-    --accent-3-rgb-dark: 192, 98, 58;
+    --accent-1-rgb-dark: 240, 138, 172;
+    --accent-2-rgb-dark: 247, 166, 193;
+    --accent-3-rgb-dark: 201, 100, 138;
 
     /* — Accent Backgrounds: Light Mode — */
-    --accent-1-background-light: #F5E8E0;
-    --accent-2-background-light: #EFDACE;
-    --accent-3-background-light: #E7CBBC;
+    --accent-1-background-light: #FBE1EA;
+    --accent-2-background-light: #F7D3E0;
+    --accent-3-background-light: #F1C4D5;
 
     /* — Accent Backgrounds: Dark Mode — */
-    --accent-1-background-dark: #241712;
-    --accent-2-background-dark: #2E1E16;
-    --accent-3-background-dark: #38251B;
+    --accent-1-background-dark: #2C1620;
+    --accent-2-background-dark: #351A26;
+    --accent-3-background-dark: #3F1F2C;
 
-    /* — Backgrounds: Light Mode (soft cream) — */
-    --background-0-light: #F6F2EB;               /* Soft cream — page canvas */
-    --background-1-light: #FFFDF9;               /* Warm white — primary surface */
-    --background-2-light: #F1EBE0;               /* Warm linen — elevated surface */
-    --background-3-light: #E8E0D2;               /* Warm bone */
-    --background-4-light: #DAD0BE;               /* Warm tan — dividers, subtle cards */
-    --frosted-background-light: rgba(246, 242, 235, 0.88);
-    --border-color-light: #E2D9C9;               /* Warm border */
-    --border-color-hover-light: #CEC1AD;         /* Warm border hover */
+    /* — Backgrounds: Light Mode (blush cream, airy) — */
+    --background-0-light: #FEF6F4;               /* Blush cream — page canvas */
+    --background-1-light: #FFFFFF;               /* White — primary surface */
+    --background-2-light: #FBEDF0;               /* Pale rose — elevated surface */
+    --background-3-light: #F5E1E7;               /* Soft blush */
+    --background-4-light: #EBD2D9;               /* Dusty rose — dividers, subtle cards */
+    --frosted-background-light: rgba(254, 246, 244, 0.82);
+    --border-color-light: #F2DFE4;               /* Blush border */
+    --border-color-hover-light: #E6C9D1;         /* Rose border hover */
 
-    /* — Backgrounds: Dark Mode (warm atelier dark) — */
-    --background-0-dark: #14110D;                /* Warm near-black — page canvas */
-    --background-1-dark: #1D1812;                /* Warm very dark — primary surface */
-    --background-2-dark: #26201A;                /* Warm dark — elevated surface */
-    --background-3-dark: #332B22;                /* Warm medium dark */
-    --background-4-dark: #41372C;                /* Warm raised — high-elevation card */
-    --frosted-background-dark: rgba(29, 24, 18, 0.90);
-    --border-color-dark: #382F26;                /* Warm dark border */
-    --border-color-hover-dark: #4E4338;          /* Warm visible border hover */
+    /* — Backgrounds: Dark Mode (warm plum dusk) — */
+    --background-0-dark: #161014;                /* Deep plum-black — page canvas */
+    --background-1-dark: #1E151C;                /* Very dark plum — primary surface */
+    --background-2-dark: #281B25;                /* Dark plum — elevated surface */
+    --background-3-dark: #342530;                /* Medium plum */
+    --background-4-dark: #42303C;                /* Raised plum — high-elevation card */
+    --frosted-background-dark: rgba(30, 21, 28, 0.88);
+    --border-color-dark: #3A2A34;                /* Dark plum border */
+    --border-color-hover-dark: #513B48;          /* Visible plum border hover */
 
     /* — Applied Colors (Default: Light Mode) — */
     --primary-text-color: var(--primary-text-color-light);
@@ -204,8 +216,8 @@
 [data-theme="dark"] {
     color-scheme: dark;
 
-    /* Hero — slightly lighter than page bg so the section reads as distinct */
-    --hero-bg:            #221A14;
+    /* Hero — warm plum dusk, slightly lifted from page bg */
+    --hero-bg:            #241521;
     --hero-text:          var(--primary-text-color-dark);
     --hero-text-sub:      var(--secondary-text-color-dark);
     --hero-border:        var(--border-color-dark);
@@ -214,6 +226,11 @@
     --accent-sec:            var(--accent-sec-dark);
     --accent-sec-rgb:        var(--accent-sec-rgb-dark);
     --accent-sec-background: var(--accent-sec-background-dark);
+
+    /* Tertiary accent */
+    --accent-ter:            var(--accent-ter-dark);
+    --accent-ter-rgb:        var(--accent-ter-rgb-dark);
+    --accent-ter-background: var(--accent-ter-background-dark);
 
     --primary-text-color: var(--primary-text-color-dark);
     --secondary-text-color: var(--secondary-text-color-dark);

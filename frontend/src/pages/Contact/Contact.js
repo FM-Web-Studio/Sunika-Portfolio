@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { FaEnvelope, FaPhone, FaMapMarkerAlt } from 'react-icons/fa';
-import { ContactForm, SocialLinks, Reveal } from '../../components';
+import { ContactForm, SocialLinks, Reveal, Botanical } from '../../components';
 import { subscribeContact, subscribeSocials, DEFAULT_CONTACT } from '../../firebase';
 import styles from './Contact.module.css';
 
@@ -21,6 +21,7 @@ const Contact = () => {
       <div className={styles.headerWrapper}>
         <span className={styles.blob} data-b="1" aria-hidden="true" />
         <span className={styles.blob} data-b="2" aria-hidden="true" />
+        <span className={`${styles.botanical} ${styles.botHeader}`} aria-hidden="true"><Botanical variant="bloom" /></span>
         <header className={styles.header}>
           <p className={styles.kicker}>Say hello</p>
           <h1 className={styles.heading}>Let&rsquo;s work<br />together</h1>

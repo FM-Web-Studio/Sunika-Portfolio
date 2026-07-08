@@ -18,7 +18,7 @@
 
 .card:hover {
   transform: translateY(-8px) scale(1.01);
-  box-shadow: var(--shadow-xl);
+  box-shadow: var(--shadow-xl), 0 0 0 3px rgba(var(--accent-1-rgb), 0.28);
 }
 
 /* ── Image ── */
@@ -62,7 +62,7 @@
   align-items: center;
   justify-content: center;
   padding: 0 0.5rem;
-  background: rgba(0, 0, 0, 0.55);
+  background: rgba(44, 22, 34, 0.55);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   border-radius: var(--radius-full);
@@ -73,15 +73,15 @@
   letter-spacing: 0.05em;
 }
 
-/* ── Overlay — always visible, stronger on hover ── */
+/* ── Overlay — always visible, stronger on hover (warm plum, not harsh black) ── */
 .overlay {
   position: absolute;
   inset: 0;
   background: linear-gradient(
     to top,
-    rgba(0, 0, 0, 0.82) 0%,
-    rgba(0, 0, 0, 0.25) 45%,
-    transparent 72%
+    rgba(38, 18, 30, 0.86) 0%,
+    rgba(38, 18, 30, 0.30) 46%,
+    transparent 74%
   );
   display: flex;
   flex-direction: column;
@@ -94,20 +94,30 @@
 .card:hover .overlay {
   background: linear-gradient(
     to top,
-    rgba(0, 0, 0, 0.92) 0%,
-    rgba(0, 0, 0, 0.4) 50%,
-    transparent 78%
+    rgba(38, 18, 30, 0.93) 0%,
+    rgba(38, 18, 30, 0.45) 52%,
+    transparent 80%
   );
 }
 
 .category {
   font-family: var(--font-heading);
   font-size: 0.62rem;
-  font-weight: 600;
+  font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.14em;
-  color: rgba(255, 255, 255, 0.65);
-  margin-bottom: 4px;
+  color: var(--accent-2-dark);
+  margin-bottom: 5px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+.category::before {
+  content: '';
+  width: 12px;
+  height: 1.5px;
+  background: var(--accent-2-dark);
+  border-radius: 2px;
 }
 
 .title {

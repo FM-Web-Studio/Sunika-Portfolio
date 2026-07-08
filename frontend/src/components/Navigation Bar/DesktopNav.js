@@ -105,6 +105,26 @@ const DesktopNav = ({ links = [], onNavigate, activeTab = null }) => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pathname, activeTab, links, isDragging]);
 
+  // --- RE-MEASURE ON FONT LOAD & RESIZE ---------------------------------------
+  // Link widths change once the web font swaps in (and on resize), so a pill
+  // measured at first paint lands offset. Re-snap it to the active link then.
+
+  useEffect(() => {
+    const remeasure = () => {
+      if (isDragging) return;
+      const i = links.findIndex((link, idx) => isActive(link, idx));
+      if (i === -1) return;
+      const m = measureLink(i);
+      if (m) setPillStyle({ ...m, opacity: 1 });
+    };
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(remeasure).catch(() => {});
+    }
+    window.addEventListener("resize", remeasure);
+    return () => window.removeEventListener("resize", remeasure);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [links, isDragging, pathname, activeTab]);
+
   // --- DRAG HANDLERS (attached to the nav capsule) ----------------------------
   // Drag only commits after DRAG_THRESHOLD px; short taps fall through to buttons.
 

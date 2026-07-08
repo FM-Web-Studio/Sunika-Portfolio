@@ -23,6 +23,11 @@
 }
 [data-no-animations="true"] .blob { animation: none !important; }
 
+/* ── Botanical accent ── */
+.botanical { position: absolute; z-index: 0; pointer-events: none; display: block; line-height: 0; }
+.botHeader { top: 20%; right: 7%; width: clamp(56px, 6vw, 104px); color: var(--accent-ter); opacity: 0.5; }
+@media (max-width: 768px) { .botHeader { display: none; } }
+
 .header {
   position: relative; z-index: 1;
   max-width: 1100px; margin: 0 auto;
@@ -34,8 +39,8 @@
   animation: rise 0.7s ease both;
 }
 .heading {
-  font-family: var(--font-heading); font-size: clamp(2.5rem, 7vw, 5rem); font-weight: 800;
-  letter-spacing: -0.035em; line-height: 0.96; margin: 0 0 var(--spacing-lg); color: var(--hero-text);
+  font-family: var(--font-heading); font-size: clamp(2.5rem, 7vw, 5rem); font-weight: 700;
+  letter-spacing: -0.012em; line-height: 1.0; margin: 0 0 var(--spacing-lg); color: var(--hero-text);
   animation: rise 0.7s ease 0.08s both;
 }
 .subtitle {

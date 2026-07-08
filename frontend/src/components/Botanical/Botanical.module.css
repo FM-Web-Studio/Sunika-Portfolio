@@ -1,0 +1,26 @@
+/* Subtle botanical line-art accent.
+   Colour comes from `currentColor`; size/position from the caller. */
+
+.botanical {
+  display: block;
+  width: 100%;
+  height: auto;
+  pointer-events: none;
+  overflow: visible;
+  transform-origin: 50% 90%;
+  opacity: 0.9;
+}
+
+/* Gentle, slow sway — reads as a plant breathing in a breeze. */
+.sway {
+  animation: sway 9s ease-in-out infinite;
+}
+
+@keyframes sway {
+  0%, 100% { transform: rotate(-2.5deg); }
+  50%      { transform: rotate(2.5deg); }
+}
+
+[data-no-animations="true"] .sway {
+  animation: none !important;
+}

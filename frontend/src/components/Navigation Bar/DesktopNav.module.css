@@ -113,23 +113,19 @@
   position: absolute;
   border-radius: var(--radius-full);
 
-  /* Accent-tinted frosted glass — adapts to light/dark theme automatically */
+  /* Solid, cheerful candy-rose indicator — the signature nav flourish */
   background: linear-gradient(
     135deg,
-    rgba(var(--accent-1-rgb), 0.22) 0%,
-    rgba(var(--accent-1-rgb), 0.08) 100%
+    var(--accent-2) 0%,
+    var(--accent-1) 100%
   );
-  backdrop-filter: blur(8px) saturate(160%);
-  -webkit-backdrop-filter: blur(8px) saturate(160%);
 
-  /* Accent-tinted rim */
-  border: 1px solid rgba(var(--accent-1-rgb), 0.35);
+  border: none;
 
-  /* Depth: accent glow shadow + inner top highlight */
+  /* Depth: soft rose glow + glossy top highlight */
   box-shadow:
-    0 2px 12px rgba(var(--accent-1-rgb), 0.15),
-    inset 0 1px 0 rgba(255, 255, 255, 0.50),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.04);
+    0 5px 16px rgba(var(--accent-1-rgb), 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.45);
 
   /* Spring slide — slightly slower for a premium liquid feel */
   transition:
@@ -221,8 +217,8 @@
    is needed here.
    ---------------------------------------------------------------- */
 .navLinkActive {
-  color: var(--accent-1);
-  font-weight: 600;
+  color: #fff;
+  font-weight: 700;
 }
 
 /* ----------------------------------------------------------------

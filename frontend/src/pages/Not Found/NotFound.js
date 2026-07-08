@@ -5,13 +5,12 @@ import { LightWaveButton } from '../../components';
 import styles from './NotFound.module.css';
 
 const SAYINGS = [
-  { text: 'This page is in a superposition of existing and not existing. You just collapsed the wave function.',    attribution: "Schrödinger's Server"  },
-  { text: 'Not all who wander are lost — but this URL definitely is.',                                              attribution: 'A GPS, Ironically'     },
-  { text: 'The server checked everywhere. Under the tables, behind the CDN, even cleared the cache. Nothing.',     attribution: 'Sys Admin, 2 a.m.'     },
-  { text: "Your destination exists in the git history. That's basically archaeology at this point.",                attribution: 'Senior Developer'      },
-  { text: '404: the digital equivalent of opening the fridge, forgetting what you wanted, and closing it again.', attribution: 'Relatable Engineering' },
-  { text: 'Your URL had excellent ambition. The destination, however, declined to participate.',                    attribution: 'Product Manager'       },
-  { text: 'Life is a journey, not a destination. This URL interpreted that very literally.',                        attribution: 'Inspirational Poster'  },
+  { text: 'This page must have wandered off to pick wildflowers.',                       attribution: 'Somewhere in the meadow' },
+  { text: 'Oops — this little corner of the garden hasn’t bloomed yet.',            attribution: 'The gardener'            },
+  { text: 'We looked everywhere, even behind the potted plants. No luck!',              attribution: 'A very thorough bee'     },
+  { text: 'This link took a lovely wrong turn somewhere.',                              attribution: 'A daydreaming butterfly' },
+  { text: 'Nothing growing here just yet — let’s head back to the sunshine.',      attribution: 'Your friendly signpost' },
+  { text: 'That page is off sketching clouds somewhere. Very on-brand of it.',          attribution: 'The sketchbook'          },
 ];
 
 const NotFound = () => {
@@ -42,14 +41,15 @@ const NotFound = () => {
       <main className={styles.card}>
         <div className={styles.statusBadge} aria-label="HTTP Error 404">
           <span className={styles.statusDot} aria-hidden="true" />
-          <span>Error 404</span>
+          <span>Lost your way?</span>
         </div>
 
         <div className={styles.codeDisplay} aria-hidden="true">404</div>
 
-        <h1 className={styles.heading}>Page Not Found</h1>
+        <h1 className={styles.heading}>This page wandered off 🌿</h1>
         <p className={styles.subtext}>
-          The page you&rsquo;re looking for has gone missing.
+          The link might be a little old, or this page has gone to bloom elsewhere.
+          Let&rsquo;s get you back home.
         </p>
 
         <div className={styles.divider} aria-hidden="true" />

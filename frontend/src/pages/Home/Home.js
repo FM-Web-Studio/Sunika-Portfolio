@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { FiArrowRight, FiArrowDown } from 'react-icons/fi';
-import { ProjectLightbox, Skeleton, SkeletonText } from '../../components';
+import { ProjectLightbox, Skeleton, SkeletonText, Botanical } from '../../components';
 import {
   subscribePersonal, subscribeSkills, subscribeEducation,
   subscribeExperience, subscribeInterests, subscribeProjects,
@@ -65,17 +65,17 @@ const Home = () => {
 
   const hasSkills    = skills.categories.length > 0;
   const hasInterests = interests.items.length > 0;
-  const hasAbout     = hasSkills || hasInterests;
   const hasExp       = experience.length > 0;
   const hasEdu       = education.length > 0;
   const hasJourney   = hasExp || hasEdu;
 
   const slides = [
-    { id: 'intro',   label: 'Intro' },
-    { id: 'work',    label: 'Work'  },
-    ...(hasAbout   ? [{ id: 'about',   label: 'About'   }] : []),
-    ...(hasJourney ? [{ id: 'journey', label: 'Journey' }] : []),
-    { id: 'contact', label: 'Hello' },
+    { id: 'intro',   label: 'Hello'   },
+    ...(hasSkills    ? [{ id: 'making',  label: 'Craft' }] : []),
+    { id: 'work',    label: 'Work'    },
+    ...(hasInterests ? [{ id: 'about',   label: 'Me'    }] : []),
+    ...(hasJourney   ? [{ id: 'journey', label: 'Path'  }] : []),
+    { id: 'contact', label: 'Say hi'  },
   ];
   const slideKey = slides.map((s) => s.id).join('|');
 
@@ -126,6 +126,8 @@ const Home = () => {
         <span className={styles.blob} data-b="1" aria-hidden="true" />
         <span className={styles.blob} data-b="2" aria-hidden="true" />
         <div className={styles.dotsTexture} aria-hidden="true" />
+        <span className={`${styles.botanical} ${styles.botIntroTop}`} aria-hidden="true"><Botanical variant="sprig" /></span>
+        <span className={`${styles.botanical} ${styles.botIntroBottom}`} aria-hidden="true"><Botanical variant="sprig" /></span>
 
         {!heroLoaded ? (
           <div className={styles.introInner}>
@@ -139,14 +141,15 @@ const Home = () => {
         ) : (
           <div className={styles.introInner}>
             <div className={styles.introText}>
-              {personal.title && <span className={`${styles.eyebrow} ${styles.s}`}>{personal.title}</span>}
+              <span className={`${styles.eyebrow} ${styles.s}`}>Hi there! <span className={styles.wave}>🌷</span></span>
               <h1 className={`${styles.name} ${styles.s}`}>{personal.name || 'Your Name'}</h1>
+              {personal.title && <p className={`${styles.role} ${styles.s}`}>{personal.title}</p>}
               {personal.bio && <p className={`${styles.bio} ${styles.s}`}>{personal.bio}</p>}
               <div className={`${styles.ctaRow} ${styles.s}`}>
                 <button type="button" className={styles.ctaPrimary} onClick={() => goTo('work')}>
-                  See my work <FiArrowRight aria-hidden="true" />
+                  Come see my work <FiArrowRight aria-hidden="true" />
                 </button>
-                <Link to="/contact" className={styles.ctaGhost}>Say hello</Link>
+                <Link to="/contact" className={styles.ctaGhost}>Say hello 👋</Link>
               </div>
             </div>
             <div className={`${styles.introPhoto} ${styles.s}`}>
@@ -157,10 +160,34 @@ const Home = () => {
           </div>
         )}
 
-        <button type="button" className={styles.scrollCue} onClick={() => goTo('work')} aria-label="Next">
-          <span>Scroll</span><FiArrowDown aria-hidden="true" />
+        <button type="button" className={styles.scrollCue} onClick={() => goTo(hasSkills ? 'making' : 'work')} aria-label="Next">
+          <span>Take a peek</span><FiArrowDown aria-hidden="true" />
         </button>
       </section>
+
+      {/* ════ SLIDE · MAKING (what I love making — skills) ════ */}
+      {hasSkills && (
+        <section ref={setRef('making')} data-slide="making" className={`${cls('making')} ${styles.slideMaking}`}>
+          <span className={styles.blob} data-b="2" aria-hidden="true" />
+          <span className={`${styles.botanical} ${styles.botMaking}`} aria-hidden="true"><Botanical variant="leaf" /></span>
+          <div className={styles.aboutInner}>
+            <div className={styles.s}>
+              <p className={styles.slideKicker}>What I love making <span aria-hidden="true">✨</span></p>
+              <h2 className={styles.slideTitle}>I turn ideas into happy things.</h2>
+            </div>
+            <div className={`${styles.skillsWrap} ${styles.s}`}>
+              {skills.categories.map((cat, i) => (
+                <div key={cat.name} className={`${styles.skillCard} ${i % 2 ? styles.skillCardSec : ''}`}>
+                  <h3 className={styles.skillName}>{cat.name}</h3>
+                  <div className={styles.skillPills}>
+                    {cat.items.map((item) => <span key={item} className={styles.skillPill}>{item}</span>)}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* ════ SLIDE · WORK (spotlight + thumbnails) ════ */}
       <section ref={setRef('work')} data-slide="work" className={`${cls('work')} ${styles.slideWork}`}>
@@ -168,10 +195,10 @@ const Home = () => {
         <div className={styles.workInner}>
           <div className={`${styles.workHead} ${styles.s}`}>
             <div>
-              <p className={styles.slideKicker}>01 — Selected Work</p>
-              <h2 className={styles.slideTitle}>A few favourite things.</h2>
+              <p className={styles.slideKicker}>Recent favourites</p>
+              <h2 className={styles.slideTitle}>A few things I&rsquo;m proud of.</h2>
             </div>
-            <Link to="/projects" className={styles.viewAll}>All projects <FiArrowRight aria-hidden="true" /></Link>
+            <Link to="/projects" className={styles.viewAll}>See everything <FiArrowRight aria-hidden="true" /></Link>
           </div>
 
           {!projectsLoaded ? (
@@ -233,41 +260,27 @@ const Home = () => {
         </div>
       </section>
 
-      {/* ════ SLIDE · ABOUT (skills + interests) ════ */}
-      {hasAbout && (
+      {/* ════ SLIDE · ABOUT (a little about me — interests) ════ */}
+      {hasInterests && (
         <section ref={setRef('about')} data-slide="about" className={`${cls('about')} ${styles.slideAbout}`}>
           <span className={styles.blob} data-b="2" aria-hidden="true" />
+          <span className={`${styles.botanical} ${styles.botAbout}`} aria-hidden="true"><Botanical variant="sprig" /></span>
           <div className={styles.aboutInner}>
             <div className={styles.s}>
-              <p className={`${styles.slideKicker} ${styles.kickerSec}`}>02 — What I Do</p>
-              <h2 className={styles.slideTitle}>Capabilities &amp; curiosities.</h2>
+              <p className={`${styles.slideKicker} ${styles.kickerSec}`}>A little about me</p>
+              <h2 className={styles.slideTitle}>Nice to meet you! <span aria-hidden="true">👋</span></h2>
+              <p className={styles.aboutNote}>A few of the things that keep me curious and inspired&nbsp;—</p>
             </div>
 
-            {hasSkills && (
-              <div className={`${styles.skillsWrap} ${styles.s}`}>
-                {skills.categories.map((cat, i) => (
-                  <div key={cat.name} className={`${styles.skillCard} ${i % 2 ? styles.skillCardSec : ''}`}>
-                    <h3 className={styles.skillName}>{cat.name}</h3>
-                    <div className={styles.skillPills}>
-                      {cat.items.map((item) => <span key={item} className={styles.skillPill}>{item}</span>)}
-                    </div>
-                  </div>
+            <div className={`${styles.interestsRow} ${styles.s}`}>
+              <div className={styles.chips}>
+                {interests.items.map((item, i) => (
+                  <span key={item} className={`${styles.chip} ${
+                    i % 3 === 0 ? styles.chipPrimary : i % 3 === 1 ? styles.chipSec : styles.chipNeutral
+                  }`}>{item}</span>
                 ))}
               </div>
-            )}
-
-            {hasInterests && (
-              <div className={`${styles.interestsRow} ${styles.s}`}>
-                <span className={styles.interestsLabel}>Off the clock</span>
-                <div className={styles.chips}>
-                  {interests.items.map((item, i) => (
-                    <span key={item} className={`${styles.chip} ${
-                      i % 3 === 0 ? styles.chipPrimary : i % 3 === 1 ? styles.chipSec : styles.chipNeutral
-                    }`}>{item}</span>
-                  ))}
-                </div>
-              </div>
-            )}
+            </div>
           </div>
         </section>
       )}
@@ -278,8 +291,8 @@ const Home = () => {
           <span className={styles.blob} data-b="1" aria-hidden="true" />
           <div className={styles.journeyInner}>
             <div className={styles.s}>
-              <p className={styles.slideKicker}>03 — The Journey</p>
-              <h2 className={styles.slideTitle}>Where I&rsquo;ve been.</h2>
+              <p className={styles.slideKicker}>My path so far</p>
+              <h2 className={styles.slideTitle}>How I got here.</h2>
             </div>
             <div className={`${styles.journeyGrid} ${hasExp && hasEdu ? '' : styles.journeySingle} ${styles.s}`}>
               {hasExp && (
@@ -331,11 +344,12 @@ const Home = () => {
       <section ref={setRef('contact')} data-slide="contact" className={`${cls('contact')} ${styles.slideContact}`}>
         <span className={styles.blob} data-b="3" aria-hidden="true" />
         <span className={styles.blob} data-b="2" aria-hidden="true" />
+        <span className={`${styles.botanical} ${styles.botContact}`} aria-hidden="true"><Botanical variant="bloom" /></span>
         <div className={styles.contactInner}>
-          <p className={`${styles.contactEyebrow} ${styles.s}`}>Let&rsquo;s talk</p>
-          <h2 className={`${styles.contactHeading} ${styles.s}`}>Have something in mind? Let&rsquo;s make it.</h2>
+          <p className={`${styles.contactEyebrow} ${styles.s}`}>Let&rsquo;s talk <span aria-hidden="true">🌸</span></p>
+          <h2 className={`${styles.contactHeading} ${styles.s}`}>Let&rsquo;s make something lovely together.</h2>
           <Link to="/contact" className={`${styles.ctaPrimary} ${styles.ctaBig} ${styles.s}`}>
-            Start a conversation <FiArrowRight aria-hidden="true" />
+            Say hello <FiArrowRight aria-hidden="true" />
           </Link>
           <button type="button" className={`${styles.backTop} ${styles.s}`} onClick={() => goTo('intro')}>
             Back to top ↑
