@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import ToastNotification from "./ToastNotification";
 
 // ─── COMPONENT ────────────────────────────────────────────────────────────────
-// Standalone toast stack — use outside of ToastProvider context.
+// Standalone toast stack, use outside of ToastProvider context.
 
 const ToastContainer = () => {
   const [toasts, setToasts] = useState([]);

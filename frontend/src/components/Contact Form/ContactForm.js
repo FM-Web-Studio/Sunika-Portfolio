@@ -33,7 +33,7 @@ const ContactForm = () => {
     setSubmitting(true);
     try {
       await submitContactForm({ name, email, message });
-      showToast?.('success', 'Message sent', 'Thanks for reaching out — we’ll be in touch.');
+      showToast?.('success', 'Message sent', 'Thanks for reaching out, we’ll be in touch.');
       setForm(EMPTY);
     } catch {
       showToast?.('error', 'Could not send', 'Something went wrong. Please try again.');

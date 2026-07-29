@@ -85,7 +85,7 @@ export const createProject = async (data, items = []) => {
 };
 
 // ── Update ─────────────────────────────────────────────────────────────────────
-// `originalFiles` — the project's current files array (used to detect removals).
+// `originalFiles`, the project's current files array (used to detect removals).
 export const updateProject = async (id, data, items = [], originalFiles = []) => {
   const keptPaths = items.filter((i) => i.existing).map((i) => i.existing.path);
   const removedPaths = originalFiles.map((f) => f.path).filter((p) => p && !keptPaths.includes(p));

@@ -47,7 +47,7 @@ class ErrorBoundaryInner extends React.Component {
             <div className={styles.message}>
               <h1 className={styles.title}>Something went wrong</h1>
               <p className={styles.subtitle}>
-                An unexpected error occurred. Try reloading — if it keeps
+                An unexpected error occurred. Try reloading, if it keeps
                 happening, go back home.
               </p>
             </div>

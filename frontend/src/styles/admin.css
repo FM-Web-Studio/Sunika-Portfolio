@@ -1,0 +1,57 @@
+/* =============================================================================
+ * ADMIN COMPAT TOKENS + SCROLLBAR
+ * =============================================================================
+ * The ported Modal + SearchableDropdown reference a Francois-style token
+ * vocabulary (--accent-1, --accent-1-rgb, --background-*, --border-color,
+ * --spacing-*, --font-size-*, --radius-*, --z-modal, transitions, shadows).
+ *
+ * This site's Theme.css already defines every one of those names natively and
+ * flips them in dark mode, so the bridge below simply re-affirms the accent
+ * mapping for documentation and provides the accent rgb triple as a stable
+ * fallback. The real work of this file is the .admin-scope scoped scrollbar.
+ *
+ * Accent bridged from Theme.css:
+ *   --accent-1      : Raspberry Rose  #B83B63 (light) / Warm Blossom #F08AAC (dark)
+ *   --accent-1-rgb  : 184, 59, 99     (light) / 240, 138, 172 (dark)
+ * ========================================================================== */
+
+.admin-scope {
+  /* Alias to the live theme accent so the ported components stay on brand and
+     follow light/dark automatically. These are no-ops where names already match. */
+  --accent-1: var(--accent-1);
+  --accent-1-rgb: var(--accent-1-rgb);
+  --accent-hover: var(--accent-hover);
+  --border-color: var(--border-color);
+  --background-0: var(--background-0);
+  --background-1: var(--background-1);
+  --background-2: var(--background-2);
+  --z-modal: var(--z-modal);
+
+  color: var(--primary-text-color);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Scoped scrollbar: transparent track, floating rounded accent thumb. */
+.admin-scope ::-webkit-scrollbar,
+.admin-modal ::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+  background: transparent;
+}
+.admin-scope ::-webkit-scrollbar-track,
+.admin-scope ::-webkit-scrollbar-corner,
+.admin-modal ::-webkit-scrollbar-track,
+.admin-modal ::-webkit-scrollbar-corner { background: transparent; }
+.admin-scope ::-webkit-scrollbar-thumb,
+.admin-modal ::-webkit-scrollbar-thumb {
+  background: rgba(var(--accent-1-rgb), 0.5);
+  border-radius: 999px;
+  border: 3px solid transparent;
+  background-clip: padding-box;
+}
+.admin-scope ::-webkit-scrollbar-thumb:hover,
+.admin-modal ::-webkit-scrollbar-thumb:hover { background: rgba(var(--accent-1-rgb), 0.8); }
+.admin-scope, .admin-modal {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(var(--accent-1-rgb), 0.55) transparent;
+}

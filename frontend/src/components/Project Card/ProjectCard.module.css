@@ -73,7 +73,7 @@
   letter-spacing: 0.05em;
 }
 
-/* ── Overlay — always visible, stronger on hover (warm plum, not harsh black) ── */
+/* ── Overlay, always visible, stronger on hover (warm plum, not harsh black) ── */
 .overlay {
   position: absolute;
   inset: 0;

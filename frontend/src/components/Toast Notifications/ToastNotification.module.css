@@ -2,7 +2,7 @@
 .toastWrapper {
   width: 100%;
   margin-bottom: var(--spacing-sm);
-  /* Height collapse transition — triggered by direct DOM style writes in JS */
+  /* Height collapse transition, triggered by direct DOM style writes in JS */
   transition:
     height 300ms cubic-bezier(0.4, 0, 0.2, 1),
     margin-bottom 300ms cubic-bezier(0.4, 0, 0.2, 1);

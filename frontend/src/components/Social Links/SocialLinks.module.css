@@ -54,7 +54,7 @@
   white-space: nowrap;
 }
 
-/* On hover the whole row takes the accent colour — keep the handle legible */
+/* On hover the whole row takes the accent colour, keep the handle legible */
 .link:hover .handle {
   color: var(--accent-sec);
   opacity: 0.85;

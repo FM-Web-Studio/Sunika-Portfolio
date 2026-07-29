@@ -90,6 +90,23 @@ service cloud.firestore {
       allow read, update, delete: if isAdmin();
     }
 
+    // ── Normalized shared structure ──────────────────────────────────────
+    // settings/shared      : contact details + social links, shared by BOTH apps
+    // settings/*_content   : editable site copy per app (gallery_content, portfolio_content)
+    match /settings/{doc} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // Portfolio timelines + profile docs, consistently prefixed.
+    match /portfolio_education/{id}  { allow read: if true; allow write: if isAdmin(); }
+    match /portfolio_experience/{id} { allow read: if true; allow write: if isAdmin(); }
+    match /portfolio_profile/{doc}   { allow read: if true; allow write: if isAdmin(); }
+
+    // NOTE: the matches above for gallery_settings, education, experience and
+    // portfolio are LEGACY. They are kept so nothing breaks during migration.
+    // After cleanup.js removes the old docs, they can be deleted.
+
     // Default deny
     match /{document=**} { allow read, write: if false; }
   }

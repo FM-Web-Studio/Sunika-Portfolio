@@ -84,10 +84,10 @@ const Modal = ({ open, onClose, children, title, size = 'md', compact = false })
   if (!open) return null;
 
   return ReactDOM.createPortal(
-    /* Backdrop — renders directly in document.body via portal,
+    /* Backdrop, renders directly in document.body via portal,
        bypassing any ancestor transform/filter containing blocks. */
     <div className={styles.backdrop} onClick={handleBackdropClick}>
-      {/* Dialog — glass panel */}
+      {/* Dialog, glass panel */}
       <div
         ref={dialogRef}
         className={[styles.dialog, size === 'lg' ? styles.dialogLg : ''].filter(Boolean).join(' ')}
@@ -97,7 +97,7 @@ const Modal = ({ open, onClose, children, title, size = 'md', compact = false })
         tabIndex={-1}
         onKeyDown={handleKeyDown}
       >
-        {/* Close button — only dismiss affordance inside the modal */}
+        {/* Close button, only dismiss affordance inside the modal */}
         <button
           className={styles.closeButton}
           onClick={onClose}
@@ -124,7 +124,7 @@ const Modal = ({ open, onClose, children, title, size = 'md', compact = false })
           </header>
         )}
 
-        {/* Body — scrolls independently on overflow */}
+        {/* Body, scrolls independently on overflow */}
         <div className={compact ? styles.bodyCompact : styles.body}>
           {children}
         </div>

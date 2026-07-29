@@ -68,7 +68,7 @@ const SocialLinks = ({ socials = [] }) => (
           key={href}
           href={href}
           className={styles.link}
-          aria-label={showHandle ? `${name} — ${handle}` : name}
+          aria-label={showHandle ? `${name}, ${handle}` : name}
           {...(isEmail ? {} : { target: '_blank', rel: 'noopener noreferrer' })}
         >
           <Icon className={styles.icon} aria-hidden="true" />

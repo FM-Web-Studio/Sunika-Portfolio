@@ -6,10 +6,10 @@ import styles from './NotFound.module.css';
 
 const SAYINGS = [
   { text: 'This page must have wandered off to pick wildflowers.',                       attribution: 'Somewhere in the meadow' },
-  { text: 'Oops — this little corner of the garden hasn’t bloomed yet.',            attribution: 'The gardener'            },
+  { text: 'Oops, this little corner of the garden hasn’t bloomed yet.', attribution: 'The gardener' },
   { text: 'We looked everywhere, even behind the potted plants. No luck!',              attribution: 'A very thorough bee'     },
   { text: 'This link took a lovely wrong turn somewhere.',                              attribution: 'A daydreaming butterfly' },
-  { text: 'Nothing growing here just yet — let’s head back to the sunshine.',      attribution: 'Your friendly signpost' },
+  { text: 'Nothing growing here just yet, let’s head back to the sunshine.', attribution: 'Your friendly signpost' },
   { text: 'That page is off sketching clouds somewhere. Very on-brand of it.',          attribution: 'The sketchbook'          },
 ];
 
@@ -60,7 +60,7 @@ const NotFound = () => {
             {SAYINGS[currentSaying].text}
             <span className={styles.quoteMark}>&rdquo;</span>
           </p>
-          <cite className={styles.sayingAttribution}>— {SAYINGS[currentSaying].attribution}</cite>
+          <cite className={styles.sayingAttribution}>{SAYINGS[currentSaying].attribution}</cite>
         </div>
 
         <div className={styles.divider} aria-hidden="true" />

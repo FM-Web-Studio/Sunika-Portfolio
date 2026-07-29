@@ -1,19 +1,24 @@
 import React, { Suspense, useCallback, useMemo, useTransition, useEffect } from 'react';
-import { Routes, Route, useNavigate, Outlet, useLocation } from 'react-router-dom';
+import { Routes, Route, useNavigate, Outlet, useLocation, Link } from 'react-router-dom';
 import { NotFound, Loading, Home, Projects, Contact, Admin } from './pages';
-import { NavigationBar, Settings, ToastProvider } from './components';
-import { useTheme, useAnimations } from './hooks';
+import { NavigationBar, Settings, ToastProvider, Footer } from './components';
+import { ContentProvider } from './context/ContentContext';
+import { useTheme, useAnimations, useMomentumScroll, getLenis } from './hooks';
 import styles from './App.module.css';
 
+// Home is reached via the standalone logo (top-left), so it is not repeated here.
 const NAVIGATION_PAGES = [
-  { label: 'Home',     to: '/'         },
   { label: 'Projects', to: '/projects' },
   { label: 'Contact',  to: '/contact'  },
 ];
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
-  useEffect(() => { window.scrollTo(0, 0); }, [pathname]);
+  useEffect(() => {
+    const lenis = getLenis();
+    if (lenis) lenis.scrollTo(0, { immediate: true });
+    window.scrollTo(0, 0);
+  }, [pathname]);
   return null;
 };
 
@@ -23,6 +28,9 @@ const AppLayout = () => {
   const { theme, toggleTheme } = useTheme();
   const [, startTransition] = useTransition();
 
+  // Premium momentum scrolling on the public site only (never the admin route).
+  useMomentumScroll();
+
   const handleNavigate = useCallback((to) => {
     if (to) startTransition(() => navigate(to));
   }, [navigate, startTransition]);
@@ -31,6 +39,10 @@ const AppLayout = () => {
 
   return (
     <div className={styles.app}>
+      <Link to="/" className={styles.brandLogo} aria-label="Home">
+        <img src="/logo.png" alt="Sunika" className={styles.brandLogoImg} />
+      </Link>
+
       <NavigationBar
         links={navigationLinks}
         onNavigate={handleNavigate}
@@ -46,6 +58,8 @@ const AppLayout = () => {
           <Outlet />
         </Suspense>
       </div>
+
+      <Footer />
     </div>
   );
 };
@@ -71,7 +85,9 @@ const App = () => {
   useAnimations();
   return (
     <ToastProvider>
-      <AppContent />
+      <ContentProvider>
+        <AppContent />
+      </ContentProvider>
     </ToastProvider>
   );
 };

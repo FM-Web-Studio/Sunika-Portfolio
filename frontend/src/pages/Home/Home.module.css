@@ -1,29 +1,22 @@
 /* ══════════════════════════════════════════════════════════════════════════
-   HOME — "The Deck"
-   Full-screen vertical scroll-snap slides + spotlight work showcase.
+   HOME, "The Deck"
+   One continuous vertical scroll of full-height sections plus a spotlight work showcase.
    Playful & lively: floating blobs, bouncy entrances, hover delight.
 ══════════════════════════════════════════════════════════════════════════ */
 
 :root { --spring: cubic-bezier(0.34, 1.56, 0.64, 1); }
 
-/* ── Scroll-snap container (its own scroller; global nav stays fixed) ── */
+/* ── Continuous page flow (the window is the single scroller, driven by
+   Lenis momentum scrolling; the fixed nav and side dots stay put) ── */
 .deck {
-  height: 100vh;
-  height: 100svh;
-  overflow-y: scroll;
-  overflow-x: hidden;
-  scroll-snap-type: y proximity;
-  scroll-behavior: smooth;
-  scrollbar-width: none;
+  width: 100%;
 }
-.deck::-webkit-scrollbar { display: none; }
 
 /* ── Slide shell ── */
 .slide {
   position: relative;
   min-height: 100vh;
   min-height: 100svh;
-  scroll-snap-align: start;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -32,7 +25,7 @@
   overflow: hidden;
 }
 
-/* Per-slide backgrounds — alternating rhythm */
+/* Per-slide backgrounds, alternating rhythm */
 .slideIntro,
 .slideContact {
   background:
@@ -271,7 +264,7 @@
 }
 
 /* ══════════════════════════════════════
-   WORK SLIDE — spotlight + thumbnails
+   WORK SLIDE, spotlight + thumbnails
 ══════════════════════════════════════ */
 .workInner {
   position: relative; z-index: 1;

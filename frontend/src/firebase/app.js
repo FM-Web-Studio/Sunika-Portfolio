@@ -21,7 +21,7 @@ export const storage = getStorage(app);
 export const auth = getAuth(app);
 export const googleProvider = new GoogleAuthProvider();
 
-// Analytics requires browser environment — init lazily
+// Analytics requires browser environment, init lazily
 export const initAnalytics = async () => {
   if (await isSupported()) return getAnalytics(app);
   return null;

@@ -1,5 +1,5 @@
 /* ================================================================
-   DESKTOP NAV — DesktopNav.module.css
+   DESKTOP NAV, DesktopNav.module.css
    Glass capsule, top-center, cursor-lit border + ambient glow.
    All colors strictly from Theme.css variables.
    ================================================================ */
@@ -17,13 +17,17 @@
   transform: translateX(-50%);
   z-index: var(--z-fixed);
 
+  display: flex;
+  align-items: center;
+  gap: 2px;
+
   /* Liquid glass base */
   background: var(--frosted-background);
   backdrop-filter: blur(20px) saturate(160%);
   -webkit-backdrop-filter: blur(20px) saturate(160%);
   contain: layout paint;
 
-  /* Base border — overlaid by rim glow ::before */
+  /* Base border, overlaid by rim glow ::before */
   border: 1px solid var(--border-color-hover);
   border-radius: var(--radius-full);
 
@@ -50,7 +54,7 @@
   cursor: grabbing;
 }
 
-/* Rim glow — border-box gradient driven by --glow-x / --glow-y */
+/* Rim glow, border-box gradient driven by --glow-x / --glow-y */
 .capsule::before {
   content: "";
   position: absolute;
@@ -113,7 +117,7 @@
   position: absolute;
   border-radius: var(--radius-full);
 
-  /* Solid, cheerful candy-rose indicator — the signature nav flourish */
+  /* Solid, cheerful candy-rose indicator, the signature nav flourish */
   background: linear-gradient(
     135deg,
     var(--accent-2) 0%,
@@ -127,14 +131,14 @@
     0 5px 16px rgba(var(--accent-1-rgb), 0.45),
     inset 0 1px 0 rgba(255, 255, 255, 0.45);
 
-  /* Spring slide — slightly slower for a premium liquid feel */
+  /* Spring slide, slightly slower for a premium liquid feel */
   transition:
     left    0.65s cubic-bezier(0.34, 1.56, 0.64, 1),
     width   0.58s cubic-bezier(0.34, 1.56, 0.64, 1),
     top     0.58s cubic-bezier(0.34, 1.56, 0.64, 1),
     opacity 0.22s ease;
 
-  /* Purely visual — drag is handled on the capsule nav element */
+  /* Purely visual, drag is handled on the capsule nav element */
   pointer-events: none;
   z-index: 2;
 }
@@ -161,7 +165,7 @@
 }
 
 /* ----------------------------------------------------------------
-   INDIVIDUAL NAV LINK — ghost button style
+   INDIVIDUAL NAV LINK, ghost button style
    ---------------------------------------------------------------- */
 .navLink {
   position: relative;

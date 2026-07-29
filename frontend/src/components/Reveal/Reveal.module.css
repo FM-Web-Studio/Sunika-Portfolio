@@ -1,4 +1,4 @@
-/* ─── Reveal — scroll-triggered entrance ─────────────────────────────────────
+/* ─── Reveal, scroll-triggered entrance ─────────────────────────────────────
    Hidden initial state + spring-eased entrance once .in is applied by the
    useReveal hook. Reduced-motion users get the final state with no transition. */
 
@@ -10,7 +10,7 @@
   will-change: opacity, transform;
 }
 
-/* Variants — initial offset before reveal */
+/* Variants, initial offset before reveal */
 .up    { transform: translateY(30px); }
 .fade  { transform: none; }
 .left  { transform: translateX(-36px); }

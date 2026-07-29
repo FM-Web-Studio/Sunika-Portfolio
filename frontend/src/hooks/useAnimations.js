@@ -16,14 +16,14 @@ export const getInitialAnimations = () => {
       }
     }
   } catch {
-    // corrupted storage — fall through to system preference
+    // corrupted storage, fall through to system preference
   }
 
   return window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
 };
 
 // ─── HOOK ────────────────────────────────────────────────────────────────────
-// Manages reduce-animations state — syncs DOM attribute and persists to storage.
+// Manages reduce-animations state, syncs DOM attribute and persists to storage.
 export const useAnimations = () => {
   const [reduceAnimations, setReduceAnimations] = useState(getInitialAnimations);
 
@@ -43,7 +43,7 @@ export const useAnimations = () => {
       info[ANIMATIONS_FIELD] = reduceAnimations;
       localStorage.setItem(STORAGE_KEY, JSON.stringify(info));
     } catch {
-      // storage unavailable — DOM attribute is still updated
+      // storage unavailable, DOM attribute is still updated
     }
   }, [reduceAnimations]);
 

@@ -1,22 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import { useToast } from '../../components';
-import { subscribeContact, updateContact, DEFAULT_CONTACT } from '../../firebase';
+import { subscribeShared, updateShared, DEFAULT_CONTACT } from '../../firebase';
 import styles from './Admin.module.css';
 import form from './AdminForms.module.css';
 
+// Contact details are shared across both Sunika apps (settings/shared), so
+// editing them here also updates the gallery site.
 const ContactSection = () => {
   const { showToast } = useToast();
-  const [data, setData] = useState(DEFAULT_CONTACT);
+  const [data, setData] = useState({ ...DEFAULT_CONTACT, socials: [] });
   const [saving, setSaving] = useState(false);
 
-  useEffect(() => subscribeContact(setData, () => {}), []);
+  useEffect(() => subscribeShared(setData, () => {}), []);
 
   const update = (field) => (e) => setData((d) => ({ ...d, [field]: e.target.value }));
 
   const handleSave = async () => {
     setSaving(true);
     try {
-      await updateContact(data);
+      await updateShared({ email: data.email ?? '', phone: data.phone ?? '', location: data.location ?? '' });
       showToast?.('success', 'Saved', 'Contact details updated.');
     } catch (e) {
       showToast?.('error', 'Save failed', e.message || 'Please try again.');

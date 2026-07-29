@@ -1,9 +1,12 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { ProjectCard, ProjectLightbox, SkeletonCard, Reveal, Botanical } from '../../components';
 import { subscribeProjects } from '../../firebase';
+import { useContent } from '../../context/ContentContext';
 import styles from './Projects.module.css';
 
 const Projects = () => {
+  const { copy } = useContent();
+  const t = copy('projects');
   const [projects, setProjects]         = useState([]);
   const [loading, setLoading]           = useState(true);
   const [error, setError]               = useState(null);
@@ -38,9 +41,9 @@ const Projects = () => {
         <span className={styles.blob} data-b="2" aria-hidden="true" />
         <span className={`${styles.botanical} ${styles.botHeader}`} aria-hidden="true"><Botanical variant="sprig" /></span>
         <header className={styles.header}>
-          <p className={styles.kicker}>The Portfolio</p>
-          <h1 className={styles.heading}>Projects</h1>
-          <p className={styles.subtitle}>A selection of design &amp; illustration work — tap any piece to take a closer look.</p>
+          <p className={styles.kicker}>{t.kicker}</p>
+          <h1 className={styles.heading}>{t.heading}</h1>
+          <p className={styles.subtitle}>{t.subtitle}</p>
         </header>
       </div>
 
@@ -60,10 +63,10 @@ const Projects = () => {
           </div>
         )}
 
-        {error && <p className={styles.empty}>Something went wrong loading projects.</p>}
+        {error && <p className={styles.empty}>{t.errorText}</p>}
 
         {!error && !loading && filtered.length === 0 && (
-          <p className={styles.empty}>No projects to show yet.</p>
+          <p className={styles.empty}>{t.emptyText}</p>
         )}
 
         <div className={styles.grid}>

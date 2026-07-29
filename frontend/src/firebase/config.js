@@ -1,22 +1,23 @@
 // Static configuration shared across the portfolio data layer.
 
 // This project's Firestore + Storage are shared with the Sunika gallery app.
-// Portfolio resources live in their own collections / Storage folder.
+// Portfolio resources live in their own consistently prefixed collections.
+// Contact details + social links are NOT portfolio specific: they live in the
+// cross-app settings/shared document (see firebase/shared.js) so both Sunika
+// sites read and edit one source of truth.
 export const COLLECTIONS = {
   projects:   'portfolio_projects',
-  education:  'education',
-  experience: 'experience',
-  portfolio:  'portfolio',          // single-doc settings (see PORTFOLIO_DOCS)
+  education:  'portfolio_education',
+  experience: 'portfolio_experience',
+  profile:    'portfolio_profile',   // single-doc profile settings (see PROFILE_DOCS)
   messages:   'portfolio_messages',
 };
 
-// Document ids inside the `portfolio` collection.
-export const PORTFOLIO_DOCS = {
+// Document ids inside the `portfolio_profile` collection.
+export const PROFILE_DOCS = {
   personal:  'personal',
-  contact:   'contact',
   interests: 'interests',
   skills:    'skills',
-  socials:   'social',
 };
 
 // Storage folder for all portfolio files (projects/, profile/).
@@ -49,9 +50,5 @@ export const DEFAULT_CONTACT = {
   phone:    '',
   location: '',
 };
-
-export const DEFAULT_INTERESTS = { items: [] };
-
-export const DEFAULT_SKILLS = { categories: [] };    // [{ name, items: [] }]
 
 export const DEFAULT_SOCIALS = { platforms: [] };    // [{ key, platform, url }]

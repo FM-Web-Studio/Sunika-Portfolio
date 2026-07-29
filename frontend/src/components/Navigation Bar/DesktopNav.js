@@ -87,7 +87,7 @@ const DesktopNav = ({ links = [], onNavigate, activeTab = null }) => {
 
   // --- PILL: SNAP TO ACTIVE ROUTE ---------------------------------------------
   // useEffect (not useLayoutEffect) so the browser paints the old pill position
-  // first, then updates — giving the CSS transition a visible delta to animate.
+  // first, then updates, giving the CSS transition a visible delta to animate.
 
   useEffect(() => {
     if (isDragging) return;
@@ -96,7 +96,7 @@ const DesktopNav = ({ links = [], onNavigate, activeTab = null }) => {
     const m = measureLink(i);
     if (!m) return;
     if (firstMount.current) {
-      // Skip the spring on first render — just place the pill silently.
+      // Skip the spring on first render, just place the pill silently.
       firstMount.current = false;
       setPillStyle({ ...m, opacity: 1 });
       return;

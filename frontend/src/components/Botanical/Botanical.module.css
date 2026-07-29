@@ -11,7 +11,7 @@
   opacity: 0.9;
 }
 
-/* Gentle, slow sway — reads as a plant breathing in a breeze. */
+/* Gentle, slow sway, reads as a plant breathing in a breeze. */
 .sway {
   animation: sway 9s ease-in-out infinite;
 }

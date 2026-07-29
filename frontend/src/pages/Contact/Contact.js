@@ -1,20 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { FaEnvelope, FaPhone, FaMapMarkerAlt } from 'react-icons/fa';
 import { ContactForm, SocialLinks, Reveal, Botanical } from '../../components';
-import { subscribeContact, subscribeSocials, DEFAULT_CONTACT } from '../../firebase';
+import { subscribeShared, DEFAULT_CONTACT } from '../../firebase';
+import { useContent } from '../../context/ContentContext';
 import styles from './Contact.module.css';
 
 const Contact = () => {
-  const [contact, setContact] = useState(DEFAULT_CONTACT);
-  const [socials, setSocials] = useState([]);
+  const { copy } = useContent();
+  const t = copy('contactPage');
+  const [contact, setContact] = useState({ ...DEFAULT_CONTACT, socials: [] });
 
-  useEffect(() => {
-    const unsubs = [
-      subscribeContact(setContact, () => {}),
-      subscribeSocials((d) => setSocials(d.platforms), () => {}),
-    ];
-    return () => unsubs.forEach((u) => u && u());
-  }, []);
+  useEffect(() => subscribeShared(setContact, () => {}), []);
+  const socials = contact.socials;
 
   return (
     <div className={styles.page}>
@@ -23,22 +20,20 @@ const Contact = () => {
         <span className={styles.blob} data-b="2" aria-hidden="true" />
         <span className={`${styles.botanical} ${styles.botHeader}`} aria-hidden="true"><Botanical variant="bloom" /></span>
         <header className={styles.header}>
-          <p className={styles.kicker}>Say hello</p>
-          <h1 className={styles.heading}>Let&rsquo;s work<br />together</h1>
-          <p className={styles.subtitle}>
-            Interested in collaborating or have a question? Drop a message below or find me online.
-          </p>
+          <p className={styles.kicker}>{t.kicker}</p>
+          <h1 className={styles.heading}>{t.heading}</h1>
+          <p className={styles.subtitle}>{t.subtitle}</p>
         </header>
       </div>
 
       <div className={styles.layout}>
         <Reveal as="section" variant="up" className={styles.formSection}>
-          <p className={styles.formLabel}>Send a message</p>
+          <p className={styles.formLabel}>{t.formLabel}</p>
           <ContactForm />
         </Reveal>
 
         <Reveal as="aside" variant="up" delay={120} className={styles.socialSection}>
-          <p className={styles.socialLabel}>Find me online</p>
+          <p className={styles.socialLabel}>{t.socialLabel}</p>
           <SocialLinks socials={socials} />
 
           {(contact.email || contact.phone || contact.location) && (

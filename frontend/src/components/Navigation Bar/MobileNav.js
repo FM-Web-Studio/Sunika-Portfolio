@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
-import { useLocation } from "react-router-dom";
+import { useLocation, Link } from "react-router-dom";
 import styles from "./MobileNav.module.css";
 
 const MobileNav = ({ links = [], onNavigate }) => {
@@ -37,11 +37,16 @@ const MobileNav = ({ links = [], onNavigate }) => {
 
   return createPortal(
     <>
-      {/* Full-screen overlay — behind the trigger */}
+      {/* Full-screen overlay, behind the trigger */}
       <div
         className={`${styles.overlay} ${isOpen ? styles.overlayOpen : ""}`}
         aria-hidden={!isOpen}
       >
+        <div className={styles.overlayTop}>
+          <Link to="/" className={styles.overlayLogo} aria-label="Home" onClick={() => setIsOpen(false)}>
+            <img src="/logo.png" alt="Sunika" className={styles.overlayLogoImg} />
+          </Link>
+        </div>
         <nav aria-label="Main navigation">
           <ul className={styles.linkList}>
             {links.map((link, i) => (
@@ -68,7 +73,7 @@ const MobileNav = ({ links = [], onNavigate }) => {
         </nav>
       </div>
 
-      {/* Trigger — portalled above the overlay */}
+      {/* Trigger, portalled above the overlay */}
       <button
         type="button"
         className={`${styles.trigger} ${isOpen ? styles.triggerOpen : ""}`}

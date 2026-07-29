@@ -16,14 +16,14 @@ export const getInitialTheme = () => {
       }
     }
   } catch {
-    // corrupted storage — fall through to system preference
+    // corrupted storage, fall through to system preference
   }
 
   return window.matchMedia?.('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
 };
 
 // ─── HOOK ────────────────────────────────────────────────────────────────────
-// Manages light/dark state — syncs DOM attribute and persists to storage.
+// Manages light/dark state, syncs DOM attribute and persists to storage.
 export const useTheme = () => {
   const [theme, setTheme] = useState(getInitialTheme);
 
@@ -37,7 +37,7 @@ export const useTheme = () => {
       info[THEME_FIELD] = theme;
       localStorage.setItem(STORAGE_KEY, JSON.stringify(info));
     } catch {
-      // storage unavailable — DOM attribute is still updated
+      // storage unavailable, DOM attribute is still updated
     }
   }, [theme]);
 

@@ -1,4 +1,4 @@
-/* App layout — structural positioning only.
+/* App layout, structural positioning only.
  * Colors, backgrounds, and visual effects live in styles/Components.css. */
 
 .app {
@@ -9,12 +9,37 @@
   flex-direction: column;
 }
 
+/* Standalone brand logo, top-left corner. Doubles as the home link, so the nav
+   itself carries only the page links. */
+.brandLogo {
+  position: fixed;
+  top: 14px;
+  left: 18px;
+  z-index: var(--z-fixed);
+  display: inline-flex;
+  text-decoration: none;
+  transition: opacity var(--transition-fast);
+}
+.brandLogo:hover,
+.brandLogo:focus { opacity: 0.85; text-decoration: none; }
+.brandLogoImg {
+  height: 38px;
+  width: auto;
+  display: block;
+  border-radius: var(--radius-sm);
+}
+
 .navigationBar {
   position: fixed;
   top: 0.5rem;
   left: 0.5rem;
   z-index: var(--z-sticky);
   pointer-events: none;
+}
+
+@media (max-width: 480px) {
+  .brandLogo { top: 10px; left: 12px; }
+  .brandLogoImg { height: 32px; }
 }
 
 .navigationBar > * {

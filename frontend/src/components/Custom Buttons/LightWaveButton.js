@@ -1,7 +1,7 @@
 import styles from './LightWaveButton.module.css';
 
 // ─── COMPONENT ────────────────────────────────────────────────────────────────
-// Pure-CSS light wave button — sliding glass fill + diagonal sheen, no JS needed.
+// Pure-CSS light wave button, sliding glass fill + diagonal sheen, no JS needed.
 // Layer stack: ::before (sliding fill) → ::after (static sheen) → .content
 
 const LightWaveButton = ({

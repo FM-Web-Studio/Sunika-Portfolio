@@ -1,7 +1,7 @@
 /* ================================================================
-   MOBILE NAV — MobileNav.module.css
+   MOBILE NAV, MobileNav.module.css
    Hamburger trigger (top-left) + full-screen editorial overlay.
-   Both portalled to <body> — no stacking-context issues.
+   Both portalled to <body>no stacking-context issues.
    All colors strictly from Theme.css variables.
    ================================================================ */
 
@@ -86,7 +86,7 @@
 .overlay {
   position: fixed;
   inset: 0;
-  z-index: calc(var(--z-modal) + 1); /* above Settings (modal) — full capture when open */
+  z-index: calc(var(--z-modal) + 1); /* above Settings (modal), full capture when open */
   background: var(--background-0);
   display: flex;
   flex-direction: column;
@@ -110,6 +110,31 @@
 }
 
 /* ----------------------------------------------------------------
+   OVERLAY LOGO
+   ---------------------------------------------------------------- */
+.overlayTop {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  display: flex;
+  align-items: center;
+}
+
+.overlayLogo {
+  display: inline-flex;
+  text-decoration: none;
+}
+.overlayLogo:hover,
+.overlayLogo:focus { text-decoration: none; }
+
+.overlayLogoImg {
+  height: 34px;
+  width: auto;
+  display: block;
+  border-radius: var(--radius-sm);
+}
+
+/* ----------------------------------------------------------------
    LINK LIST
    ---------------------------------------------------------------- */
 .linkList {
@@ -121,7 +146,7 @@
 }
 
 /* ----------------------------------------------------------------
-   LINK ITEM  — stagger in on open
+   LINK ITEM, stagger in on open
    ---------------------------------------------------------------- */
 .linkItem {
   opacity: 0;

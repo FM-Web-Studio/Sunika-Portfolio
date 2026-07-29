@@ -69,12 +69,12 @@ const ProjectLightbox = ({ project, open, onClose }) => {
               aria-hidden="true"
             />
 
-            {/* All images stacked — switching is an opacity change, not a fetch */}
+            {/* All images stacked, switching is an opacity change, not a fetch */}
             {images.map((img, i) => (
               <img
                 key={img.path || i}
                 src={img.url}
-                alt={i === safeIndex ? `${title} — image ${i + 1} of ${total}` : ''}
+                alt={i === safeIndex ? `${title}, image ${i + 1} of ${total}` : ''}
                 className={`${styles.image} ${i === safeIndex ? styles.imageActive : ''}`}
                 aria-hidden={i !== safeIndex}
                 onLoad={() => markLoaded(i)}

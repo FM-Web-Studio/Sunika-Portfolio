@@ -1,0 +1,19 @@
+{
+  "name": "sunika-functions",
+  "description": "Cloud Functions for the Sunika sites, emails on new contact messages",
+  "type": "commonjs",
+  "main": "index.js",
+  "private": true,
+  "engines": {
+    "node": "22"
+  },
+  "scripts": {
+    "serve": "firebase emulators:start --only functions",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "dependencies": {
+    "firebase-functions": "^6.1.0",
+    "nodemailer": "^6.9.16"
+  }
+}

@@ -60,7 +60,7 @@ const TriggerButton = ({ isOpen, onClick, size }) => {
 };
 
 // ─── SETTING BUBBLES ───────────────────────────────────────────────────────────────
-// Self-contained bubbles — each owns its state and applies its action directly.
+// Self-contained bubbles, each owns its state and applies its action directly.
 
 const ThemeBubble = ({ cfg, isOpen, theme, toggleTheme }) => {
   const isDark = theme === 'dark';
@@ -111,7 +111,7 @@ const AnimationsBubble = ({ cfg, isOpen }) => {
 };
 
 // ─── SETTINGS ROOT ───────────────────────────────────────────────────────────────
-// Portalled to <body> — avoids the App wrapper's stacking context (position:fixed + z-index).
+// Portalled to <body>avoids the App wrapper's stacking context (position:fixed + z-index).
 
 const Settings = ({ theme, toggleTheme, cogSize = 52, className = '' }) => {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -142,7 +142,7 @@ const Settings = ({ theme, toggleTheme, cogSize = 52, className = '' }) => {
   }, [close]);
 
   // ─── RENDER ───────────────────────────────────────────────────────────────
-  // Backdrop is a sibling of the container (not a child) — direct z-index comparison:
+  // Backdrop is a sibling of the container (not a child), direct z-index comparison:
   // container (z:1050) > backdrop (z:1040) > page content.
 
   const [themeCfg, animCfg] = BUBBLES;

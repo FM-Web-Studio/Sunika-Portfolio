@@ -12,3 +12,5 @@ export { default as ProjectLightbox }   from './Project Lightbox';
 export { default as Skeleton, SkeletonText, SkeletonCard } from './Skeleton/Skeleton';
 export { default as Reveal }            from './Reveal/Reveal';
 export { default as Botanical }         from './Botanical/Botanical';
+export { default as Footer }            from './Footer';
+export { default as SearchableDropdown } from './SearchableDropdown';

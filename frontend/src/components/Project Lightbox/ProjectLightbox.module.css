@@ -78,7 +78,7 @@
   pointer-events: auto;
 }
 
-/* ── Wide invisible tap zones — easy to hit on mobile ── */
+/* ── Wide invisible tap zones, easy to hit on mobile ── */
 .touchLeft,
 .touchRight {
   position: absolute;
@@ -100,11 +100,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  /* 64 px — well above the 44 px iOS minimum tap target */
+  /* 64 px, well above the 44 px iOS minimum tap target */
   width: 4rem;
   height: 4rem;
   border-radius: 50%;
-  /* Dark solid background — always visible regardless of image colour */
+  /* Dark solid background, always visible regardless of image colour */
   background: rgba(0, 0, 0, 0.80);
   border: 2.5px solid rgba(255, 255, 255, 0.35);
   color: #ffffff;
@@ -247,7 +247,7 @@
     max-height: 55vw;
   }
 
-  /* Keep buttons large on mobile — touch targets matter */
+  /* Keep buttons large on mobile, touch targets matter */
   .nav {
     width: 3.5rem;
     height: 3.5rem;

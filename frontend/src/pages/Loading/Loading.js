@@ -56,7 +56,7 @@ const Loading = ({ message = 'Loading', showVerse = true }) => {
               {BIBLE_VERSES[currentVerse].verse}
               <span className={styles.quoteMark}>&rdquo;</span>
             </p>
-            <cite className={styles.verseRef}>— {BIBLE_VERSES[currentVerse].reference}</cite>
+            <cite className={styles.verseRef}>{BIBLE_VERSES[currentVerse].reference}</cite>
           </div>
         )}
       </div>

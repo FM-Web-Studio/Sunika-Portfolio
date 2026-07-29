@@ -2,7 +2,7 @@ import React from 'react';
 import styles from './Botanical.module.css';
 
 /**
- * Botanical — subtle decorative line-art accents (leaves / blossoms).
+ * Botanical, subtle decorative line-art accents (leaves / blossoms).
  *
  * Purely decorative: aria-hidden, non-interactive. Colour is inherited via
  * `currentColor`, so tint it by setting `color` on the element (usually to an

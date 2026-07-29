@@ -2,9 +2,9 @@
 
 /**
  * Layer stack (back → front):
- *   z:0  ::before   — sliding glass fill + leading accent stripe
- *   z:1  ::after    — static diagonal glass sheen (always visible)
- *   z:2  .content   — text / children
+ * z:0 ::before, sliding glass fill + leading accent stripe
+ * z:1 ::after, static diagonal glass sheen (always visible)
+ * z:2 .content, text / children
  *
  * overflow: hidden clips the sliding ::before fill to the button shape.
  */
@@ -20,7 +20,7 @@
     padding: var(--spacing-sm) var(--spacing-lg);
     border-radius: var(--radius-md);
 
-    /* Frosted glass base — barely-there accent tint */
+    /* Frosted glass base, barely-there accent tint */
     background-color: rgba(var(--accent-1-rgb), 0.04);
     backdrop-filter: blur(4px);
     -webkit-backdrop-filter: blur(4px);
@@ -73,7 +73,7 @@
  * The fill slides in from the left (translateX -100% → 0).
  * The gradient puts a bright accent stripe on the LEFT side of the panel.
  * As the panel moves right, this stripe sweeps across the button like
- * a bar of light passing through glass — the "sliding border highlight".
+ * a bar of light passing through glass, the "sliding border highlight".
  *
  * The main body of the fill is a very soft translucent accent tint.
  * backdrop-filter on the pseudo-element gives the fill its own blur,
@@ -104,7 +104,7 @@
 
 /* ── Static diagonal glass sheen ───────────────────────────────────────
  *
- * Matches CursorGlowButton::after — ambient light from above-left.
+ * Matches CursorGlowButton::after, ambient light from above-left.
  * Always visible; gives the surface material depth at rest.
  * Sits above the fill so the sheen persists through the slide.
  */

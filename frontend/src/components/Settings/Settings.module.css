@@ -45,7 +45,7 @@
     border-color 0.28s ease,
     box-shadow   0.28s ease,
     transform    0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-  /* No overflow:hidden — lets ::before extend past the border for the rim glow */
+  /* No overflow:hidden, lets ::before extend past the border for the rim glow */
   z-index: 2;
   padding: 0;
   outline: none;
@@ -79,7 +79,7 @@
   z-index: 0;
 }
 
-/* Inner ambient glow — soft tinted fill inside the button that follows the cursor */
+/* Inner ambient glow, soft tinted fill inside the button that follows the cursor */
 .trigger::after {
   content: '';
   position: absolute;
