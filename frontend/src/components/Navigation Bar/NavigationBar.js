@@ -14,7 +14,6 @@ const NavigationBar = ({
   onNavigate = () => {},
   activeTab  = null,
   burgerSize = 56,
-  className  = "",
 }) => {
   // ─── BREAKPOINT DETECTION ───────────────────────────────────────────────
 

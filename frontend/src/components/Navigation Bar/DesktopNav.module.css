@@ -1,195 +1,51 @@
 /* ================================================================
    DESKTOP NAV, DesktopNav.module.css
-   Glass capsule, top-center, cursor-lit border + ambient glow.
-   All colors strictly from Theme.css variables.
+   Plain text links that sit inside the app's fixed top bar.
+   The bar itself owns positioning and background; this file only
+   styles the links. All colors strictly from Theme.css variables.
    ================================================================ */
 
-/* ----------------------------------------------------------------
-   CAPSULE SHELL
-   Fixed, horizontally centered at the top of the viewport.
-   position: relative so the rim-glow ::before is contained but
-   overflow: visible lets the ambient glow breathe outward.
-   ---------------------------------------------------------------- */
-.capsule {
-  position: fixed;
-  top: 18px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: var(--z-fixed);
-
+.nav {
   display: flex;
   align-items: center;
-  gap: 2px;
-
-  /* Liquid glass base */
-  background: var(--frosted-background);
-  backdrop-filter: blur(20px) saturate(160%);
-  -webkit-backdrop-filter: blur(20px) saturate(160%);
-  contain: layout paint;
-
-  /* Base border, overlaid by rim glow ::before */
-  border: 1px solid var(--border-color-hover);
-  border-radius: var(--radius-full);
-
-  /* Depth shadow */
-  box-shadow:
-    0 8px 32px rgba(0, 0, 0, 0.12),
-    inset 0 1px 0 rgba(255, 255, 255, 0.45);
-
-  padding: 6px 8px;
-
-  /* Allow ambient glow to overflow */
-  overflow: visible;
-
-  /* Smooth border/shadow transitions */
-  transition:
-    border-color 0.3s ease,
-    box-shadow   0.35s ease;
-
-  cursor: grab;
-  touch-action: none;
 }
 
-.capsuleDragging {
-  cursor: grabbing;
-}
-
-/* Rim glow, border-box gradient driven by --glow-x / --glow-y */
-.capsule::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: var(--radius-full);
-  /* 1.5 px so it sits visibly atop the element's 1 px base border */
-  border: 1.5px solid transparent;
-  background:
-    /* Re-paint the frosted fill to mask the interior */
-    linear-gradient(var(--frosted-background), var(--frosted-background)) padding-box,
-    /* Accent gradient on the border ring only */
-    radial-gradient(
-      circle at var(--glow-x, 50%) var(--glow-y, 50%),
-      var(--accent-1) 0%,
-      transparent 70%
-    ) border-box;
-  opacity: var(--glow-show, 0);
-  transition: opacity 0.22s ease;
-  pointer-events: none;
-  /* z-index must stay below linkList (z-index: 1) so the padding-box fill
-     of the gradient-border trick never occludes the link text */
-  z-index: 0;
-}
-
-/* Slightly lift on hover to emphasise the float */
-.capsule:hover {
-  box-shadow:
-    0 12px 40px rgba(0, 0, 0, 0.16),
-    inset 0 1px 0 rgba(255, 255, 255, 0.45);
-}
-
-/* ----------------------------------------------------------------
-   AMBIENT GLOW LAYER
-   A blurred radial bloom that follows the cursor horizontally
-   across the capsule interior.  Positioned absolutely, z-index 0
-   so it sits behind all link text.
-   ---------------------------------------------------------------- */
-.ambientGlow {
-  position: absolute;
-  inset: 0;
-  border-radius: var(--radius-full);
-  /* Radial bloom centered at the cursor percentage position */
-  background: radial-gradient(
-    ellipse 60% 100% at var(--glow-x, 50%) 50%,
-    rgba(var(--accent-1-rgb), 0.08) 0%,
-    transparent 75%
-  );
-  opacity: var(--glow-show, 0);
-  transition: opacity 0.25s ease;
-  pointer-events: none;
-  z-index: 0;
-}
-
-/* ----------------------------------------------------------------
-   LIQUID GLASS PILL
-   Absolutely positioned sibling of .linkList inside the capsule.
-   Slides to cover whichever link is active using a spring transition.
-   ---------------------------------------------------------------- */
-.liquidPill {
-  position: absolute;
-  border-radius: var(--radius-full);
-
-  /* Solid, cheerful candy-rose indicator, the signature nav flourish */
-  background: linear-gradient(
-    135deg,
-    var(--accent-2) 0%,
-    var(--accent-1) 100%
-  );
-
-  border: none;
-
-  /* Depth: soft rose glow + glossy top highlight */
-  box-shadow:
-    0 5px 16px rgba(var(--accent-1-rgb), 0.45),
-    inset 0 1px 0 rgba(255, 255, 255, 0.45);
-
-  /* Spring slide, slightly slower for a premium liquid feel */
-  transition:
-    left    0.65s cubic-bezier(0.34, 1.56, 0.64, 1),
-    width   0.58s cubic-bezier(0.34, 1.56, 0.64, 1),
-    top     0.58s cubic-bezier(0.34, 1.56, 0.64, 1),
-    opacity 0.22s ease;
-
-  /* Purely visual, drag is handled on the capsule nav element */
-  pointer-events: none;
-  z-index: 2;
-}
-
-/* Drop positional transitions while dragging so the pill follows instantly */
-.liquidPillDragging {
-  transition:
-    width   0.12s ease,
-    opacity 0.22s ease;
-}
-
-/* ----------------------------------------------------------------
-   LINK LIST
-   ---------------------------------------------------------------- */
 .linkList {
-  position: relative;
-  z-index: 3; /* must sit above the pill (z-index: 2) so labels are always readable */
   list-style: none;
   margin: 0;
   padding: 0;
   display: flex;
   align-items: center;
-  gap: 2px;
+  gap: var(--spacing-lg);
 }
 
 /* ----------------------------------------------------------------
-   INDIVIDUAL NAV LINK, ghost button style
+   NAV LINK
+   A text button with a 1px underline that grows in on hover and
+   stays put on the active route. Nothing moves but the underline.
    ---------------------------------------------------------------- */
 .navLink {
   position: relative;
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 7px 16px;
-  border-radius: var(--radius-full);
+  padding: 4px 2px;
+  border-radius: 0;
   color: var(--secondary-text-color);
   font-family: var(--font-heading);
-  font-size: 0.68rem;
+  font-size: 0.72rem;
   font-weight: 600;
-  letter-spacing: 0.11em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   cursor: pointer;
   white-space: nowrap;
-  user-select: none;
   outline: none;
 
-  /* Hard-reset every token the global button[type="button"] rule sets.
-     This prevents the frosted border/background/glow from showing on nav links. */
+  /* Hard-reset every token the global button[type="button"] rule sets, so the
+     frosted surface, border and hover lift never reach these links. */
   border: none;
   background: transparent;
   box-shadow: none;
+  transform: none;
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
   --_btn-bg:           transparent;
@@ -199,30 +55,50 @@
   --_btn-glow:         transparent;
   --_btn-shadow:       none;
 
-  transition: color 0.25s ease;
+  transition: color 0.2s ease;
 }
 
-/* -- Label ---------------------------------------------------- */
-.navLinkLabel {
-  position: relative;
-  z-index: 1;
-  transition: color 0.22s ease;
+/* Underline marker */
+.navLink::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1.5px;
+  border-radius: 1px;
+  background: var(--accent-1);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 0.22s cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
-
-/* Suppress any global button:hover glow */
 .navLink:hover {
+  color: var(--primary-text-color);
+  /* Neutralise the global button hover lift and glow */
+  box-shadow: none;
+  transform: none;
+  background: transparent;
+}
+
+.navLink:hover::after {
+  transform: scaleX(1);
+}
+
+.navLink:active:not(:disabled) {
+  transform: none;
   box-shadow: none;
 }
 
 /* ----------------------------------------------------------------
    ACTIVE STATE
-   The liquid pill provides the visual background; only text styling
-   is needed here.
    ---------------------------------------------------------------- */
 .navLinkActive {
-  color: #fff;
-  font-weight: 700;
+  color: var(--accent-1);
+}
+
+.navLinkActive::after {
+  transform: scaleX(1);
 }
 
 /* ----------------------------------------------------------------
@@ -230,12 +106,5 @@
    ---------------------------------------------------------------- */
 .navLink:focus-visible {
   outline: 2px solid var(--accent-1);
-  outline-offset: 2px;
-}
-
-/* ----------------------------------------------------------------
-   PRESSED STATE
-   ---------------------------------------------------------------- */
-.navLink:active {
-  box-shadow: none;
+  outline-offset: 4px;
 }

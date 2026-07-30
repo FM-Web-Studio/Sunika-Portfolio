@@ -11,16 +11,9 @@
   opacity: 0.9;
 }
 
-/* Gentle, slow sway, reads as a plant breathing in a breeze. */
+/* The sway animation was removed with the rest of the site's ambient motion,
+   see the motion policy: Lenis momentum scroll is the only movement on the
+   page. The class is kept as a no-op so existing `animate` props stay valid. */
 .sway {
-  animation: sway 9s ease-in-out infinite;
-}
-
-@keyframes sway {
-  0%, 100% { transform: rotate(-2.5deg); }
-  50%      { transform: rotate(2.5deg); }
-}
-
-[data-no-animations="true"] .sway {
-  animation: none !important;
+  animation: none;
 }

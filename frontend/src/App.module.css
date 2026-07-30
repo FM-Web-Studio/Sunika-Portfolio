@@ -9,48 +9,72 @@
   flex-direction: column;
 }
 
-/* Standalone brand logo, top-left corner. Doubles as the home link, so the nav
-   itself carries only the page links. */
-.brandLogo {
+/* ── Fixed top bar ────────────────────────────────────────────────────────
+   Logo on the left, nav links on the right. Transparent while the page is at
+   the top so the hero reads full-bleed, then a frosted background and hairline
+   border fade in once scrolled.
+
+   The Settings cog and the mobile burger are portalled to <body> and fixed to
+   the top-right corner, so the bar reserves room for them on its right edge
+   instead of laying them out. */
+.topBar {
   position: fixed;
-  top: 14px;
-  left: 18px;
+  top: 0;
+  left: 0;
+  right: 0;
   z-index: var(--z-fixed);
+
+  height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-lg);
+  padding-left: clamp(1rem, 4vw, 2.5rem);
+  /* Clear the fixed cog (52px wide at right: 20px) */
+  padding-right: 88px;
+
+  background: transparent;
+  border-bottom: 1px solid transparent;
+  transition:
+    background-color 0.25s ease,
+    border-color     0.25s ease,
+    backdrop-filter  0.25s ease;
+}
+
+.topBarScrolled {
+  background: var(--frosted-background);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom-color: var(--border-color);
+}
+
+.brandLogo {
   display: inline-flex;
+  flex-shrink: 0;
   text-decoration: none;
   transition: opacity var(--transition-fast);
 }
 .brandLogo:hover,
-.brandLogo:focus { opacity: 0.85; text-decoration: none; }
+.brandLogo:focus { opacity: 0.7; text-decoration: none; }
 .brandLogoImg {
-  height: 38px;
+  height: 46px;
   width: auto;
   display: block;
-  border-radius: var(--radius-sm);
-}
-
-.navigationBar {
-  position: fixed;
-  top: 0.5rem;
-  left: 0.5rem;
-  z-index: var(--z-sticky);
-  pointer-events: none;
-}
-
-@media (max-width: 480px) {
-  .brandLogo { top: 10px; left: 12px; }
-  .brandLogoImg { height: 32px; }
-}
-
-.navigationBar > * {
-  pointer-events: auto;
 }
 
 .themeSwitch {
-  position: fixed;
-  top: 0.5rem;
-  right: 0.5rem;
-  z-index: calc(var(--z-sticky) + 1);
+  /* Settings portals itself to <body>; this wrapper is a no-op placeholder. */
+  display: contents;
+}
+
+/* Below the mobile breakpoint the burger also sits top-right, next to the cog. */
+@media (max-width: 767px) {
+  .topBar { padding-right: 140px; }
+}
+
+@media (max-width: 480px) {
+  .topBar { height: 62px; padding-left: 0.75rem; }
+  .brandLogoImg { height: 38px; }
 }
 
 .pageContent {
@@ -64,9 +88,4 @@
 @keyframes pageEnter {
   from { opacity: 0; }
   to   { opacity: 1; }
-}
-
-@media (max-width: 480px) {
-  .navigationBar { top: var(--spacing-xs); left: var(--spacing-xs); }
-  .themeSwitch   { top: var(--spacing-xs); right: var(--spacing-xs); }
 }

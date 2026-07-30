@@ -16,48 +16,20 @@ const BUBBLES = [
 ];
 
 // ─── TRIGGER BUTTON ───────────────────────────────────────────────────────────────
-// Circular glass cog button with cursor-following glow when closed.
+// Flat cog button. Purely presentational, so no local state.
 
-const TriggerButton = ({ isOpen, onClick, size }) => {
-  const ref = useRef(null);
-  const [glowPos, setGlowPos]   = useState({ x: 50, y: 50 });
-  const [hovered, setHovered]   = useState(false);
-
-  const handleMouseMove = useCallback((e) => {
-    const r = ref.current?.getBoundingClientRect();
-    if (!r) return;
-    setGlowPos({
-      x: ((e.clientX - r.left) / r.width)  * 100,
-      y: ((e.clientY - r.top)  / r.height) * 100,
-    });
-  }, []);
-
-  const iconSize = Math.round(size * 0.46);
-
-  return (
-    <button
-      ref={ref}
-      type="button"
-      className={`${styles.trigger} ${isOpen ? styles.triggerOpen : ''}`}
-      style={{
-        width:  size,
-        height: size,
-        // CSS custom properties consumed by the ::before glow layer
-        '--glow-x':    `${glowPos.x}%`,
-        '--glow-y':    `${glowPos.y}%`,
-        '--glow-show': (!isOpen && hovered) ? '1' : '0',
-      }}
-      onClick={onClick}
-      onMouseMove={handleMouseMove}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-      aria-label={isOpen ? 'Close settings' : 'Open settings'}
-      aria-expanded={isOpen}
-    >
-      <IoSettingsSharp size={iconSize} className={styles.triggerIcon} />
-    </button>
-  );
-};
+const TriggerButton = ({ isOpen, onClick, size }) => (
+  <button
+    type="button"
+    className={`${styles.trigger} ${isOpen ? styles.triggerOpen : ''}`}
+    style={{ width: size, height: size }}
+    onClick={onClick}
+    aria-label={isOpen ? 'Close settings' : 'Open settings'}
+    aria-expanded={isOpen}
+  >
+    <IoSettingsSharp size={Math.round(size * 0.46)} className={styles.triggerIcon} />
+  </button>
+);
 
 // ─── SETTING BUBBLES ───────────────────────────────────────────────────────────────
 // Self-contained bubbles, each owns its state and applies its action directly.
@@ -113,7 +85,7 @@ const AnimationsBubble = ({ cfg, isOpen }) => {
 // ─── SETTINGS ROOT ───────────────────────────────────────────────────────────────
 // Portalled to <body>avoids the App wrapper's stacking context (position:fixed + z-index).
 
-const Settings = ({ theme, toggleTheme, cogSize = 52, className = '' }) => {
+const Settings = ({ theme, toggleTheme, cogSize = 44, className = '' }) => {
   const [menuOpen, setMenuOpen] = useState(false);
   const containerRef = useRef(null);
 

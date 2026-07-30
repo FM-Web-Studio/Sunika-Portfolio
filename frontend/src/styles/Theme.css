@@ -275,8 +275,10 @@
 
 
 /* ─── PAGE & BODY ───────────────────────────────────────────────────────────── */
+/* scroll-behavior MUST stay `auto`: Lenis drives scrolling itself, and native
+   smooth scrolling fights its interpolation, which reads as stutter. */
 html {
-    scroll-behavior: smooth;
+    scroll-behavior: auto;
     overflow-x: hidden;
 }
 

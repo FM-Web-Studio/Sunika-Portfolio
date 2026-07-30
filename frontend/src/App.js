@@ -1,4 +1,4 @@
-import React, { Suspense, useCallback, useMemo, useTransition, useEffect } from 'react';
+import React, { Suspense, useCallback, useMemo, useState, useTransition, useEffect } from 'react';
 import { Routes, Route, useNavigate, Outlet, useLocation, Link } from 'react-router-dom';
 import { NotFound, Loading, Home, Projects, Contact, Admin } from './pages';
 import { NavigationBar, Settings, ToastProvider, Footer } from './components';
@@ -28,8 +28,20 @@ const AppLayout = () => {
   const { theme, toggleTheme } = useTheme();
   const [, startTransition] = useTransition();
 
-  // Premium momentum scrolling on the public site only (never the admin route).
+  // Momentum scrolling on the public site only (never the admin route).
   useMomentumScroll();
+
+  // The top bar is transparent over the hero and picks up a frosted background
+  // once the page has scrolled. Lenis drives native scroll, so a plain scroll
+  // listener stays in sync with it.
+  const [scrolled, setScrolled] = useState(() => window.scrollY > 8);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 8);
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
 
   const handleNavigate = useCallback((to) => {
     if (to) startTransition(() => navigate(to));
@@ -39,15 +51,13 @@ const AppLayout = () => {
 
   return (
     <div className={styles.app}>
-      <Link to="/" className={styles.brandLogo} aria-label="Home">
-        <img src="/logo.png" alt="Sunika" className={styles.brandLogoImg} />
-      </Link>
+      <header className={`${styles.topBar} ${scrolled ? styles.topBarScrolled : ''}`}>
+        <Link to="/" className={styles.brandLogo} aria-label="Home">
+          <img src="/logo-mark.png" alt="Suni Designs" className={styles.brandLogoImg} />
+        </Link>
 
-      <NavigationBar
-        links={navigationLinks}
-        onNavigate={handleNavigate}
-        className={styles.navigationBar}
-      />
+        <NavigationBar links={navigationLinks} onNavigate={handleNavigate} />
+      </header>
 
       <div className={styles.themeSwitch}>
         <Settings theme={theme} toggleTheme={toggleTheme} />

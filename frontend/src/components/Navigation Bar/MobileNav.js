@@ -44,7 +44,7 @@ const MobileNav = ({ links = [], onNavigate }) => {
       >
         <div className={styles.overlayTop}>
           <Link to="/" className={styles.overlayLogo} aria-label="Home" onClick={() => setIsOpen(false)}>
-            <img src="/logo.png" alt="Sunika" className={styles.overlayLogoImg} />
+            <img src="/logo-wordmark.png" alt="Suni Designs" className={styles.overlayLogoImg} />
           </Link>
         </div>
         <nav aria-label="Main navigation">

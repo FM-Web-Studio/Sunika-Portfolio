@@ -30,10 +30,9 @@
 .logo:hover { opacity: 0.85; }
 
 .logoImg {
-  height: 30px;
+  height: 46px;
   width: auto;
   display: block;
-  border-radius: var(--radius-sm);
 }
 
 .tagline {

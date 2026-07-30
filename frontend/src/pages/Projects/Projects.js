@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { ProjectCard, ProjectLightbox, SkeletonCard, Reveal, Botanical } from '../../components';
+import { ProjectCard, ProjectLightbox, SkeletonCard, Botanical } from '../../components';
 import { subscribeProjects } from '../../firebase';
 import { useContent } from '../../context/ContentContext';
 import styles from './Projects.module.css';
@@ -72,10 +72,8 @@ const Projects = () => {
         <div className={styles.grid}>
           {loading
             ? Array.from({ length: 6 }, (_, i) => <SkeletonCard key={i} />)
-            : filtered.map((project, i) => (
-                <Reveal key={project.id} variant="up" delay={(i % 3) * 80}>
-                  <ProjectCard project={project} onOpen={setSelected} />
-                </Reveal>
+            : filtered.map((project) => (
+                <ProjectCard key={project.id} project={project} onOpen={setSelected} />
               ))
           }
         </div>

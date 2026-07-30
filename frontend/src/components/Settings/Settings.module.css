@@ -20,80 +20,38 @@
   z-index: var(--z-modal);
 }
 
+/* On mobile the burger owns the right edge, so the cog steps aside. */
+@media (max-width: 767px) {
+  .container { right: 76px; }
+}
+
+@media (max-width: 480px) {
+  .container { top: 12px; right: 66px; }
+}
+
 
 /* ===================== TRIGGER ===================== */
 /*
-  Main circular glass button.
-  A ::before layer renders the cursor-following glow
-  driven by --glow-x / --glow-y / --glow-show set inline.
+  Flat bordered cog button. The cursor-following rim glow and the spring
+  scale-up were removed with the rest of the site's decorative motion, so
+  the only feedback left is a border/background change.
 */
 .trigger {
   position: relative;
-  border-radius: 50%;
-  border: 1px solid var(--border-color-hover);
-  background: var(--frosted-background);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-  box-shadow:
-    var(--shadow-md),
-    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+  background: var(--background-1);
+  box-shadow: var(--shadow-sm);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   transition:
-    border-color 0.28s ease,
-    box-shadow   0.28s ease,
-    transform    0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-  /* No overflow:hidden, lets ::before extend past the border for the rim glow */
+    border-color 0.2s ease,
+    background   0.2s ease;
   z-index: 2;
   padding: 0;
   outline: none;
-}
-
-/* Cursor-following glow on the BORDER RING only.
-   Uses the CSS gradient-border trick:
-     - padding-box layer re-paints the frosted fill, masking the interior
-     - border-box layer shows the radial gradient through the transparent border
-   Result: accent colour appears only in the 1.5px border ring, strongest where
-   the cursor is, fading away around the circumference. */
-.trigger::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  /* Slightly thicker than the element's 1px border so the glow ring is visible */
-  border: 2px solid transparent;
-  background:
-    /* Mask the interior with the same frosted fill */
-    linear-gradient(var(--frosted-background), var(--frosted-background)) padding-box,
-    /* Gradient border: accent at cursor, transparent elsewhere */
-    radial-gradient(
-      circle at var(--glow-x, 50%) var(--glow-y, 50%),
-      var(--accent-1) 0%,
-      transparent 80%
-    ) border-box;
-  opacity: var(--glow-show, 0);
-  transition: opacity 0.22s ease;
-  pointer-events: none;
-  z-index: 0;
-}
-
-/* Inner ambient glow, soft tinted fill inside the button that follows the cursor */
-.trigger::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  background: radial-gradient(
-    circle at var(--glow-x, 50%) var(--glow-y, 50%),
-    rgba(var(--accent-1-rgb), 0.18) 0%,
-    transparent 65%
-  );
-  opacity: var(--glow-show, 0);
-  transition: opacity 0.22s ease;
-  pointer-events: none;
-  z-index: 0;
 }
 
 .trigger:focus-visible {
@@ -103,15 +61,11 @@
 
 .trigger:hover {
   border-color: var(--accent-1);
-  transform: scale(1.07);
 }
 
 .triggerOpen {
   border-color: var(--accent-1);
-  box-shadow:
-    var(--shadow-lg),
-    0 0 0 3px var(--accent-1-background),
-    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  background: var(--accent-1-background);
 }
 
 .triggerIcon {
@@ -119,15 +73,6 @@
   z-index: 1;
   color: var(--accent-1);
   display: block;
-  transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.trigger:hover .triggerIcon {
-  transform: rotate(60deg);
-}
-
-.triggerOpen .triggerIcon {
-  transform: rotate(150deg);
 }
 
 
@@ -168,24 +113,20 @@
   pointer-events: auto;
   /* Opening transition � spring with per-bubble stagger */
   transition:
-    transform 0.58s cubic-bezier(0.34, 1.56, 0.64, 1),
-    opacity   0.32s ease;
+    transform 0.3s cubic-bezier(0.22, 0.61, 0.36, 1),
+    opacity   0.22s ease;
   transition-delay: var(--delay, 0s);
 }
 
 
 /* ===================== BUBBLE BUTTON ===================== */
 .bubble {
-  width: 54px;
-  height: 54px;
-  border-radius: 50%;
-  border: 1px solid var(--border-color-hover);
-  background: var(--frosted-background);
-  backdrop-filter: blur(24px) saturate(200%);
-  -webkit-backdrop-filter: blur(24px) saturate(200%);
-  box-shadow:
-    var(--shadow-lg),
-    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+  background: var(--background-1);
+  box-shadow: var(--shadow-md);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -193,23 +134,18 @@
   padding: 0;
   outline: none;
   transition:
-    transform    0.28s cubic-bezier(0.34, 1.56, 0.64, 1),
-    border-color 0.2s  ease,
-    box-shadow   0.2s  ease,
-    background   0.2s  ease;
+    border-color 0.2s ease,
+    background   0.2s ease;
 }
 
 .bubble:hover {
-  transform: scale(1.12) translateY(-3px);
+  transform: none;
   border-color: var(--accent-1);
-  box-shadow:
-    var(--shadow-xl),
-    0 0 0 2px var(--accent-1-background),
-    inset 0 1px 0 rgba(255, 255, 255, 0.45);
+  box-shadow: var(--shadow-md);
 }
 
 .bubble:active {
-  transform: scale(0.94);
+  transform: none;
 }
 
 .bubble:focus-visible {
@@ -221,29 +157,18 @@
 .bubbleActive {
   border-color: var(--accent-1);
   background: var(--accent-1-background);
-  box-shadow:
-    var(--shadow-md),
-    0 0 0 1.5px var(--accent-1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  box-shadow: var(--shadow-md);
 }
 
 .bubbleActive:hover {
   background: var(--accent-2-background);
-  box-shadow:
-    var(--shadow-xl),
-    0 0 0 2px var(--accent-1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.45);
+  box-shadow: var(--shadow-md);
 }
 
 .bubbleIcon {
-  font-size: 1.25rem;
+  font-size: 1.15rem;
   color: var(--accent-1);
   display: block;
-  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
-}
-
-.bubble:hover .bubbleIcon {
-  transform: scale(1.15);
 }
 
 
@@ -257,9 +182,7 @@
   letter-spacing: 0.07em;
   text-transform: uppercase;
   color: var(--secondary-text-color);
-  background: var(--frosted-background);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: var(--background-1);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-full);
   padding: 2px 8px;

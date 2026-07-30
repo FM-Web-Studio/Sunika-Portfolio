@@ -25,7 +25,7 @@ const Footer = () => {
       <div className={`container ${styles.inner}`}>
         <div className={styles.brand}>
           <Link to="/" className={styles.logo} aria-label={brand.brandName}>
-            <img src="/logo.png" alt={brand.brandName} className={styles.logoImg} />
+            <img src="/logo-wordmark.png" alt={brand.brandName} className={styles.logoImg} />
           </Link>
           <p className={styles.tagline}>{brand.footerTagline}</p>
           {(info.email || info.phone || info.location) && (

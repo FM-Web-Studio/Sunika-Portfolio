@@ -23,7 +23,6 @@ export const HOME_FIELDS = [
   { key: 'heroEyebrow',    label: 'Hero: greeting',        type: 'text',     default: 'Hi there!' },
   { key: 'heroCtaPrimary', label: 'Hero: primary button',  type: 'text',     default: 'Come see my work' },
   { key: 'heroCtaGhost',   label: 'Hero: second button',   type: 'text',     default: 'Say hello 👋' },
-  { key: 'heroScrollCue',  label: 'Hero: scroll cue',      type: 'text',     default: 'Take a peek' },
 
   { key: 'makingKicker',   label: 'Craft: kicker',         type: 'text',     default: 'What I love making' },
   { key: 'makingTitle',    label: 'Craft: title',          type: 'text',     default: 'I turn ideas into happy things.' },
@@ -31,11 +30,13 @@ export const HOME_FIELDS = [
   { key: 'workKicker',     label: 'Work: kicker',          type: 'text',     default: 'Recent favourites' },
   { key: 'workTitle',      label: 'Work: title',           type: 'text',     default: "A few things I'm proud of." },
   { key: 'workViewAll',    label: 'Work: view all link',   type: 'text',     default: 'See everything' },
+  { key: 'workViewOne',    label: 'Work: per-project link', type: 'text',    default: 'Take a closer look' },
   { key: 'workEmpty',      label: 'Work: empty note',      type: 'text',     default: 'Projects are on their way, check back soon.' },
 
   { key: 'aboutKicker',    label: 'About: kicker',         type: 'text',     default: 'A little about me' },
   { key: 'aboutTitle',     label: 'About: title',          type: 'text',     default: 'Nice to meet you!' },
   { key: 'aboutNote',      label: 'About: note',           type: 'textarea', default: 'A few of the things that keep me curious and inspired' },
+  { key: 'interestsLabel', label: 'About: interests label', type: 'text',    default: 'Things I love' },
 
   { key: 'journeyKicker',  label: 'Journey: kicker',       type: 'text',     default: 'My path so far' },
   { key: 'journeyTitle',   label: 'Journey: title',        type: 'text',     default: 'How I got here.' },

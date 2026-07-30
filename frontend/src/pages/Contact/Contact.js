@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { FaEnvelope, FaPhone, FaMapMarkerAlt } from 'react-icons/fa';
-import { ContactForm, SocialLinks, Reveal, Botanical } from '../../components';
+import { ContactForm, SocialLinks, Botanical } from '../../components';
 import { subscribeShared, DEFAULT_CONTACT } from '../../firebase';
 import { useContent } from '../../context/ContentContext';
 import styles from './Contact.module.css';
@@ -27,12 +27,12 @@ const Contact = () => {
       </div>
 
       <div className={styles.layout}>
-        <Reveal as="section" variant="up" className={styles.formSection}>
+        <section className={styles.formSection}>
           <p className={styles.formLabel}>{t.formLabel}</p>
           <ContactForm />
-        </Reveal>
+        </section>
 
-        <Reveal as="aside" variant="up" delay={120} className={styles.socialSection}>
+        <aside className={styles.socialSection}>
           <p className={styles.socialLabel}>{t.socialLabel}</p>
           <SocialLinks socials={socials} />
 
@@ -58,7 +58,7 @@ const Contact = () => {
               )}
             </ul>
           )}
-        </Reveal>
+        </aside>
       </div>
     </div>
   );
