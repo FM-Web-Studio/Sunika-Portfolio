@@ -78,11 +78,13 @@
   pointer-events: auto;
 }
 
-/* ── Wide invisible tap zones, easy to hit on mobile ── */
+/* ── Wide invisible tap zones, easy to hit on mobile ──
+   They start below the modal close button so the top corners stay tappable,
+   otherwise a tap on the X lands on the "next image" zone instead. */
 .touchLeft,
 .touchRight {
   position: absolute;
-  top: 0;
+  top: 3.5rem;
   bottom: 0;
   width: 38%;
   z-index: 5;
@@ -95,7 +97,12 @@
 .nav {
   position: absolute;
   top: 50%;
-  transform: translateY(-50%);
+  /* Centred with `translate`, NOT `transform`. The global button rules in
+     Components.css (`button:hover:not(:disabled)`, 0,2,1) outscore a plain
+     `.nav:hover` and set their own `transform`, which used to wipe out the
+     -50% centring and drop the arrow half its height on hover/click. */
+  translate: 0 -50%;
+  transform: none;
   z-index: 10;
   display: flex;
   align-items: center;
@@ -123,15 +130,16 @@
   flex-shrink: 0;
 }
 
-.nav:hover {
+/* Prefixed with .viewer (0,3,0) so these beat the global button state rules. */
+.viewer .nav:hover {
   background: var(--accent-1, #B83B63);
   border-color: transparent;
-  transform: translateY(-50%) scale(1.1);
+  transform: scale(1.1);
   box-shadow: 0 6px 28px rgba(184, 59, 99, 0.55);
 }
 
-.nav:active {
-  transform: translateY(-50%) scale(0.93);
+.viewer .nav:active {
+  transform: scale(0.93);
   transition-duration: 0.08s;
 }
 

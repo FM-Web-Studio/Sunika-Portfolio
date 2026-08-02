@@ -38,17 +38,27 @@ const SocialsSection = () => {
   return (
     <div className={styles.section}>
       <div className={styles.sectionHead}>
-        <h2 className={styles.sectionTitle}>Social links</h2>
+        <span className={styles.sectionCount}>
+          {platforms.length} {platforms.length === 1 ? 'link' : 'links'}
+        </span>
         <button className={styles.addBtn} onClick={add}>+ Add link</button>
       </div>
 
-      <div className={form.form}>
-        {platforms.length === 0 && <p className={styles.empty}>No social links yet.</p>}
+      <div className={styles.stack}>
+        {platforms.length === 0 && <p className={styles.empty}>No social links yet. Add your first one above.</p>}
 
         {platforms.map((p, i) => (
-          <div key={i} className={form.card}>
-            <div className={form.cardHead}>
-              <div style={{ flex: 1, minWidth: 0 }}>
+          <section key={i} className={styles.card}>
+            <div className={styles.cardHead}>
+              <h2 className={styles.cardTitle}>{p.label?.trim() || p.key || `Link ${i + 1}`}</h2>
+              <button type="button" className={styles.itemRemove} onClick={() => remove(i)}>
+                Remove
+              </button>
+            </div>
+            <div className={styles.cardBody}>
+              {/* Not a <label>: SearchableDropdown is not a labelable control. */}
+              <div className={form.field}>
+                <span className={form.label}>Platform</span>
                 <SearchableDropdown
                   options={KEY_OPTIONS}
                   value={KEY_OPTIONS.find((o) => o.value === p.key) || null}
@@ -56,26 +66,31 @@ const SocialsSection = () => {
                   placeholder="Platform"
                 />
               </div>
-              <button type="button" className={form.removeBtn} onClick={() => remove(i)} aria-label="Remove link">×</button>
+              <div className={form.socialInputs}>
+                <label className={form.field}>
+                  <span className={form.label}>Display name</span>
+                  <input
+                    className={form.input}
+                    placeholder="e.g. Instagram"
+                    value={p.label}
+                    onChange={(e) => update(i, 'label', e.target.value)}
+                  />
+                </label>
+                <label className={form.field}>
+                  <span className={form.label}>URL</span>
+                  <input
+                    className={form.input}
+                    placeholder="https://… or mailto:…"
+                    value={p.url}
+                    onChange={(e) => update(i, 'url', e.target.value)}
+                  />
+                </label>
+              </div>
             </div>
-            <div className={form.socialInputs}>
-              <input
-                className={form.input}
-                placeholder="Display name (e.g. Instagram)"
-                value={p.label}
-                onChange={(e) => update(i, 'label', e.target.value)}
-              />
-              <input
-                className={form.input}
-                placeholder="https://… or mailto:…"
-                value={p.url}
-                onChange={(e) => update(i, 'url', e.target.value)}
-              />
-            </div>
-          </div>
+          </section>
         ))}
 
-        <div className={form.actions}>
+        <div className={styles.saveBar}>
           <button className={form.submit} onClick={handleSave} disabled={saving}>
             {saving ? 'Saving…' : 'Save links'}
           </button>

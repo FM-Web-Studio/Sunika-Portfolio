@@ -39,38 +39,48 @@ const SkillsSection = () => {
   return (
     <div className={styles.section}>
       <div className={styles.sectionHead}>
-        <h2 className={styles.sectionTitle}>Skills</h2>
+        <span className={styles.sectionCount}>
+          {cats.length} {cats.length === 1 ? 'category' : 'categories'}
+        </span>
         <button className={styles.addBtn} onClick={addCat}>+ Add category</button>
       </div>
 
-      <div className={form.form}>
-        {cats.length === 0 && <p className={styles.empty}>No skill categories yet.</p>}
+      <div className={styles.stack}>
+        {cats.length === 0 && <p className={styles.empty}>No skill categories yet. Add your first one above.</p>}
 
         {cats.map((c, i) => (
-          <div key={i} className={form.card}>
-            <div className={form.cardHead}>
-              <input
-                className={form.input}
-                placeholder="Category name (e.g. Creative)"
-                value={c.name}
-                onChange={(e) => updateCat(i, 'name', e.target.value)}
-              />
-              <button type="button" className={form.removeBtn} onClick={() => removeCat(i)} aria-label="Remove category">×</button>
+          <section key={i} className={styles.card}>
+            <div className={styles.cardHead}>
+              <h2 className={styles.cardTitle}>{c.name?.trim() || `Category ${i + 1}`}</h2>
+              <button type="button" className={styles.itemRemove} onClick={() => removeCat(i)}>
+                Remove
+              </button>
             </div>
-            <label className={form.field}>
-              <span className={form.label}>Skills <span className={form.hint}>(comma separated)</span></span>
-              <textarea
-                className={form.textarea}
-                rows={3}
-                placeholder="Painting, Drawing, Digital Illustration"
-                value={c.itemsText}
-                onChange={(e) => updateCat(i, 'itemsText', e.target.value)}
-              />
-            </label>
-          </div>
+            <div className={styles.cardBody}>
+              <label className={form.field}>
+                <span className={form.label}>Category name</span>
+                <input
+                  className={form.input}
+                  placeholder="e.g. Creative"
+                  value={c.name}
+                  onChange={(e) => updateCat(i, 'name', e.target.value)}
+                />
+              </label>
+              <label className={form.field}>
+                <span className={form.label}>Skills <span className={form.hint}>(comma separated)</span></span>
+                <textarea
+                  className={form.textarea}
+                  rows={3}
+                  placeholder="Painting, Drawing, Digital Illustration"
+                  value={c.itemsText}
+                  onChange={(e) => updateCat(i, 'itemsText', e.target.value)}
+                />
+              </label>
+            </div>
+          </section>
         ))}
 
-        <div className={form.actions}>
+        <div className={styles.saveBar}>
           <button className={form.submit} onClick={handleSave} disabled={saving}>
             {saving ? 'Saving…' : 'Save skills'}
           </button>

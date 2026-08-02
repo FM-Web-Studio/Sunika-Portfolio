@@ -161,99 +161,11 @@
   color: #fff;
 }
 
-.removeTile { right: 4px; background: rgba(192, 57, 43, 0.9); }
+.removeTile { right: 4px; background: var(--btn-danger); color: var(--btn-danger-contrast); }
 .coverTile  { left: 4px;  background: rgba(0, 0, 0, 0.55); }
 
-/* ── Repeatable rows (skills, socials, interests) ── */
-.repeatHeader {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--spacing-sm);
-}
-
-.addBtn {
-  background: var(--accent-1-background);
-  color: var(--accent-1);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-full);
-  padding: 0.35rem 0.9rem;
-  font-size: var(--font-size-xs);
-  font-weight: 600;
-  font-family: inherit;
-  cursor: pointer;
-}
-
-.card {
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-sm);
-  padding: var(--spacing-md);
-  background: var(--background-2);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-md);
-}
-
-.cardHead {
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-sm);
-}
-
-.removeBtn {
-  background: transparent;
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-sm);
-  color: var(--error-color);
-  width: 32px;
-  height: 32px;
-  font-size: 1.1rem;
-  line-height: 1;
-  cursor: pointer;
-  flex-shrink: 0;
-}
-
-.removeBtn:hover { border-color: var(--error-color); }
-
-.inlineRow {
-  display: flex;
-  gap: var(--spacing-sm);
-  align-items: center;
-}
-
-.inlineRow .input { flex: 1; }
-
-.chips { display: flex; flex-wrap: wrap; gap: var(--spacing-xs); }
-
-.chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 0.3rem 0.4rem 0.3rem 0.8rem;
-  background: var(--background-1);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-full);
-  font-size: var(--font-size-sm);
-  color: var(--secondary-text-color);
-}
-
-.chipRemove {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 18px;
-  height: 18px;
-  border: none;
-  border-radius: var(--radius-full);
-  background: var(--background-3);
-  color: var(--tertiary-text-color);
-  font-size: 0.8rem;
-  line-height: 1;
-  cursor: pointer;
-}
-
-.chipRemove:hover { background: var(--error-color); color: #fff; }
-
+/* Repeatable groups (skills, socials, interests) now use the card system in
+   Admin.module.css; the chip/inline-row styles that lived here are gone. */
 .socialInputs {
   display: grid;
   grid-template-columns: 1fr 1fr;
@@ -262,11 +174,14 @@
 
 .error { margin: 0; color: var(--error-color); font-size: var(--font-size-sm); }
 
+/* Divider above the save/cancel row so long forms have a clear footer. */
 .actions {
   display: flex;
   justify-content: flex-end;
   gap: var(--spacing-sm);
   margin-top: var(--spacing-sm);
+  padding-top: var(--spacing-md);
+  border-top: 1px solid var(--border-color);
 }
 
 .cancel,
@@ -280,8 +195,28 @@
   border: 1px solid transparent;
 }
 
-.cancel { background: transparent; border-color: var(--border-color); color: var(--secondary-text-color); }
-.submit { background: var(--accent-1); color: #fff; }
+/* Action colour convention: cancel = red outline, save = solid green. */
+.cancel {
+  background: transparent;
+  border-color: rgba(var(--btn-danger-rgb), 0.45);
+  color: var(--btn-danger);
+}
+.cancel:hover:not(:disabled) {
+  background: var(--btn-danger);
+  border-color: var(--btn-danger);
+  color: var(--btn-danger-contrast);
+}
+
+.submit {
+  background: var(--btn-confirm);
+  border-color: var(--btn-confirm);
+  color: var(--btn-confirm-contrast);
+}
+.submit:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--btn-confirm) 86%, #000);
+  border-color: color-mix(in srgb, var(--btn-confirm) 86%, #000);
+}
+
 .submit:disabled, .cancel:disabled { opacity: 0.6; cursor: not-allowed; }
 
 @media (max-width: 560px) {

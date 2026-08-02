@@ -46,7 +46,9 @@ const RecordSection = ({
   return (
     <div className={styles.section}>
       <div className={styles.sectionHead}>
-        <h2 className={styles.sectionTitle}>{title}</h2>
+        <span className={styles.sectionCount}>
+          {records.length} {records.length === 1 ? 'entry' : 'entries'}
+        </span>
         <button className={styles.addBtn} onClick={openAdd}>+ Add</button>
       </div>
 

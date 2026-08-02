@@ -84,17 +84,22 @@
 }
 .viewSiteBtn:hover { border-color: var(--accent-1); color: var(--accent-1); }
 
+/* Ending a session reads as the "stop" family, so it takes red. */
 .signOut {
   padding: 0.4rem 1rem;
   background: transparent;
-  border: 1px solid var(--border-color);
+  border: 1px solid rgba(var(--btn-danger-rgb), 0.45);
   border-radius: var(--radius-full);
-  color: var(--secondary-text-color);
+  color: var(--btn-danger);
   cursor: pointer;
   font-family: inherit;
   font-size: var(--font-size-sm);
 }
-.signOut:hover { border-color: var(--accent-1); color: var(--accent-1); }
+.signOut:hover:not(:disabled) {
+  background: var(--btn-danger);
+  border-color: var(--btn-danger);
+  color: var(--btn-danger-contrast);
+}
 
 /* Shell (sidebar + content) */
 .shell {
@@ -104,7 +109,9 @@
   max-width: 1160px;
   margin: 0 auto;
   display: flex;
-  gap: var(--spacing-xl);
+  /* No gap: the sidebar's border-right is the divider, and each side pads
+     away from it so the rule sits in an even gutter. */
+  gap: 0;
   padding: 0 var(--spacing-lg);
   overflow: hidden;
 }
@@ -115,12 +122,17 @@
   min-height: 0;
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-lg);
+  gap: var(--spacing-md);
   overflow-y: auto;
   overscroll-behavior: contain;
-  padding: var(--spacing-lg) 0.25rem var(--spacing-lg) 0;
+  padding: var(--spacing-lg) var(--spacing-lg) var(--spacing-lg) 0;
+  /* Vertical rule between the sidebar and the working area. */
+  border-right: 1px solid var(--border-color);
 }
 .navGroup { display: flex; flex-direction: column; gap: 2px; }
+/* Space, not a rule: the uppercase group label already marks the break, and
+   the sidebar's own border-right carries the structure. */
+.navGroup + .navGroup { padding-top: var(--spacing-md); }
 .navGroupLabel {
   margin: 0 0 0.25rem 0.5rem;
   font-size: 0.75rem;
@@ -163,17 +175,210 @@
   min-width: 0;
   min-height: 0;
   overflow-y: auto;
-  padding: var(--spacing-lg) var(--spacing-md) var(--spacing-2xl) 0;
+  padding: var(--spacing-lg) var(--spacing-md) var(--spacing-2xl) var(--spacing-xl);
+}
+/* Page header: the ONLY place the active section's name is printed.
+   Sections must not repeat it, that is what made every page read twice. */
+.pageHeader {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-md);
+  padding-bottom: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
+  border-bottom: 2px solid rgba(var(--accent-1-rgb), 0.30);
+}
+.pageIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  font-size: 1.35rem;
+  line-height: 1;
+  border-radius: var(--radius-md);
+  background: rgba(var(--accent-1-rgb), 0.12);
+}
+.pageHeadText { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.pageEyebrow {
+  margin: 0;
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: var(--tertiary-text-color);
 }
 .contentTitle {
   font-size: var(--font-size-xl);
   font-weight: 700;
   color: var(--accent-1);
-  margin: 0 0 var(--spacing-lg);
-  padding-bottom: var(--spacing-sm);
-  border-bottom: 1px solid var(--border-color);
+  margin: 0;
+  line-height: 1.2;
+}
+.pageDesc {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  color: var(--tertiary-text-color);
+  line-height: 1.5;
 }
 .sectionBody { min-width: 0; }
+
+/* ── Card system ───────────────────────────────────────────────────────────
+   Every admin page is built from these: a titled card per group of related
+   fields, so nothing floats loose on the page background.
+
+     .stack   vertical run of cards
+     .card    bordered surface  ← the ONLY border on a card
+     .cardHead   tinted strip: sub-title + optional hint/action
+     .cardBody   the fields
+     .cardFoot   tinted strip: save / actions
+
+   Head and foot are separated by their background tint, not by rules. A tint
+   AND a rule is double signalling, and repeated down a page of cards it reads
+   as clutter. Rules are reserved for: the page header, the sidebar, and rows
+   inside a list (where there is no tint to do the job).
+   ------------------------------------------------------------------------ */
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+.card {
+  background: var(--background-1);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.cardHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-md);
+  padding: 0.7rem var(--spacing-lg);
+  background: var(--background-2);
+}
+
+.cardTitle {
+  margin: 0;
+  font-size: var(--font-size-xs);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--secondary-text-color);
+}
+
+.cardHint {
+  font-size: var(--font-size-xs);
+  color: var(--tertiary-text-color);
+  text-align: right;
+}
+
+.cardBody {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  padding: var(--spacing-lg);
+}
+
+/* Body variant with no padding, for cards that hold a divided row list. */
+.cardBodyFlush { padding: 0; gap: 0; }
+
+/* Body variant laying its fields out in two columns. */
+.cardGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-md);
+  padding: var(--spacing-lg);
+}
+
+.cardFoot {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--spacing-sm);
+  padding: 0.7rem var(--spacing-lg);
+  background: var(--background-2);
+}
+
+/* Left-aligned status text sitting opposite the footer button. */
+.cardFootNote {
+  margin-right: auto;
+  font-size: var(--font-size-xs);
+  color: var(--tertiary-text-color);
+}
+
+/* ── Divided item rows (used inside .cardBodyFlush) ── */
+.itemRow {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  padding: 0.6rem var(--spacing-lg);
+  transition: background var(--transition-fast);
+}
+.itemRow + .itemRow { border-top: 1px solid var(--border-color); }
+.itemRow:hover { background: rgba(var(--accent-1-rgb), 0.04); }
+
+.itemIndex {
+  width: 22px;
+  flex-shrink: 0;
+  font-size: var(--font-size-xs);
+  font-weight: 700;
+  color: var(--tertiary-text-color);
+  font-variant-numeric: tabular-nums;
+}
+
+.itemText {
+  flex: 1;
+  min-width: 0;
+  color: var(--primary-text-color);
+  font-size: var(--font-size-sm);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.itemRemove {
+  flex-shrink: 0;
+  padding: 0.3rem 0.75rem;
+  border: 1px solid rgba(var(--btn-danger-rgb), 0.45);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--btn-danger);
+  font-family: inherit;
+  font-size: var(--font-size-xs);
+  cursor: pointer;
+}
+.itemRemove:hover:not(:disabled) {
+  background: var(--btn-danger);
+  border-color: var(--btn-danger);
+  color: var(--btn-danger-contrast);
+}
+
+/* Add-a-thing row: text field + button, sits above a list. */
+.addRow { display: flex; gap: var(--spacing-sm); align-items: center; }
+.addRow input { flex: 1; min-width: 0; }
+
+/* Standalone footer for pages whose save button sits below a run of cards. */
+.saveBar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--spacing-sm);
+  padding-top: var(--spacing-md);
+  border-top: 1px solid var(--border-color);
+}
+
+/* Inline empty state inside a card body. */
+.cardEmpty {
+  margin: 0;
+  padding: var(--spacing-xl) var(--spacing-lg);
+  text-align: center;
+  font-size: var(--font-size-sm);
+  color: var(--tertiary-text-color);
+}
 
 /* Mobile menu button + drawer */
 .menuBtn {
@@ -194,7 +399,12 @@
 /* Site Copy: sub-tabs + form card */
 .intro { color: var(--tertiary-text-color); font-size: var(--font-size-sm); margin: 0 0 var(--spacing-lg); line-height: 1.6; }
 
-.subTabs { display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: var(--spacing-lg); }
+.subTabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: var(--spacing-lg);
+}
 .subTab {
   padding: 7px 16px;
   background: transparent;
@@ -217,49 +427,47 @@
   gap: 2px;
   margin-left: 8px;
   font-size: 0.75rem;
-  color: var(--accent-1);
+  /* Reverting an edit belongs to the "stop" family. */
+  color: var(--btn-danger);
   cursor: pointer;
   vertical-align: middle;
 }
 .resetBtn:hover { text-decoration: underline; }
 
-.formCard {
-  background: var(--background-1);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-lg);
-  padding: var(--spacing-xl);
-  margin-bottom: var(--spacing-xl);
-  box-shadow: var(--shadow-sm);
-}
-
-.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-md); }
 .span2 { grid-column: span 2; }
 
 .field { display: flex; flex-direction: column; gap: 0.4rem; }
 .field label { font-weight: 700; font-size: var(--font-size-sm); color: var(--primary-text-color); }
-
-.formActions { display: flex; gap: 0.75rem; padding-top: 0.5rem; flex-wrap: wrap; }
 
 /* Section shell (used by the existing section components) */
 .section { animation: fadeIn 0.2s ease-out both; }
 
 @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
 
+/* Toolbar above a list: record count on the left, primary action on the right.
+   The heading itself lives in .pageHeader, never here. */
 .sectionHead {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: var(--spacing-md);
-  margin-bottom: var(--spacing-lg);
+  margin-bottom: var(--spacing-md);
 }
 
-.sectionTitle { margin: 0; font-size: var(--font-size-xl); }
+.sectionCount {
+  font-size: var(--font-size-xs);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--tertiary-text-color);
+}
 
+/* Commit action, green. See the ACTION COLOUR CONVENTION in Components.css. */
 .addBtn {
   padding: 0.5rem 1.1rem;
-  background: var(--accent-1);
-  color: #fff;
-  border: none;
+  background: var(--btn-confirm);
+  color: var(--btn-confirm-contrast);
+  border: 1px solid var(--btn-confirm);
   border-radius: var(--radius-full);
   font-weight: 600;
   font-size: var(--font-size-sm);
@@ -267,23 +475,42 @@
   cursor: pointer;
 }
 
-.addBtn:hover { opacity: 0.92; }
+/* :not(:disabled) is included so this scores 0,3,0 and outranks the global
+   button:hover:not(:disabled) (0,2,1), which would otherwise repaint it. */
+.addBtn:hover:not(:disabled) { background: color-mix(in srgb, var(--btn-confirm) 86%, #000); }
 .addBtn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-.empty { text-align: center; color: var(--tertiary-text-color); padding: var(--spacing-2xl) 0; }
+.empty {
+  margin: 0;
+  text-align: center;
+  color: var(--tertiary-text-color);
+  padding: var(--spacing-2xl) var(--spacing-lg);
+  border: 1px dashed var(--border-color);
+  border-radius: var(--radius-lg);
+}
 
-/* List rows */
-.list { display: flex; flex-direction: column; gap: var(--spacing-sm); }
+/* List rows: one bordered panel with hairline dividers between rows, rather
+   than a stack of separately floating cards. */
+.list {
+  display: flex;
+  flex-direction: column;
+  background: var(--background-1);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
 
 .row {
   display: flex;
   align-items: center;
   gap: var(--spacing-md);
-  background: var(--background-1);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-md);
   padding: var(--spacing-sm) var(--spacing-md);
+  transition: background var(--transition-fast);
 }
+
+.row + .row { border-top: 1px solid var(--border-color); }
+.row:hover { background: rgba(var(--accent-1-rgb), 0.04); }
 
 .thumb {
   width: 56px;
@@ -305,16 +532,33 @@
 .edit, .delete {
   padding: 0.4rem 0.8rem;
   border-radius: var(--radius-sm);
-  border: 1px solid var(--border-color);
   background: transparent;
   font-size: var(--font-size-xs);
   font-family: inherit;
   cursor: pointer;
 }
 
-.edit { color: var(--secondary-text-color); }
-.edit:hover { border-color: var(--accent-1); color: var(--accent-1); }
-.delete { color: var(--error-color); border-color: var(--error-color); }
+/* Edit → brand accent. Destroy → red. Both outlined at rest, solid on hover
+   so a long list is not a wall of colour. */
+.edit {
+  color: var(--accent-1);
+  border: 1px solid rgba(var(--accent-1-rgb), 0.45);
+}
+.edit:hover:not(:disabled) {
+  background: var(--accent-1);
+  border-color: var(--accent-1);
+  color: #fff;
+}
+
+.delete {
+  color: var(--btn-danger);
+  border: 1px solid rgba(var(--btn-danger-rgb), 0.45);
+}
+.delete:hover:not(:disabled) {
+  background: var(--btn-danger);
+  border-color: var(--btn-danger);
+  color: var(--btn-danger-contrast);
+}
 
 /* Responsive */
 @media (max-width: 900px) {
@@ -336,7 +580,7 @@
   .navOpen { transform: translateX(0); }
   .navBackdrop { display: block; position: fixed; inset: 0; z-index: 1090; background: rgba(0, 0, 0, 0.5); animation: adFade 0.2s ease; }
   .content { padding: var(--spacing-lg) var(--spacing-md) var(--spacing-2xl); }
-  .grid2 { grid-template-columns: 1fr; }
+  .cardGrid { grid-template-columns: 1fr; }
   .span2 { grid-column: span 1; }
 }
 @keyframes adFade { from { opacity: 0; } to { opacity: 1; } }

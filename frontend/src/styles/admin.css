@@ -21,7 +21,14 @@
   --accent-1: var(--accent-1);
   --accent-1-rgb: var(--accent-1-rgb);
   --accent-hover: var(--accent-hover);
-  --border-color: var(--border-color);
+
+  /* The public site's hairline is a blush #F2DFE4, which all but disappears
+     against the white --background-1 card surface. That is fine for an airy
+     portfolio, but it left the admin looking like one undivided blob. Inside
+     .admin-scope the stronger token is promoted to the default so every card,
+     divider and table line is actually visible. Still theme-aware: the token
+     flips to #513B48 in dark mode. */
+  --border-color: var(--border-color-hover);
   --background-0: var(--background-0);
   --background-1: var(--background-1);
   --background-2: var(--background-2);

@@ -47,15 +47,15 @@ const EXPERIENCE_FIELDS = [
 const GROUPS = ['Portfolio', 'About', 'Contact', 'Site'];
 
 const SECTIONS = [
-  { id: 'projects',   group: 'Portfolio', title: 'Projects',        icon: '🎨' },
-  { id: 'profile',    group: 'About',     title: 'Profile',         icon: '👤' },
-  { id: 'skills',     group: 'About',     title: 'Skills',          icon: '🧩' },
-  { id: 'experience', group: 'About',     title: 'Experience',      icon: '💼' },
-  { id: 'education',  group: 'About',     title: 'Education',        icon: '🎓' },
-  { id: 'interests',  group: 'About',     title: 'Interests',       icon: '🌷' },
-  { id: 'socials',    group: 'Contact',   title: 'Social Links',    icon: '🔗' },
-  { id: 'contact',    group: 'Contact',   title: 'Contact Details', icon: '📇' },
-  { id: 'copy',       group: 'Site',      title: 'Site Copy',       icon: '📝' },
+  { id: 'projects',   group: 'Portfolio', title: 'Projects',        icon: '🎨', description: 'The pieces shown on the Work grid and the Home page.' },
+  { id: 'profile',    group: 'About',     title: 'Profile',         icon: '👤', description: 'Your photo, name, title and bio.' },
+  { id: 'skills',     group: 'About',     title: 'Skills',          icon: '🧩', description: 'Grouped skill categories listed on the About section.' },
+  { id: 'experience', group: 'About',     title: 'Experience',      icon: '💼', description: 'Roles and internships on the journey timeline.' },
+  { id: 'education',  group: 'About',     title: 'Education',       icon: '🎓', description: 'Qualifications on the journey timeline.' },
+  { id: 'interests',  group: 'About',     title: 'Interests',       icon: '🌷', description: 'The short interest chips shown beside your bio.' },
+  { id: 'socials',    group: 'Contact',   title: 'Social Links',    icon: '🔗', description: 'Profile links in the footer and Contact page. Shared with the gallery site.' },
+  { id: 'contact',    group: 'Contact',   title: 'Contact Details', icon: '📇', description: 'Email, phone and location. Shared with the gallery site.' },
+  { id: 'copy',       group: 'Site',      title: 'Site Copy',       icon: '📝', description: 'Headings and wording used across the public pages.' },
 ];
 
 const Admin = () => {
@@ -192,7 +192,17 @@ const Admin = () => {
         </aside>
 
         <main className={styles.content}>
-          <h1 className={styles.contentTitle}>{activeSection.title}</h1>
+          {/* Single source of the page heading, sections never repeat it. */}
+          <header className={styles.pageHeader}>
+            <span className={styles.pageIcon} aria-hidden="true">{activeSection.icon}</span>
+            <div className={styles.pageHeadText}>
+              <p className={styles.pageEyebrow}>{activeSection.group}</p>
+              <h1 className={styles.contentTitle}>{activeSection.title}</h1>
+              {activeSection.description && (
+                <p className={styles.pageDesc}>{activeSection.description}</p>
+              )}
+            </div>
+          </header>
           <div key={view} className={styles.sectionBody}>
             {renderSection()}
           </div>

@@ -68,10 +68,10 @@ export default function SiteCopySection() {
   const group = COPY_SCHEMA.find((g) => g.key === activeGroup) ?? COPY_SCHEMA[0];
 
   return (
-    <div>
+    <div className={styles.section}>
       <p className={styles.intro}>
-        Edit the headings and wording shown across the site. Clear a field to restore
-        its original text. Changes apply to every page in the group.
+        Pick a page group below, then edit its wording. Clear a field, or use
+        <em> reset</em>, to restore the original text.
       </p>
 
       <nav className={styles.subTabs}>
@@ -87,8 +87,12 @@ export default function SiteCopySection() {
         ))}
       </nav>
 
-      <div className={styles.formCard}>
-        <div className={styles.grid2}>
+      <section className={styles.card}>
+        <div className={styles.cardHead}>
+          <h2 className={styles.cardTitle}>{group.label}</h2>
+          <span className={styles.cardHint}>{group.fields.length} fields</span>
+        </div>
+        <div className={styles.cardGrid}>
           {group.fields.map((f) => {
             const value = draft[group.key]?.[f.key] ?? '';
             const modified = value !== f.default;
@@ -112,11 +116,12 @@ export default function SiteCopySection() {
             );
           })}
         </div>
-      </div>
+      </section>
 
-      <div className={styles.formActions}>
+      <div className={styles.saveBar}>
+        <span className={styles.cardFootNote}>Saves every group, not just this tab.</span>
         <button type="button" className={styles.addBtn} onClick={handleSave} disabled={saving}>
-          {saving ? 'Saving...' : 'Save Site Copy'}
+          {saving ? 'Saving...' : 'Save site copy'}
         </button>
       </div>
     </div>

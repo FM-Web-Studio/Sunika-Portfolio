@@ -29,29 +29,33 @@ const ContactSection = () => {
 
   return (
     <div className={styles.section}>
-      <div className={styles.sectionHead}><h2 className={styles.sectionTitle}>Contact details</h2></div>
-
-      <div className={form.form}>
-        <div className={form.grid}>
+      <section className={styles.card}>
+        <div className={styles.cardHead}>
+          <h2 className={styles.cardTitle}>How people reach you</h2>
+          <span className={styles.cardHint}>Also used by the gallery site</span>
+        </div>
+        <div className={styles.cardBody}>
+          <div className={form.grid}>
+            <label className={form.field}>
+              <span className={form.label}>Email</span>
+              <input type="email" className={form.input} value={data.email} onChange={update('email')} />
+            </label>
+            <label className={form.field}>
+              <span className={form.label}>Phone</span>
+              <input className={form.input} value={data.phone} onChange={update('phone')} />
+            </label>
+          </div>
           <label className={form.field}>
-            <span className={form.label}>Email</span>
-            <input type="email" className={form.input} value={data.email} onChange={update('email')} />
-          </label>
-          <label className={form.field}>
-            <span className={form.label}>Phone</span>
-            <input className={form.input} value={data.phone} onChange={update('phone')} />
+            <span className={form.label}>Location</span>
+            <input className={form.input} value={data.location} onChange={update('location')} />
           </label>
         </div>
-        <label className={form.field}>
-          <span className={form.label}>Location</span>
-          <input className={form.input} value={data.location} onChange={update('location')} />
-        </label>
-        <div className={form.actions}>
+        <div className={styles.cardFoot}>
           <button className={form.submit} onClick={handleSave} disabled={saving}>
             {saving ? 'Saving…' : 'Save details'}
           </button>
         </div>
-      </div>
+      </section>
     </div>
   );
 };

@@ -108,6 +108,28 @@
     --success-color: #4a8b3a;
     --info-color: #5a7d9a;
 
+    /* ── Action colours ──────────────────────────────────────────────────
+       One convention across the whole site:
+         confirm  (save, submit, add)          → green
+         danger   (delete, remove, cancel)     → red
+         edit / neutral navigation             → the brand accent
+       Separate from the --success/--error status colours above, which paint
+       toasts and validation text: these are tuned for BUTTON contrast, and
+       the *-contrast value is the text colour that sits on a solid fill. */
+    --btn-confirm-light:          #3F7A32;   /* Deep leaf, 5.4:1 with white */
+    --btn-confirm-dark:           #7CBF6A;   /* Light leaf, for dark plum   */
+    --btn-confirm-rgb-light:      63, 122, 50;
+    --btn-confirm-rgb-dark:       124, 191, 106;
+    --btn-confirm-contrast-light: #FFFFFF;
+    --btn-confirm-contrast-dark:  #14100F;
+
+    --btn-danger-light:           #C0392B;
+    --btn-danger-dark:            #EC8B80;
+    --btn-danger-rgb-light:       192, 57, 43;
+    --btn-danger-rgb-dark:        236, 139, 128;
+    --btn-danger-contrast-light:  #FFFFFF;
+    --btn-danger-contrast-dark:   #14100F;
+
     /* Sold badge */
     --sold-color-light: #A03030; /* Deep red, "sold" marker */
     --sold-color-dark:  #D86060;
@@ -208,6 +230,13 @@
     --warning-background-color: var(--warning-background-color-light);
     --error-background-color: var(--error-background-color-light);
     --info-background-color: var(--info-background-color-light);
+
+    --btn-confirm:          var(--btn-confirm-light);
+    --btn-confirm-rgb:      var(--btn-confirm-rgb-light);
+    --btn-confirm-contrast: var(--btn-confirm-contrast-light);
+    --btn-danger:           var(--btn-danger-light);
+    --btn-danger-rgb:       var(--btn-danger-rgb-light);
+    --btn-danger-contrast:  var(--btn-danger-contrast-light);
 }
 
 
@@ -263,6 +292,13 @@
     --warning-background-color: var(--warning-background-color-dark);
     --error-background-color: var(--error-background-color-dark);
     --info-background-color: var(--info-background-color-dark);
+
+    --btn-confirm:          var(--btn-confirm-dark);
+    --btn-confirm-rgb:      var(--btn-confirm-rgb-dark);
+    --btn-confirm-contrast: var(--btn-confirm-contrast-dark);
+    --btn-danger:           var(--btn-danger-dark);
+    --btn-danger-rgb:       var(--btn-danger-rgb-dark);
+    --btn-danger-contrast:  var(--btn-danger-contrast-dark);
 
     --sold-color: var(--sold-color-dark);
 

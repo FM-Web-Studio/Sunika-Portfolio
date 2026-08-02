@@ -39,36 +39,62 @@ const InterestsSection = () => {
 
   return (
     <div className={styles.section}>
-      <div className={styles.sectionHead}><h2 className={styles.sectionTitle}>Interests</h2></div>
-
-      <div className={form.form}>
-        <div className={form.inlineRow}>
-          <input
-            className={form.input}
-            placeholder="Add an interest and press Enter"
-            value={draft}
-            onChange={(e) => setDraft(e.target.value)}
-            onKeyDown={handleKeyDown}
-          />
-          <button type="button" className={form.addBtn} onClick={add}>Add</button>
-        </div>
-
-        {items.length > 0 && (
-          <div className={form.chips}>
-            {items.map((item, i) => (
-              <span key={item} className={form.chip}>
-                {item}
-                <button type="button" className={form.chipRemove} onClick={() => remove(i)} aria-label={`Remove ${item}`}>×</button>
-              </span>
-            ))}
+      <div className={styles.stack}>
+        <section className={styles.card}>
+          <div className={styles.cardHead}>
+            <h2 className={styles.cardTitle}>Add an interest</h2>
+            <span className={styles.cardHint}>Press Enter to add</span>
           </div>
-        )}
+          <div className={styles.cardBody}>
+            <div className={styles.addRow}>
+              <input
+                className={form.input}
+                placeholder="e.g. Botanical illustration"
+                value={draft}
+                onChange={(e) => setDraft(e.target.value)}
+                onKeyDown={handleKeyDown}
+              />
+              <button type="button" className={styles.addBtn} onClick={add}>Add</button>
+            </div>
+          </div>
+        </section>
 
-        <div className={form.actions}>
-          <button className={form.submit} onClick={handleSave} disabled={saving}>
-            {saving ? 'Saving…' : 'Save interests'}
-          </button>
-        </div>
+        <section className={styles.card}>
+          <div className={styles.cardHead}>
+            <h2 className={styles.cardTitle}>Your list</h2>
+            <span className={styles.cardHint}>
+              {items.length} {items.length === 1 ? 'interest' : 'interests'}
+            </span>
+          </div>
+
+          {items.length === 0 ? (
+            <p className={styles.cardEmpty}>Nothing here yet. Add your first interest above.</p>
+          ) : (
+            <div className={`${styles.cardBody} ${styles.cardBodyFlush}`}>
+              {items.map((item, i) => (
+                <div key={item} className={styles.itemRow}>
+                  <span className={styles.itemIndex}>{i + 1}</span>
+                  <span className={styles.itemText}>{item}</span>
+                  <button
+                    type="button"
+                    className={styles.itemRemove}
+                    onClick={() => remove(i)}
+                    aria-label={`Remove ${item}`}
+                  >
+                    Remove
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+
+          <div className={styles.cardFoot}>
+            <span className={styles.cardFootNote}>Changes go live once you save.</span>
+            <button className={form.submit} onClick={handleSave} disabled={saving}>
+              {saving ? 'Saving…' : 'Save interests'}
+            </button>
+          </div>
+        </section>
       </div>
     </div>
   );

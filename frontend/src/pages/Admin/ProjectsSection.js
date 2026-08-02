@@ -48,7 +48,9 @@ const ProjectsSection = () => {
   return (
     <div className={styles.section}>
       <div className={styles.sectionHead}>
-        <h2 className={styles.sectionTitle}>Projects</h2>
+        <span className={styles.sectionCount}>
+          {projects.length} {projects.length === 1 ? 'project' : 'projects'}
+        </span>
         <button className={styles.addBtn} onClick={openAdd}>+ Add project</button>
       </div>
 

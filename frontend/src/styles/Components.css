@@ -242,33 +242,70 @@ button.btn-ghost:hover:not(:disabled) {
     box-shadow: none;
 }
 
-/* Danger, burnt sienna */
+/* ─── ACTION COLOUR CONVENTION ────────────────────────────────────────────
+ * Site-wide, so a button's colour always tells you what it does:
+ *   .btn-confirm  green solid    save, submit, add, send      (the commit)
+ *   .btn-danger   red outline    delete, remove, cancel       (undo / destroy)
+ *   .btn-edit     accent outline edit, manage                 (neutral change)
+ * Destructive actions are outlined rather than solid so a list of rows does
+ * not turn into a wall of red; they fill solid on hover, at the point of
+ * intent. Only ONE solid green commit button should exist per view.
+ * -------------------------------------------------------------------------*/
+
+/* Danger, red. Outline at rest, solid on hover. */
 button.btn-danger,
 button[type="reset"] {
-    --_btn-bg: rgba(184, 57, 28, 0.10);
-    --_btn-border: rgba(184, 57, 28, 0.35);
-    --_btn-color: var(--error-color);
-    --_btn-hover-bg: rgba(184, 57, 28, 0.17);
-    --_btn-hover-border: rgba(184, 57, 28, 0.55);
-    --_btn-glow: rgba(184, 57, 28, 0.10);
-    --_btn-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.10),
-        0 1px 2px rgba(0, 0, 0, 0.06);
+    --_btn-bg: transparent;
+    --_btn-border: rgba(var(--btn-danger-rgb), 0.45);
+    --_btn-color: var(--btn-danger);
+    --_btn-hover-bg: var(--btn-danger);
+    --_btn-hover-border: var(--btn-danger);
+    --_btn-glow: rgba(var(--btn-danger-rgb), 0.22);
+    --_btn-shadow: none;
+    box-shadow: none;
 }
 
-/* Success, olive moss */
+button.btn-danger:hover:not(:disabled),
+button[type="reset"]:hover:not(:disabled) {
+    color: var(--btn-danger-contrast);
+}
+
+/* Danger, solid. For the one irreversible confirm in a dialog. */
+button.btn-danger-solid {
+    --_btn-bg: var(--btn-danger);
+    --_btn-border: var(--btn-danger);
+    --_btn-color: var(--btn-danger-contrast);
+    --_btn-hover-bg: color-mix(in srgb, var(--btn-danger) 86%, #000);
+    --_btn-hover-border: color-mix(in srgb, var(--btn-danger) 86%, #000);
+    --_btn-glow: rgba(var(--btn-danger-rgb), 0.30);
+}
+
+/* Confirm, green solid. Save / submit / add / send. */
+button.btn-confirm,
 button.btn-success,
 button[type="submit"] {
-    --_btn-bg: rgba(107, 140, 58, 0.13);
-    --_btn-border: rgba(107, 140, 58, 0.38);
-    --_btn-color: var(--success-color);
-    --_btn-hover-bg: rgba(107, 140, 58, 0.20);
-    --_btn-hover-border: rgba(107, 140, 58, 0.58);
-    --_btn-glow: rgba(107, 140, 58, 0.12);
-    --_btn-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.10),
-        0 1px 2px rgba(0, 0, 0, 0.06);
+    --_btn-bg: var(--btn-confirm);
+    --_btn-border: var(--btn-confirm);
+    --_btn-color: var(--btn-confirm-contrast);
+    --_btn-hover-bg: color-mix(in srgb, var(--btn-confirm) 86%, #000);
+    --_btn-hover-border: color-mix(in srgb, var(--btn-confirm) 86%, #000);
+    --_btn-glow: rgba(var(--btn-confirm-rgb), 0.30);
+    --_btn-shadow: 0 1px 2px rgba(0, 0, 0, 0.10);
 }
+
+/* Edit, brand accent. Outline at rest, solid on hover. */
+button.btn-edit {
+    --_btn-bg: transparent;
+    --_btn-border: rgba(var(--accent-1-rgb), 0.45);
+    --_btn-color: var(--accent-1);
+    --_btn-hover-bg: var(--accent-1);
+    --_btn-hover-border: var(--accent-1);
+    --_btn-glow: rgba(var(--accent-1-rgb), 0.22);
+    --_btn-shadow: none;
+    box-shadow: none;
+}
+
+button.btn-edit:hover:not(:disabled) { color: #fff; }
 
 
 /* ─── LABELS ─────────────────────────────────────────────────────────────── */
