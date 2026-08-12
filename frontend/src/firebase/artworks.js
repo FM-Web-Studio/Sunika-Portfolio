@@ -4,12 +4,12 @@ import {
 } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 import { db, storage } from './app';
-import { CATEGORIES, COLLECTIONS, ARTWORK_STORAGE_PREFIX } from './config';
+import { CATEGORIES, COLLECTIONS, STORAGE_FOLDERS } from './config';
 
 const COL = COLLECTIONS.artworks;
 
 const uploadImage = async (file, artworkId) => {
-  const path = `${ARTWORK_STORAGE_PREFIX}/artworks/${artworkId}/${Date.now()}_${file.name}`;
+  const path = `${STORAGE_FOLDERS.artworks}/${artworkId}/${Date.now()}_${file.name}`;
   const storageRef = ref(storage, path);
   await uploadBytes(storageRef, file);
   const url = await getDownloadURL(storageRef);

@@ -1,15 +1,15 @@
 import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
 import { db } from './app';
+import { SETTINGS_DOCS } from './config';
 
 /*
  * Editable site copy lives in ONE document:
  *
- *   settings/portfolio_content -> { brand:{...}, home:{...}, gallery:{...}, ... }
+ *   settings/content -> { brand:{...}, home:{...}, gallery:{...}, ... }
  *
  * firestore.rules allows public read and admin-only write on settings/{docId}.
  */
-const CONTENT_DOC_ID = 'portfolio_content';
-const contentRef = () => doc(db, 'settings', CONTENT_DOC_ID);
+const contentRef = () => doc(db, 'settings', SETTINGS_DOCS.content);
 
 /** The saved overrides object (only values that differ from code defaults). */
 export async function getContent() {

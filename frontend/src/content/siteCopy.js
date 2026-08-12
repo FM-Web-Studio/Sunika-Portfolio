@@ -5,7 +5,7 @@
  * a page now lives here as a field with a `default`. The default is the exact
  * string the page shipped with, so the site renders identically until an admin
  * edits it. Only values that differ from the default are stored in Firestore
- * (settings/portfolio_content). Code stays the single source of truth for
+ * (settings/content). Code stays the single source of truth for
  * anything untouched.
  *
  * `resolveGroup(fields, overrides)` overlays saved overrides onto the defaults.
@@ -78,9 +78,9 @@ export const CONTACT_PAGE_FIELDS = [
 ];
 
 // Tabs shown in the admin "Site Copy" editor. `key` matches the group name
-// pages read from the settings/portfolio_content document. Contact details and
-// social links are edited separately (Contact / Social Links sections), backed
-// by the cross-app settings/shared document.
+// pages read from the settings/content document. Contact details and social
+// links are edited separately (Contact / Social Links sections), backed by
+// settings/contact.
 export const COPY_SCHEMA = [
   { key: 'brand',       label: 'Brand & Footer', fields: BRAND_FIELDS },
   { key: 'home',        label: 'Home',           fields: HOME_FIELDS },

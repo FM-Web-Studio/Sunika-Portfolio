@@ -1,6 +1,6 @@
 # Sunika Cloud Functions
 
-One function, `onContactMessage`, watching `portfolio_messages/{id}`.
+One function, `onContactMessage`, watching `messages/{id}`.
 
 When a visitor submits the contact form, a new Firestore document triggers a
 formatted email to the site owner. Replying to that email replies to the visitor

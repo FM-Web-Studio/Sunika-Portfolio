@@ -2,7 +2,7 @@ import { doc, getDoc, setDoc, onSnapshot, serverTimestamp } from 'firebase/fires
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { db, storage } from './app';
 import {
-  COLLECTIONS, PROFILE_DOCS, STORAGE_PREFIX,
+  COLLECTIONS, PROFILE_DOCS, STORAGE_FOLDERS,
   DEFAULT_PERSONAL,
 } from './config';
 
@@ -68,7 +68,7 @@ export const updateSkills    = (categories) =>
 
 // ── Profile photo upload ──────────────────────────────────────────────────────
 export const uploadProfilePhoto = async (file) => {
-  const path = `${STORAGE_PREFIX}/profile/${Date.now()}_${file.name}`;
+  const path = `${STORAGE_FOLDERS.profile}/${Date.now()}_${file.name}`;
   const storageRef = ref(storage, path);
   await uploadBytes(storageRef, file);
   return getDownloadURL(storageRef);

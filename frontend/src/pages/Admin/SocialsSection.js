@@ -1,19 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { useToast, SearchableDropdown } from '../../components';
-import { subscribeShared, updateShared, SOCIAL_KEYS } from '../../firebase';
+import { subscribeContact, updateContact, SOCIAL_KEYS } from '../../firebase';
 import styles from './Admin.module.css';
 import form from './AdminForms.module.css';
 
 const KEY_OPTIONS = SOCIAL_KEYS.map((k) => ({ value: k, label: k.charAt(0).toUpperCase() + k.slice(1) }));
 
-// Social links live in settings/shared, read by the footer and Contact page.
+// Social links live in settings/contact, read by the footer and Contact page.
 // Item shape: { key, label, url }.
 const SocialsSection = () => {
   const { showToast } = useToast();
   const [platforms, setPlatforms] = useState([]);
   const [saving, setSaving] = useState(false);
 
-  useEffect(() => subscribeShared((d) => setPlatforms(d.socials || []), () => {}), []);
+  useEffect(() => subscribeContact((d) => setPlatforms(d.socials || []), () => {}), []);
 
   const update = (i, key, value) =>
     setPlatforms((prev) => prev.map((p, idx) => (idx === i ? { ...p, [key]: value } : p)));
@@ -26,7 +26,7 @@ const SocialsSection = () => {
       const socials = platforms
         .map((p) => ({ key: (p.key ?? '').trim().toLowerCase(), label: (p.label ?? '').trim(), url: (p.url ?? '').trim() }))
         .filter((p) => p.url);
-      await updateShared({ socials });
+      await updateContact({ socials });
       showToast?.('success', 'Saved', 'Social links updated.');
     } catch (e) {
       showToast?.('error', 'Save failed', e.message || 'Please try again.');

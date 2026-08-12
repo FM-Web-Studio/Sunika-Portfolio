@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useContent } from '../../context/ContentContext';
-import { subscribeShared, DEFAULT_CONTACT } from '../../firebase';
+import { subscribeContact, DEFAULT_CONTACT } from '../../firebase';
 import styles from './Footer.module.css';
 
 const NAV = [
@@ -15,9 +15,9 @@ const Footer = () => {
   const { copy } = useContent();
   const brand = copy('brand');
 
-  // Contact details + socials come from the shared cross-app document.
+  // Contact details + socials come from settings/contact.
   const [info, setInfo] = useState({ ...DEFAULT_CONTACT, socials: [] });
-  useEffect(() => subscribeShared(setInfo, () => {}), []);
+  useEffect(() => subscribeContact(setInfo, () => {}), []);
 
   const socials = (info.socials || []).filter((s) => s.url).map((s) => ({ label: s.label, href: s.url }));
 

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useToast } from '../Toast Notifications/ToastContext';
-import { submitContactForm } from '../../firebase';
+import { submitMessage } from '../../firebase';
 import styles from './ContactForm.module.css';
 
 const EMPTY = { name: '', email: '', message: '' };
@@ -32,7 +32,7 @@ const ContactForm = () => {
 
     setSubmitting(true);
     try {
-      await submitContactForm({ name, email, message });
+      await submitMessage({ name, email, message });
       showToast?.('success', 'Message sent', 'Thanks for reaching out, we’ll be in touch.');
       setForm(EMPTY);
     } catch {

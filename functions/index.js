@@ -1,7 +1,7 @@
 /**
  * Cloud Functions, contact-form email notifications.
  *
- * A new document in portfolio_messages emails a formatted summary to the site
+ * A new document in `messages` emails a formatted summary to the site
  * owner over a Gmail account's SMTP (nodemailer). Replying to the email goes
  * straight back to the visitor (their address is set as Reply-To).
  *
@@ -133,6 +133,6 @@ const handler = async (event) => {
 };
 
 exports.onContactMessage = onDocumentCreated(
-  { document: 'portfolio_messages/{id}', region: REGION, secrets: [SMTP_PASSWORD], maxInstances: 5 },
+  { document: 'messages/{id}', region: REGION, secrets: [SMTP_PASSWORD], maxInstances: 5 },
   handler,
 );

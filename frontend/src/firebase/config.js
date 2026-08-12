@@ -1,27 +1,34 @@
 // Static configuration shared across the data layer.
 
-// Collection names carry a `gallery_` / `portfolio_` prefix. It is a namespace,
-// not a separate site: `gallery_*` is the artwork side, `portfolio_*` the rest,
-// and `settings/*` holds the documents both sides read.
 export const COLLECTIONS = {
-  projects:   'portfolio_projects',
-  education:  'portfolio_education',
-  experience: 'portfolio_experience',
-  profile:    'portfolio_profile',   // single-doc profile settings (see PROFILE_DOCS)
-  messages:   'portfolio_messages',  // the site's one contact form
-  artworks:   'gallery_artworks',
+  artworks:   'artworks',
+  projects:   'projects',
+  education:  'education',
+  experience: 'experience',
+  profile:    'profile',     // single-doc profile settings (see PROFILE_DOCS)
+  messages:   'messages',    // contact-form submissions
 };
 
-// Document ids inside the `portfolio_profile` collection.
+// Single documents in the `settings` collection.
+export const SETTINGS_DOCS = {
+  content: 'content',   // editable site copy, one group per page
+  contact: 'contact',   // email / phone / location + social links
+};
+
+// Document ids inside the `profile` collection.
 export const PROFILE_DOCS = {
   personal:  'personal',
   interests: 'interests',
   skills:    'skills',
 };
 
-// Storage folders. Both are matched by prefix in storage.rules.
-export const STORAGE_PREFIX = 'portfolio';   // projects/, profile/
-export const ARTWORK_STORAGE_PREFIX = 'gallery';   // artworks/
+// Storage folders, one per collection that owns files. Matched by prefix in
+// storage.rules, so a new folder needs a matching rule.
+export const STORAGE_FOLDERS = {
+  artworks: 'artworks',
+  projects: 'projects',
+  profile:  'profile',
+};
 
 // Comma-separated allowlist of admin Google account emails (client-side UX gate).
 // Real enforcement lives in firestore.rules / storage.rules (managed separately).

@@ -1,23 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { useToast } from '../../components';
-import { subscribeShared, updateShared, DEFAULT_CONTACT } from '../../firebase';
+import { subscribeContact, updateContact, DEFAULT_CONTACT } from '../../firebase';
 import styles from './Admin.module.css';
 import form from './AdminForms.module.css';
 
-// Contact details live in settings/shared, read by the footer and Contact page.
+// Contact details live in settings/contact, read by the footer and Contact page.
 const ContactSection = () => {
   const { showToast } = useToast();
   const [data, setData] = useState({ ...DEFAULT_CONTACT, socials: [] });
   const [saving, setSaving] = useState(false);
 
-  useEffect(() => subscribeShared(setData, () => {}), []);
+  useEffect(() => subscribeContact(setData, () => {}), []);
 
   const update = (field) => (e) => setData((d) => ({ ...d, [field]: e.target.value }));
 
   const handleSave = async () => {
     setSaving(true);
     try {
-      await updateShared({ email: data.email ?? '', phone: data.phone ?? '', location: data.location ?? '' });
+      await updateContact({ email: data.email ?? '', phone: data.phone ?? '', location: data.location ?? '' });
       showToast?.('success', 'Saved', 'Contact details updated.');
     } catch (e) {
       showToast?.('error', 'Save failed', e.message || 'Please try again.');

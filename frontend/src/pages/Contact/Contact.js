@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { FaEnvelope, FaPhone, FaMapMarkerAlt } from 'react-icons/fa';
 import { ContactForm, SocialLinks, Botanical } from '../../components';
-import { subscribeShared, DEFAULT_CONTACT } from '../../firebase';
+import { subscribeContact, DEFAULT_CONTACT } from '../../firebase';
 import { useContent } from '../../context/ContentContext';
 import styles from './Contact.module.css';
 
@@ -10,7 +10,7 @@ const Contact = () => {
   const t = copy('contactPage');
   const [contact, setContact] = useState({ ...DEFAULT_CONTACT, socials: [] });
 
-  useEffect(() => subscribeShared(setContact, () => {}), []);
+  useEffect(() => subscribeContact(setContact, () => {}), []);
   const socials = contact.socials;
 
   return (

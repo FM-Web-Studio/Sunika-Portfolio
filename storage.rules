@@ -1,9 +1,12 @@
 rules_version = '2';
 
+// One folder per collection that owns files. Public read (the images are the
+// point of the site), admin-only write.
+
 service firebase.storage {
   match /b/{bucket}/o {
 
-    // Keep this list in sync with REACT_APP_ADMIN_EMAILS and firestore.rules.
+    // Keep this list in sync with ADMIN_EMAILS in frontend/.env and firestore.rules.
     function isAdmin() {
       return request.auth != null
              && request.auth.token.email_verified == true
@@ -13,23 +16,30 @@ service firebase.storage {
              ];
     }
 
-    // Gallery artwork images live under gallery/ to coexist with the portfolio
-    // app in the shared bucket. Public read, owner-only write (max 15 MB, images).
-    match /gallery/artworks/{artworkId}/{fileName} {
+    function isAdminImageWrite() {
+      return isAdmin()
+             && request.resource.size < 15 * 1024 * 1024
+             && request.resource.contentType.matches('image/.*');
+    }
+
+    // artworks/{artworkId}/{file} — one image per artwork
+    match /artworks/{allPaths=**} {
       allow read: if true;
-      allow write: if isAdmin()
-                   && request.resource.size < 15 * 1024 * 1024
-                   && request.resource.contentType.matches('image/.*');
+      allow write: if isAdminImageWrite();
       allow delete: if isAdmin();
     }
 
-    // Portfolio files (project images + profile photo) live under portfolio/.
-    // Public read, owner-only write (max 15 MB, images).
-    match /portfolio/{allPaths=**} {
+    // projects/{projectId}/{file} — many images per project
+    match /projects/{allPaths=**} {
       allow read: if true;
-      allow write: if isAdmin()
-                   && request.resource.size < 15 * 1024 * 1024
-                   && request.resource.contentType.matches('image/.*');
+      allow write: if isAdminImageWrite();
+      allow delete: if isAdmin();
+    }
+
+    // profile/{file} — the profile photo
+    match /profile/{allPaths=**} {
+      allow read: if true;
+      allow write: if isAdminImageWrite();
       allow delete: if isAdmin();
     }
 

@@ -4,7 +4,7 @@ import {
 } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 import { db, storage } from './app';
-import { COLLECTIONS, STORAGE_PREFIX } from './config';
+import { COLLECTIONS, STORAGE_FOLDERS } from './config';
 
 const COL = COLLECTIONS.projects;
 
@@ -21,7 +21,7 @@ const sortProjects = (list) =>
   });
 
 const uploadProjectFile = async (file, projectId) => {
-  const path = `${STORAGE_PREFIX}/projects/${projectId}/${Date.now()}_${file.name}`;
+  const path = `${STORAGE_FOLDERS.projects}/${projectId}/${Date.now()}_${file.name}`;
   const storageRef = ref(storage, path);
   await uploadBytes(storageRef, file);
   const url = await getDownloadURL(storageRef);

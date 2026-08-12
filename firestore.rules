@@ -2,11 +2,10 @@ rules_version = '2';
 
 // Sunika.
 //
-// The `portfolio_` / `gallery_` collection prefixes are a namespace, not two
-// sites. Everything public-facing is world-readable; writes are admin-only,
-// with two deliberate exceptions: anonymous visitors may submit a contact
-// message, and may nudge the rating / like counters on an artwork within
-// tightly bounded deltas.
+// Everything public-facing is world-readable; writes are admin-only, with two
+// deliberate exceptions: anonymous visitors may submit a contact message, and
+// may nudge the rating / like counters on an artwork within tightly bounded
+// deltas.
 
 service cloud.firestore {
   match /databases/{database}/documents {
@@ -35,8 +34,8 @@ service cloud.firestore {
              && request.resource.data.message.size() <= 5000;
     }
 
-    // ── Gallery artworks ──────────────────────────────────────────────────
-    match /gallery_artworks/{artworkId} {
+    // ── Artworks (the Gallery page) ───────────────────────────────────────
+    match /artworks/{artworkId} {
       allow read: if true;
 
       allow create, delete: if isAdmin();
@@ -59,27 +58,27 @@ service cloud.firestore {
         );
     }
 
-    // ── Portfolio projects ────────────────────────────────────────────────
-    match /portfolio_projects/{id} {
+    // ── Projects (the Projects page) ──────────────────────────────────────
+    match /projects/{id} {
       allow read: if true;
       allow write: if isAdmin();
     }
 
     // ── Timelines + profile singletons ────────────────────────────────────
-    match /portfolio_education/{id}  { allow read: if true; allow write: if isAdmin(); }
-    match /portfolio_experience/{id} { allow read: if true; allow write: if isAdmin(); }
-    match /portfolio_profile/{doc}   { allow read: if true; allow write: if isAdmin(); }
+    match /education/{id}  { allow read: if true; allow write: if isAdmin(); }
+    match /experience/{id} { allow read: if true; allow write: if isAdmin(); }
+    match /profile/{doc}   { allow read: if true; allow write: if isAdmin(); }
 
     // ── Contact-form messages ─────────────────────────────────────────────
-    // The site has one contact form. Visitors may submit; only an admin reads.
-    match /portfolio_messages/{doc} {
+    // Visitors may submit; only an admin may read or manage them.
+    match /messages/{doc} {
       allow create: if isContactMessage();
       allow read, update, delete: if isAdmin();
     }
 
-    // ── Shared settings documents ─────────────────────────────────────────
-    // settings/shared            : contact details + social links
-    // settings/portfolio_content : editable site copy for every public page
+    // ── Settings ──────────────────────────────────────────────────────────
+    // settings/content : editable site copy, one group per page
+    // settings/contact : email / phone / location + social links
     match /settings/{doc} {
       allow read: if true;
       allow write: if isAdmin();
