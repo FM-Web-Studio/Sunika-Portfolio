@@ -1,0 +1,110 @@
+/* ── Floating wrapper ─────────────────────────────────────────────────────── */
+/* Fixed to the bottom-right corner, portalled to <body>. */
+.dock {
+  position: fixed;
+  right: calc(20px + env(safe-area-inset-right, 0px));
+  bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+  z-index: var(--z-fixed);
+  display: inline-flex;
+  pointer-events: all;
+  transition:
+    opacity var(--transition-base),
+    transform var(--transition-base),
+    visibility var(--transition-base);
+}
+
+/* Panel open — the trigger steps back so it never floats over the backdrop. */
+.hidden {
+  opacity: 0;
+  visibility: hidden;
+  transform: scale(0.9);
+  pointer-events: none;
+}
+
+/* ── Trigger ──────────────────────────────────────────────────────────────── */
+/* Frosted plate, border and shadow matching the site's other floating chrome. */
+.button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 10px 18px;
+  background: var(--frosted-background);
+  backdrop-filter: blur(18px) saturate(160%);
+  -webkit-backdrop-filter: blur(18px) saturate(160%);
+  border: 1px solid var(--border-color-hover);
+  border-radius: var(--radius-full);
+  box-shadow: var(--shadow-lg);
+  color: var(--secondary-text-color);
+  font-family: inherit;
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    color var(--transition-fast),
+    border-color var(--transition-fast),
+    background-color var(--transition-fast);
+}
+
+.button:hover:not(:disabled) {
+  color: var(--accent-1);
+  border-color: var(--accent-1);
+  background: var(--frosted-background);
+  box-shadow: var(--shadow-lg);
+  transform: none;
+}
+
+.button:focus-visible { outline: 2px solid var(--accent-1); outline-offset: 2px; }
+
+/* Filters applied — same accent tint as the switch's active segment, so
+   "something is filtered" is readable without opening the panel. */
+.buttonActive,
+.buttonActive:hover:not(:disabled) {
+  color: var(--accent-1);
+  border-color: rgba(var(--accent-1-rgb), 0.4);
+  background: var(--accent-1-background);
+}
+
+.icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.15rem;
+  height: 1.15rem;
+  padding: 0 0.28rem;
+  background: var(--accent-1);
+  color: var(--background-1);
+  border-radius: var(--radius-full);
+  font-size: 0.68rem;
+  font-weight: 700;
+}
+
+/* ── Small screens ────────────────────────────────────────────────────────── */
+/* Collapse to a circle so the row stays comfortably inside a phone viewport.
+   The count moves to the corner as a dot-sized badge. */
+@media (max-width: 640px) {
+  .dock {
+    right: calc(14px + env(safe-area-inset-right, 0px));
+    bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+  }
+  .button { padding: 0; width: 44px; height: 44px; justify-content: center; }
+  .label { display: none; }
+  .badge {
+    position: absolute;
+    top: -3px;
+    right: -3px;
+    border: 1px solid var(--background-0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dock { transition: opacity var(--transition-fast), visibility var(--transition-fast); }
+  .hidden { transform: none; }
+}

@@ -28,3 +28,6 @@ Thumbs.db
 .idea/
 *.suo
 *.user
+
+# One-off migration backups (contain exported Firestore data)
+frontend/scripts/backup-*/

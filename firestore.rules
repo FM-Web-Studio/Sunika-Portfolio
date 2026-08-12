@@ -1,10 +1,18 @@
 rules_version = '2';
 
+// Sunika.
+//
+// The `portfolio_` / `gallery_` collection prefixes are a namespace, not two
+// sites. Everything public-facing is world-readable; writes are admin-only,
+// with two deliberate exceptions: anonymous visitors may submit a contact
+// message, and may nudge the rating / like counters on an artwork within
+// tightly bounded deltas.
+
 service cloud.firestore {
   match /databases/{database}/documents {
 
     // ── Admin allowlist ───────────────────────────────────────────────────
-    // Keep this list in sync with REACT_APP_ADMIN_EMAILS and storage.rules.
+    // Keep in sync with ADMIN_EMAILS in frontend/.env and with storage.rules.
     function isAdmin() {
       return request.auth != null
              && request.auth.token.email_verified == true
@@ -14,11 +22,23 @@ service cloud.firestore {
              ];
     }
 
+    // A visitor-submitted contact message: the four expected fields, nothing
+    // enormous, and no way to write anything else into the collection.
+    function isContactMessage() {
+      return request.resource.data.keys().hasOnly(['name', 'email', 'message', 'createdAt'])
+             && request.resource.data.keys().hasAll(['name', 'email', 'message', 'createdAt'])
+             && request.resource.data.name is string
+             && request.resource.data.name.size() <= 200
+             && request.resource.data.email is string
+             && request.resource.data.email.size() <= 320
+             && request.resource.data.message is string
+             && request.resource.data.message.size() <= 5000;
+    }
+
     // ── Gallery artworks ──────────────────────────────────────────────────
     match /gallery_artworks/{artworkId} {
       allow read: if true;
 
-      // Owner has full control.
       allow create, delete: if isAdmin();
       allow update: if isAdmin()
         // Anonymous rating: only ratingSum/ratingCount change, count +1, sum +1..5.
@@ -39,73 +59,31 @@ service cloud.firestore {
         );
     }
 
-    // ── Gallery contact messages ──────────────────────────────────────────
-    // Visitors may submit; only the owner may read/manage entries.
-    match /gallery_messages/{doc} {
-      allow create: if request.resource.data.keys().hasAll(['name', 'email', 'message', 'createdAt'])
-                    && request.resource.data.name is string
-                    && request.resource.data.email is string
-                    && request.resource.data.message is string
-                    && request.resource.data.message.size() <= 5000;
-      allow read, update, delete: if isAdmin();
-    }
-
-    // ── Gallery site settings (socials + contact details) ─────────────────
-    match /gallery_settings/{doc} {
-      allow read: if true;
-      allow write: if isAdmin();
-    }
-
-    // ── Portfolio: projects ───────────────────────────────────────────────
+    // ── Portfolio projects ────────────────────────────────────────────────
     match /portfolio_projects/{id} {
       allow read: if true;
-      allow create, update, delete: if isAdmin();
-    }
-
-    // ── Portfolio: education & experience timelines ───────────────────────
-    match /education/{id} {
-      allow read: if true;
-      allow write: if isAdmin();
-    }
-    match /experience/{id} {
-      allow read: if true;
       allow write: if isAdmin();
     }
 
-    // ── Portfolio: singleton settings docs (personal, contact, interests,
-    //    skills, socials) ─────────────────────────────────────────────────
-    match /portfolio/{doc} {
-      allow read: if true;
-      allow write: if isAdmin();
-    }
-
-    // ── Portfolio: contact-form messages ──────────────────────────────────
-    // Visitors may submit; only an admin may read/manage entries.
-    match /portfolio_messages/{doc} {
-      allow create: if request.resource.data.keys().hasAll(['name', 'email', 'message', 'createdAt'])
-                    && request.resource.data.name is string
-                    && request.resource.data.email is string
-                    && request.resource.data.message is string
-                    && request.resource.data.message.size() <= 5000;
-      allow read, update, delete: if isAdmin();
-    }
-
-    // ── Normalized shared structure ──────────────────────────────────────
-    // settings/shared      : contact details + social links, shared by BOTH apps
-    // settings/*_content   : editable site copy per app (gallery_content, portfolio_content)
-    match /settings/{doc} {
-      allow read: if true;
-      allow write: if isAdmin();
-    }
-
-    // Portfolio timelines + profile docs, consistently prefixed.
+    // ── Timelines + profile singletons ────────────────────────────────────
     match /portfolio_education/{id}  { allow read: if true; allow write: if isAdmin(); }
     match /portfolio_experience/{id} { allow read: if true; allow write: if isAdmin(); }
     match /portfolio_profile/{doc}   { allow read: if true; allow write: if isAdmin(); }
 
-    // NOTE: the matches above for gallery_settings, education, experience and
-    // portfolio are LEGACY. They are kept so nothing breaks during migration.
-    // After cleanup.js removes the old docs, they can be deleted.
+    // ── Contact-form messages ─────────────────────────────────────────────
+    // The site has one contact form. Visitors may submit; only an admin reads.
+    match /portfolio_messages/{doc} {
+      allow create: if isContactMessage();
+      allow read, update, delete: if isAdmin();
+    }
+
+    // ── Shared settings documents ─────────────────────────────────────────
+    // settings/shared            : contact details + social links
+    // settings/portfolio_content : editable site copy for every public page
+    match /settings/{doc} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
 
     // Default deny
     match /{document=**} { allow read, write: if false; }

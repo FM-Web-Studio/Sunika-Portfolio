@@ -1,12 +1,8 @@
 # Sunika Cloud Functions
 
-One Functions codebase serving BOTH Sunika apps, which share the single Firebase
-project `sunika-project`:
+One function, `onContactMessage`, watching `portfolio_messages/{id}`.
 
-- `onGalleryMessage`   watches `gallery_messages/{id}`   (Sunika Gallery)
-- `onPortfolioMessage` watches `portfolio_messages/{id}` (Sunika Portfolio)
-
-When a visitor submits a contact form, a new Firestore document triggers a
+When a visitor submits the contact form, a new Firestore document triggers a
 formatted email to the site owner. Replying to that email replies to the visitor
 (their address is set as `Reply-To`). Sending errors are logged and swallowed,
 the message is always saved in Firestore regardless.

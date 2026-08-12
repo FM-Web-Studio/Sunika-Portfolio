@@ -2,14 +2,11 @@ import { doc, getDoc, setDoc, updateDoc } from 'firebase/firestore';
 import { db } from './app';
 
 /*
- * Editable site copy + contact details live in ONE document in the shared
- * `settings` collection. The `portfolio_` doc-id prefix keeps it namespaced
- * from the gallery app that shares this Firebase project.
+ * Editable site copy lives in ONE document:
  *
- *   settings/portfolio_content -> { brand:{...}, home:{...}, ..., contact:{...} }
+ *   settings/portfolio_content -> { brand:{...}, home:{...}, gallery:{...}, ... }
  *
- * NOTE: this requires a firestore.rules entry allowing public read and
- * admin-only write for settings/{docId}. See the project report.
+ * firestore.rules allows public read and admin-only write on settings/{docId}.
  */
 const CONTENT_DOC_ID = 'portfolio_content';
 const contentRef = () => doc(db, 'settings', CONTENT_DOC_ID);

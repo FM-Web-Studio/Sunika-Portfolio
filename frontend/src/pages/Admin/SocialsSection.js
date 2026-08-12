@@ -6,8 +6,8 @@ import form from './AdminForms.module.css';
 
 const KEY_OPTIONS = SOCIAL_KEYS.map((k) => ({ value: k, label: k.charAt(0).toUpperCase() + k.slice(1) }));
 
-// Social links are shared across both Sunika apps (settings/shared), so editing
-// them here also updates the gallery site. Item shape: { key, label, url }.
+// Social links live in settings/shared, read by the footer and Contact page.
+// Item shape: { key, label, url }.
 const SocialsSection = () => {
   const { showToast } = useToast();
   const [platforms, setPlatforms] = useState([]);

@@ -1,6 +1,6 @@
 import React, { Suspense, useCallback, useMemo, useState, useTransition, useEffect } from 'react';
 import { Routes, Route, useNavigate, Outlet, useLocation, Link } from 'react-router-dom';
-import { NotFound, Loading, Home, Projects, Contact, Admin } from './pages';
+import { NotFound, Loading, Home, Projects, Gallery, Contact, Admin } from './pages';
 import { NavigationBar, Settings, ToastProvider, Footer } from './components';
 import { ContentProvider } from './context/ContentContext';
 import { useTheme, useAnimations, useMomentumScroll, getLenis } from './hooks';
@@ -9,6 +9,7 @@ import styles from './App.module.css';
 // Home is reached via the standalone logo (top-left), so it is not repeated here.
 const NAVIGATION_PAGES = [
   { label: 'Projects', to: '/projects' },
+  { label: 'Gallery',  to: '/gallery'  },
   { label: 'Contact',  to: '/contact'  },
 ];
 
@@ -82,6 +83,7 @@ const AppContent = () => (
       <Route path="/" element={<AppLayout />}>
         <Route index             element={<Home />} />
         <Route path="projects"   element={<Projects />} />
+        <Route path="gallery"    element={<Gallery />} />
         <Route path="contact"    element={<Contact />} />
         <Route path="loading"    element={<Loading />} />
         <Route path="*"          element={<NotFound />} />

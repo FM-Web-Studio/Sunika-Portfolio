@@ -1,16 +1,9 @@
 /**
- * Cloud Functions - contact-form email notifications for BOTH Sunika sites.
+ * Cloud Functions, contact-form email notifications.
  *
- * The Sunika Portfolio and the Sunika Gallery apps live in the same Firebase
- * project (sunika-project), so one Functions codebase serves both. A new
- * document in either messages collection emails a formatted summary to the site
- * owner via a Gmail account's SMTP (nodemailer). No third-party service, same
- * approach as the Francois0203 and Lientjie projects. Replying to the email goes
+ * A new document in portfolio_messages emails a formatted summary to the site
+ * owner over a Gmail account's SMTP (nodemailer). Replying to the email goes
  * straight back to the visitor (their address is set as Reply-To).
- *
- * Collections watched:
- *   gallery_messages/{id}    -> Sunika Gallery contact form
- *   portfolio_messages/{id}  -> Sunika Portfolio contact form
  *
  * Setup (see functions/README.md):
  *   1. Project on the Blaze plan (required for outbound network / email).
@@ -52,11 +45,10 @@ const formatWhen = (createdAt) => {
 };
 
 // Build a compact, email-client-friendly HTML message (table plus inline styles).
-const buildHtml = ({ site, name, email, message, when, extra }) => {
+const buildHtml = ({ site, name, email, message, when }) => {
   const rows = [
     ['From', esc(name)],
     ['Email', email ? `<a href="mailto:${esc(email)}" style="color:${site.accent};font-weight:600;text-decoration:none;">${esc(email)}</a>` : '<span style="color:#94a3b8;">not provided</span>'],
-    ...extra.map(([k, v]) => [k, esc(v)]),
     ['Received', esc(when)],
   ];
 
@@ -88,33 +80,23 @@ const buildHtml = ({ site, name, email, message, when, extra }) => {
 </body></html>`;
 };
 
-const buildText = ({ site, name, email, message, when, extra }) =>
+const buildText = ({ site, name, email, message, when }) =>
   `New ${site.label} message\n\n` +
   `From:     ${name}\n` +
   `Email:    ${email || 'not provided'}\n` +
-  extra.map(([k, v]) => `${k}: ${v}\n`).join('') +
   `Received: ${when}\n\n` +
   `Message:\n${message}\n`;
 
-// Per-site presentation, keyed by the config passed to makeHandler().
-const SITES = {
-  gallery_messages: {
-    label: 'Sunika Gallery',
-    accent: '#B8860B', // warm gold
-    intro: 'Someone reached out through your gallery site.',
-  },
-  portfolio_messages: {
-    label: 'Sunika Portfolio',
-    accent: '#4C6EF5', // cool blue
-    intro: 'Someone reached out through your portfolio site.',
-  },
+const SITE = {
+  label: 'Sunika',
+  accent: '#B83B63', // the site's raspberry rose accent
+  intro: 'Someone reached out through your website.',
 };
 
-// Factory: one shared handler, configured per watched collection.
-const makeHandler = (siteConfig) => async (event) => {
+const handler = async (event) => {
   const data = event.data && event.data.data();
   if (!data) {
-    logger.warn('Trigger fired with no document data', { label: siteConfig.label, id: event.params.id });
+    logger.warn('Trigger fired with no document data', { id: event.params.id });
     return;
   }
 
@@ -123,12 +105,7 @@ const makeHandler = (siteConfig) => async (event) => {
   const message = (data.message || '').trim() || '(empty message)';
   const when = formatWhen(data.createdAt);
 
-  // Optional extra fields, included only when present.
-  const extra = [];
-  if (data.subject) extra.push(['Subject', String(data.subject).trim()]);
-  if (data.phone) extra.push(['Phone', String(data.phone).trim()]);
-
-  const payload = { site: siteConfig, name, email, message, when, extra };
+  const payload = { site: SITE, name, email, message, when };
 
   const port = Number(SMTP_PORT.value()) || 465;
   const transporter = nodemailer.createTransport({
@@ -140,22 +117,22 @@ const makeHandler = (siteConfig) => async (event) => {
 
   try {
     await transporter.sendMail({
-      from: `"Sunika Websites" <${SMTP_USER.value()}>`,
+      from: `"Sunika" <${SMTP_USER.value()}>`,
       to: NOTIFY_TO.value() || SMTP_USER.value(),
       replyTo: email || undefined,
-      subject: `New ${siteConfig.label} message from ${name}`,
+      subject: `New ${SITE.label} message from ${name}`,
       text: buildText(payload),
       html: buildHtml(payload),
     });
-    logger.info('Notification sent', { label: siteConfig.label, id: event.params.id, from: email });
+    logger.info('Notification sent', { id: event.params.id, from: email });
   } catch (err) {
     // Do not rethrow. A retry storm will not fix bad credentials, and the
     // message is safely stored in Firestore regardless. Surface it in logs.
-    logger.error('Failed to send notification', { label: siteConfig.label, id: event.params.id, error: err && err.message });
+    logger.error('Failed to send notification', { id: event.params.id, error: err && err.message });
   }
 };
 
-const opts = (document) => ({ document, region: REGION, secrets: [SMTP_PASSWORD], maxInstances: 5 });
-
-exports.onGalleryMessage = onDocumentCreated(opts('gallery_messages/{id}'), makeHandler(SITES.gallery_messages));
-exports.onPortfolioMessage = onDocumentCreated(opts('portfolio_messages/{id}'), makeHandler(SITES.portfolio_messages));
+exports.onContactMessage = onDocumentCreated(
+  { document: 'portfolio_messages/{id}', region: REGION, secrets: [SMTP_PASSWORD], maxInstances: 5 },
+  handler,
+);

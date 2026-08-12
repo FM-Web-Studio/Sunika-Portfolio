@@ -24,11 +24,6 @@ const buildFields = (data) => ({
   order:       typeof data.order === 'number' ? data.order : Date.now(),
 });
 
-export const getExperience = async () => {
-  const snap = await getDocs(query(collection(db, COL)));
-  return sortByOrder(snap.docs.map(mapDoc));
-};
-
 export const subscribeExperience = (cb, onError) =>
   onSnapshot(query(collection(db, COL)), (snap) => cb(sortByOrder(snap.docs.map(mapDoc))), onError);
 

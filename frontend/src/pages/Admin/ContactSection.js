@@ -4,8 +4,7 @@ import { subscribeShared, updateShared, DEFAULT_CONTACT } from '../../firebase';
 import styles from './Admin.module.css';
 import form from './AdminForms.module.css';
 
-// Contact details are shared across both Sunika apps (settings/shared), so
-// editing them here also updates the gallery site.
+// Contact details live in settings/shared, read by the footer and Contact page.
 const ContactSection = () => {
   const { showToast } = useToast();
   const [data, setData] = useState({ ...DEFAULT_CONTACT, socials: [] });

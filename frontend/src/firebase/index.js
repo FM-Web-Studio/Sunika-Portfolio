@@ -8,3 +8,6 @@ export * from './education';
 export * from './experience';
 export * from './contact';
 export * from './content';
+export * from './artworks';
+export * from './ratings';
+export * from './likes';

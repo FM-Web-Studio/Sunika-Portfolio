@@ -10,6 +10,7 @@ import {
 } from '../../firebase';
 import Loading from '../Loading';
 import ProjectsSection from './ProjectsSection';
+import ArtworksSection from './ArtworksSection';
 import ProfileSection from './ProfileSection';
 import SkillsSection from './SkillsSection';
 import InterestsSection from './InterestsSection';
@@ -44,17 +45,18 @@ const EXPERIENCE_FIELDS = [
   { name: 'order',       label: 'Order',       type: 'number', hint: 'lower shows first' },
 ];
 
-const GROUPS = ['Portfolio', 'About', 'Contact', 'Site'];
+const GROUPS = ['Portfolio', 'Gallery', 'About', 'Contact', 'Site'];
 
 const SECTIONS = [
   { id: 'projects',   group: 'Portfolio', title: 'Projects',        icon: '🎨', description: 'The pieces shown on the Work grid and the Home page.' },
+  { id: 'artworks',   group: 'Gallery',   title: 'Artworks',        icon: '🖼️', description: 'Original pieces in the gallery grid, with price and sold status.' },
   { id: 'profile',    group: 'About',     title: 'Profile',         icon: '👤', description: 'Your photo, name, title and bio.' },
   { id: 'skills',     group: 'About',     title: 'Skills',          icon: '🧩', description: 'Grouped skill categories listed on the About section.' },
   { id: 'experience', group: 'About',     title: 'Experience',      icon: '💼', description: 'Roles and internships on the journey timeline.' },
   { id: 'education',  group: 'About',     title: 'Education',       icon: '🎓', description: 'Qualifications on the journey timeline.' },
   { id: 'interests',  group: 'About',     title: 'Interests',       icon: '🌷', description: 'The short interest chips shown beside your bio.' },
-  { id: 'socials',    group: 'Contact',   title: 'Social Links',    icon: '🔗', description: 'Profile links in the footer and Contact page. Shared with the gallery site.' },
-  { id: 'contact',    group: 'Contact',   title: 'Contact Details', icon: '📇', description: 'Email, phone and location. Shared with the gallery site.' },
+  { id: 'socials',    group: 'Contact',   title: 'Social Links',    icon: '🔗', description: 'Profile links shown in the footer and on the Contact page.' },
+  { id: 'contact',    group: 'Contact',   title: 'Contact Details', icon: '📇', description: 'Email, phone and location shown in the footer and on the Contact page.' },
   { id: 'copy',       group: 'Site',      title: 'Site Copy',       icon: '📝', description: 'Headings and wording used across the public pages.' },
 ];
 
@@ -81,7 +83,7 @@ const Admin = () => {
       <div className={`admin-scope ${styles.center}`}>
         <div className={styles.authCard}>
           <h1 className={styles.authTitle}>Admin</h1>
-          <p className={styles.authText}>Sign in to manage the portfolio.</p>
+          <p className={styles.authText}>Sign in to manage the site.</p>
           <button
             className={styles.googleBtn}
             onClick={() => signInWithGoogle().catch(() => showToast?.('error', 'Sign-in failed', 'Please try again.'))}
@@ -110,6 +112,7 @@ const Admin = () => {
   const renderSection = () => {
     switch (view) {
       case 'projects':   return <ProjectsSection />;
+      case 'artworks':   return <ArtworksSection />;
       case 'profile':    return <ProfileSection />;
       case 'skills':     return <SkillsSection />;
       case 'interests':  return <InterestsSection />;
@@ -156,7 +159,7 @@ const Admin = () => {
         <div className={styles.topbarLeft}>
           <button type="button" className={styles.menuBtn} onClick={() => setNavOpen(true)} aria-label="Open sections menu">☰</button>
           <span className={styles.topbarIcon}>🌷</span>
-          <span className={styles.topbarTitle}>Portfolio Admin</span>
+          <span className={styles.topbarTitle}>Sunika Admin</span>
         </div>
         <div className={styles.topbarRight}>
           <span className={styles.userEmail}>{user.email}</span>

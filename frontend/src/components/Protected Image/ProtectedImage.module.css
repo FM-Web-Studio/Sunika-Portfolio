@@ -1,0 +1,56 @@
+.wrapper {
+  position: relative;
+  display: inline-block;
+  overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* Diagonal watermark rendered above the image, captured in any screenshot.
+   OS-level screenshots cannot be prevented, so this ensures every capture
+   carries a visible copyright notice. */
+.wrapper::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 3;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='90'%3E%3Ctext transform='translate(110,55) rotate(-30)' text-anchor='middle' font-size='13' font-family='Arial,sans-serif' fill='%23ffffff'%3E%C2%A9 Sunika Gallery%3C/text%3E%3Ctext transform='translate(111,56) rotate(-30)' text-anchor='middle' font-size='13' font-family='Arial,sans-serif' fill='%23222222'%3E%C2%A9 Sunika Gallery%3C/text%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 220px 90px;
+  opacity: 0.5;
+}
+
+.image {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-user-drag: none;
+  /* Gentle fade-in once the image has decoded, so it arrives softly during
+     fast scrolling instead of snapping in. */
+  opacity: 0;
+  transition: opacity 0.5s var(--ease-out, ease);
+}
+
+.image.loaded {
+  opacity: 1;
+}
+
+[data-no-animations="true"] .image {
+  opacity: 1;
+  transition: none;
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: transparent;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}

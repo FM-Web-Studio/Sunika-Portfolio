@@ -5,8 +5,7 @@
   "targets": {
     "sunika-project": {
       "hosting": {
-        "portfolio": ["sunika-studio"],
-        "gallery": ["sunika-gallery"]
+        "portfolio": ["sunika-studio"]
       }
     }
   }

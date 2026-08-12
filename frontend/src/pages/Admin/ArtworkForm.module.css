@@ -1,0 +1,214 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.imageRow {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-lg);
+}
+
+.previewBox {
+  width: 120px;
+  height: 150px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--background-2);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.preview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.previewEmpty {
+  font-size: var(--font-size-xs);
+  color: var(--tertiary-text-color);
+}
+
+.fileLabel {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.6rem 1.1rem;
+  background: var(--accent-1-background);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  color: var(--accent-1);
+  cursor: pointer;
+}
+
+.fileInput { display: none; }
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-md);
+}
+
+.label {
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  color: var(--secondary-text-color);
+}
+
+.input,
+.textarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.6rem 0.8rem;
+  background: var(--background-1);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  color: var(--primary-text-color);
+  font-size: var(--font-size-base);
+  font-family: inherit;
+}
+
+.input:focus,
+.textarea:focus {
+  outline: none;
+  border-color: var(--accent-1);
+}
+
+.textarea { resize: vertical; }
+
+.pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-xs);
+}
+
+.pill {
+  padding: 0.4rem 0.9rem;
+  background: var(--background-2);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-full);
+  color: var(--secondary-text-color);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.pill:hover { border-color: var(--accent-1); color: var(--primary-text-color); }
+
+.pillActive {
+  background: var(--accent-1);
+  border-color: var(--accent-1);
+  color: #fff;
+  font-weight: 600;
+}
+
+.pillActive:hover { color: #fff; }
+
+.checkboxField {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  font-size: var(--font-size-sm);
+  color: var(--secondary-text-color);
+  cursor: pointer;
+}
+
+.checkboxField input[type="checkbox"] {
+  width: 1rem;
+  height: 1rem;
+  accent-color: var(--accent-1);
+  cursor: pointer;
+  flex-shrink: 0;
+  border: 1px solid var(--border-color);
+}
+
+.error {
+  margin: 0;
+  color: var(--error-color);
+  font-size: var(--font-size-sm);
+}
+
+/* Divider above the save/cancel row so long forms have a clear footer. */
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-sm);
+  padding-top: var(--spacing-md);
+  border-top: 1px solid var(--border-color);
+}
+
+.cancel,
+.submit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.7rem 1.5rem;
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  border: 1px solid transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast), opacity var(--transition-fast);
+}
+
+.cancel svg,
+.submit svg { width: 1rem; height: 1rem; flex-shrink: 0; }
+
+/* Action colour convention: cancel = red outline, save = solid green.
+   Cancel outlines at rest so it never competes with the green commit beside
+   it, and fills solid on hover, at the point of intent. */
+.cancel {
+  background: transparent;
+  border-color: rgba(var(--btn-danger-rgb), 0.45);
+  color: var(--btn-danger);
+}
+/* The class is doubled so this scores 0,4,0 and outranks the global
+   button[type="button"]:hover:not(:disabled) (0,3,1) in Components.css, which
+   would otherwise repaint the label accent-taupe on the red fill. */
+.cancel.cancel:hover:not(:disabled) {
+  background: var(--btn-danger);
+  border-color: var(--btn-danger);
+  color: var(--btn-danger-contrast);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.submit {
+  background: var(--btn-confirm);
+  border-color: var(--btn-confirm);
+  color: var(--btn-confirm-contrast);
+}
+.submit:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--btn-confirm) 86%, #000);
+  border-color: color-mix(in srgb, var(--btn-confirm) 86%, #000);
+  color: var(--btn-confirm-contrast);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.submit:disabled,
+.cancel:disabled { opacity: 0.5; cursor: not-allowed; }
+
+@media (max-width: 480px) {
+  .grid { grid-template-columns: 1fr; }
+}

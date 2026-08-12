@@ -58,6 +58,16 @@ export const PROJECTS_FIELDS = [
   { key: 'errorText', label: 'Error state',       type: 'text',     default: 'Something went wrong loading projects.' },
 ];
 
+// Gallery page (original artworks)
+export const GALLERY_FIELDS = [
+  { key: 'overline',      label: 'Header: overline',   type: 'text',     default: 'Sunika · Original Works' },
+  { key: 'heading',       label: 'Header: title',      type: 'text',     default: 'The Gallery' },
+  { key: 'subtitle',      label: 'Header: subtitle',   type: 'textarea', default: 'A curated collection of original paintings, drawings and artistic mixes, each one available to view and to own.' },
+  { key: 'filtersLabel',  label: 'Filters button',     type: 'text',     default: 'Filters' },
+  { key: 'emptyFiltered', label: 'No results message', type: 'text',     default: 'No pieces match this filter.' },
+  { key: 'errorText',     label: 'Load error message', type: 'text',     default: 'Something went wrong loading the gallery.' },
+];
+
 // Contact page copy
 export const CONTACT_PAGE_FIELDS = [
   { key: 'kicker',      label: 'Header: kicker',    type: 'text',     default: 'Say hello' },
@@ -75,6 +85,7 @@ export const COPY_SCHEMA = [
   { key: 'brand',       label: 'Brand & Footer', fields: BRAND_FIELDS },
   { key: 'home',        label: 'Home',           fields: HOME_FIELDS },
   { key: 'projects',    label: 'Projects',       fields: PROJECTS_FIELDS },
+  { key: 'gallery',     label: 'Gallery',        fields: GALLERY_FIELDS },
   { key: 'contactPage', label: 'Contact page',   fields: CONTACT_PAGE_FIELDS },
 ];
 
@@ -83,6 +94,7 @@ export const GROUP_FIELDS = {
   brand:       BRAND_FIELDS,
   home:        HOME_FIELDS,
   projects:    PROJECTS_FIELDS,
+  gallery:     GALLERY_FIELDS,
   contactPage: CONTACT_PAGE_FIELDS,
 };
 

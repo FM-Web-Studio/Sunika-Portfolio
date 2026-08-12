@@ -4,6 +4,7 @@
     /* ─── FONTS ─────────────────────────────────────────────────────────────── */
     --font-heading: 'Fredoka', -apple-system, BlinkMacSystemFont, sans-serif;
     --font-body:    'Nunito', -apple-system, BlinkMacSystemFont, sans-serif;
+    --font-display: var(--font-heading);
 
     /* ─── HERO SECTION (light, airy blush panel) ─────────────────────────────── */
     --hero-bg:            #FCEEF1;
@@ -71,6 +72,10 @@
     --transition-fast: 150ms ease;
     --transition-base: 250ms ease;
     --transition-slow: 350ms ease;
+
+    /* Named easings, used by the scroll-reveal and the gallery components. */
+    --ease-out:      cubic-bezier(0.22, 1, 0.36, 1);
+    --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
 
     /* Shadows, soft, rose-tinted petal-light elevation */
     --shadow-sm: 0 1px 2px 0 rgba(140, 70, 100, 0.06);
@@ -372,6 +377,31 @@ body, #root {
 }
 
 
+/* ─── SCROLL-REVEAL ─────────────────────────────────────────────────────────── */
+/* Elements marked [data-reveal] fade + rise as they enter the viewport.
+   useReveal adds .is-revealed via IntersectionObserver. Stagger via --reveal-delay. */
+[data-reveal] {
+    opacity: 0;
+    transform: translateY(26px);
+    transition:
+        opacity 0.8s var(--ease-out-expo),
+        transform 0.9s var(--ease-out-expo);
+    transition-delay: var(--reveal-delay, 0s);
+    will-change: opacity, transform;
+}
+
+[data-reveal].is-revealed {
+    opacity: 1;
+    transform: none;
+}
+
+/* Lenis owns scrolling; a sheet marked [data-lenis-prevent] scrolls on its own
+   without the page gliding underneath it. */
+.lenis.lenis-smooth [data-lenis-prevent] {
+    overscroll-behavior: contain;
+}
+
+
 /* ==================== REDUCED MOTION SUPPORT ==================== */
 @media (prefers-reduced-motion: reduce) {
     * {
@@ -380,6 +410,11 @@ body, #root {
         transition-duration: 0.01ms !important;
         scroll-behavior: auto !important;
     }
+
+    [data-reveal] {
+        opacity: 1 !important;
+        transform: none !important;
+    }
 }
 
 /* Manual animation override */
@@ -387,6 +422,11 @@ body, #root {
     transition: none !important;
     animation: none !important;
     scroll-behavior: auto !important;
+}
+
+[data-no-animations="true"] [data-reveal] {
+    opacity: 1 !important;
+    transform: none !important;
 }
 
 

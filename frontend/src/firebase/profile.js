@@ -44,7 +44,6 @@ const writeDoc = (id, data) =>
 
 // ── Typed helpers ───────────────────────────────────────────────────────────────
 export const subscribePersonal = (cb, onError) => subscribeDoc(PROFILE_DOCS.personal, cb, onError);
-export const getPersonal       = () => readDoc(PROFILE_DOCS.personal);
 export const updatePersonal    = (data) => writeDoc(PROFILE_DOCS.personal, {
   name:     data.name     ?? '',
   title:    data.title    ?? '',

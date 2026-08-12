@@ -1,0 +1,145 @@
+/* Gallery page.
+ *
+ * The header deliberately mirrors Projects.module.css (hero panel, blobs,
+ * botanical accent). The two grids sit side by side in the nav, so they should
+ * not read as two different websites. Below the header this is its own thing. */
+
+.page { width: 100%; }
+
+/* ── Header, full-bleed hero panel with blobs ── */
+.headerWrapper {
+  position: relative;
+  width: 100%;
+  background:
+    radial-gradient(110% 120% at 88% 0%, rgba(var(--accent-1-rgb), 0.22) 0%, transparent 55%),
+    radial-gradient(90% 120% at 5% 100%, rgba(var(--accent-sec-rgb), 0.20) 0%, transparent 55%),
+    var(--hero-bg);
+  overflow: hidden;
+}
+
+.blob {
+  position: absolute; border-radius: 50%; filter: blur(56px); opacity: 0.3; z-index: 0; pointer-events: none;
+}
+.blob[data-b="1"] { width: 360px; height: 360px; top: -120px; right: 4%; background: radial-gradient(circle, rgba(var(--accent-1-rgb), 0.55), transparent 70%); }
+.blob[data-b="2"] { width: 300px; height: 300px; bottom: -120px; left: -40px; background: radial-gradient(circle, rgba(var(--accent-sec-rgb), 0.5), transparent 70%); }
+
+.botanical { position: absolute; z-index: 0; pointer-events: none; display: block; line-height: 0; }
+.botHeader { top: 22%; right: 6%; width: clamp(60px, 7vw, 120px); color: var(--accent-sec); opacity: 0.5; }
+@media (max-width: 768px) { .botHeader { display: none; } }
+
+.header {
+  position: relative; z-index: 1;
+  max-width: 1400px; margin: 0 auto;
+  /* The extra 64px clears the fixed top bar. */
+  padding: calc(var(--spacing-5xl) + 64px) clamp(1.25rem, 5vw, 5rem) var(--spacing-4xl);
+}
+
+.overline {
+  display: block;
+  font-family: var(--font-heading); font-size: var(--font-size-xs); font-weight: 600;
+  text-transform: uppercase; letter-spacing: 0.2em; color: var(--accent-1);
+  margin: 0 0 var(--spacing-md);
+}
+
+.heading {
+  font-family: var(--font-heading); font-size: clamp(3rem, 10vw, 6.5rem); font-weight: 700;
+  letter-spacing: -0.012em; line-height: 0.98; margin: 0 0 var(--spacing-md); color: var(--hero-text);
+}
+
+.subtitle {
+  margin: 0; max-width: 52ch; color: var(--hero-text-sub);
+  font-size: var(--font-size-md); line-height: 1.7;
+}
+
+/* ── Body ── */
+.body {
+  max-width: 1400px; margin: 0 auto;
+  padding: var(--spacing-3xl) clamp(1.25rem, 5vw, 5rem) var(--spacing-5xl);
+}
+
+/* ── Category chip row ────────────────────────────────────────────────────── */
+/* Scrolls with the page. The persistent filter entry point is the floating
+   FilterDock (bottom-right), so nothing up here needs to stay pinned. */
+.toolbar {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-2xl);
+}
+
+.chips {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  flex: 1;
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 2px;
+}
+
+.chips::-webkit-scrollbar { display: none; }
+
+.chip {
+  flex-shrink: 0;
+  padding: 0.45rem 1.15rem;
+  background: transparent;
+  border: 1.5px solid var(--border-color);
+  border-radius: var(--radius-full);
+  color: var(--secondary-text-color);
+  font-family: var(--font-heading);
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  cursor: pointer;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
+}
+
+.chip:hover:not(:disabled) {
+  border-color: var(--accent-1);
+  color: var(--accent-1);
+  background: var(--accent-1-background);
+  box-shadow: none;
+}
+
+.chipActive,
+.chipActive:hover:not(:disabled) {
+  background: var(--accent-1);
+  border-color: var(--accent-1);
+  color: #fff;
+}
+
+/* ── Grid ─────────────────────────────────────────────────────────────────── */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  column-gap: var(--spacing-2xl);
+  row-gap: var(--spacing-3xl);
+}
+
+.empty {
+  text-align: center;
+  color: var(--tertiary-text-color);
+  padding: var(--spacing-4xl) 0;
+  font-family: var(--font-heading);
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+}
+
+@media (max-width: 768px) {
+  .heading { font-size: clamp(2.5rem, 14vw, 4.5rem); }
+}
+
+@media (max-width: 480px) {
+  .grid {
+    grid-template-columns: repeat(2, 1fr);
+    column-gap: var(--spacing-md);
+    row-gap: var(--spacing-2xl);
+  }
+}

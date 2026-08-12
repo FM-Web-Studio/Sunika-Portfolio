@@ -34,11 +34,6 @@ const removeFile = async (path) => {
 };
 
 // ── Reads ─────────────────────────────────────────────────────────────────────
-export const getProjects = async () => {
-  const snap = await getDocs(query(collection(db, COL)));
-  return sortProjects(snap.docs.map(mapDoc));
-};
-
 export const subscribeProjects = (cb, onError) =>
   onSnapshot(
     query(collection(db, COL)),
