@@ -3,7 +3,7 @@ import { Modal, StarRating, useToast } from '../../components';
 import {
   getAllReviews, getAllComments, setReviewApproved, setCommentApproved,
   deleteReview, deleteComment, replyAsOwner, ratingSummary,
-  REVIEW_LIMITS,
+  describeVisitor, REVIEW_LIMITS,
 } from '../../firebase';
 import { useContent } from '../../context/ContentContext';
 import styles from './Admin.module.css';
@@ -44,6 +44,7 @@ const ReviewsSection = () => {
   const [reviews, setReviews] = useState([]);
   const [comments, setComments] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [filter, setFilter] = useState('pending');
   const [expanded, setExpanded] = useState(null);
   const [busy, setBusy] = useState(null);
@@ -56,9 +57,31 @@ const ReviewsSection = () => {
       const [r, c] = await Promise.all([getAllReviews(), getAllComments()]);
       setReviews(r);
       setComments(c);
+      setError(null);
     } catch (err) {
       console.error('[Admin] load reviews failed:', err);
-      showToast?.('error', 'Load failed', 'Could not load reviews.');
+      /*
+       * Name the cause rather than saying "could not load".
+       *
+       * Reviews are the only collection whose READ requires isAdmin() — every other
+       * admin section reads a publicly readable collection, so it loads regardless of
+       * whether the rules recognise you. That makes permission-denied here ambiguous
+       * in a way it is nowhere else, so the identity the rules actually saw is logged
+       * alongside it and the two likely causes are named.
+       */
+      if (err?.code === 'permission-denied') {
+        const who = await describeVisitor();
+        console.error('[Admin] identity firestore.rules saw:', who);
+        setError(
+          who.isAnonymous || !who.signedIn
+            ? 'You are not signed in as an admin in this browser — the session is anonymous. Sign out and sign in with Google again.'
+            : `Permission denied reading reviews as ${who.tokenEmail || who.email || 'unknown'}`
+              + `${who.tokenEmailVerified === false ? ' (email not verified)' : ''}. `
+              + 'Check this address is in the isAdmin() allowlist in firestore.rules and that the rules are deployed.',
+        );
+      } else {
+        setError(`Could not load reviews: ${err?.message || 'unknown error'}`);
+      }
     } finally {
       setLoading(false);
     }
@@ -249,8 +272,15 @@ const ReviewsSection = () => {
 
       {loading && <p className={styles.empty}>Loading…</p>}
 
+      {!loading && error && (
+        <div className={styles.cardEmpty}>
+          <p>{error}</p>
+          <button type="button" className={styles.edit} onClick={load}>Try again</button>
+        </div>
+      )}
+
       {/* ── Needs attention: reviews AND replies together ─────────────────── */}
-      {!loading && filter === 'pending' && (
+      {!loading && !error && filter === 'pending' && (
         pendingTotal === 0 ? (
           <p className={styles.empty}>Nothing waiting for approval.</p>
         ) : (
@@ -302,7 +332,7 @@ const ReviewsSection = () => {
       )}
 
       {/* ── Published / All: reviews with their threads ───────────────────── */}
-      {!loading && filter !== 'pending' && (
+      {!loading && !error && filter !== 'pending' && (
         <div className={styles.list}>
           {listed.length === 0 && <p className={styles.empty}>No reviews here yet.</p>}
 

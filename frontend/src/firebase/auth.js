@@ -56,3 +56,31 @@ export const ensureVisitor = async () => {
 
 /** The current uid if one exists, without triggering a sign-in. */
 export const currentUid = () => auth.currentUser?.uid ?? null;
+
+/**
+ * The identity firestore.rules will actually see, for diagnosing a permission error.
+ *
+ * Worth having as a named helper because reviews are the only collection on this site
+ * whose READ requires isAdmin() — everything else in the admin reads a publicly
+ * readable collection. That makes the Reviews section the first and only place an
+ * identity mismatch surfaces, and "permission denied" on its own does not distinguish
+ * between "signed in as the wrong account", "still an anonymous session", "email not
+ * verified" and "email missing from the allowlist in the rules".
+ *
+ * Reads the cached ID token result, so it costs no network round trip.
+ */
+export const describeVisitor = async () => {
+  const user = auth.currentUser;
+  if (!user) return { signedIn: false };
+  let claims = {};
+  try { claims = (await user.getIdTokenResult()).claims ?? {}; } catch { /* token unavailable */ }
+  return {
+    signedIn: true,
+    uid: user.uid,
+    isAnonymous: user.isAnonymous,
+    email: user.email,
+    // These two are exactly what isAdmin() checks in firestore.rules.
+    tokenEmail: claims.email ?? null,
+    tokenEmailVerified: claims.email_verified ?? null,
+  };
+};
