@@ -34,28 +34,187 @@ service cloud.firestore {
              && request.resource.data.message.size() <= 5000;
     }
 
+    // ── Visitor identity ──────────────────────────────────────────────────
+    // Every anonymous vote is tied to an account the server issued, which is the
+    // only reason "one per visitor" is enforceable at all. A localStorage flag
+    // cannot be checked here; a uid can.
+    function isVisitor() {
+      return request.auth != null;
+    }
+
+    // A vote record the visitor owns: created for themselves, never for someone
+    // else, and never edited after the fact.
+    function ownVote(uid) {
+      return isVisitor() && request.auth.uid == uid;
+    }
+
     // ── Artworks (the Gallery page) ───────────────────────────────────────
+    // Ratings and likes keep a denormalised aggregate on the artwork so the
+    // gallery can sort without reading every vote. The aggregate is only allowed
+    // to move in lockstep with a per-visitor vote document appearing or
+    // disappearing in the SAME commit, which getAfter() can see. Without that
+    // pairing, `likeCount` was a free-floating counter anyone could drive to
+    // zero, and `ratingSum` could be inflated by clearing browser storage.
     match /artworks/{artworkId} {
       allow read: if true;
 
       allow create, delete: if isAdmin();
       allow update: if isAdmin()
-        // Anonymous rating: only ratingSum/ratingCount change, count +1, sum +1..5.
+        // Rating: sum/count move together, and this visitor's rater doc must
+        // appear in the same commit carrying exactly the value being added.
         || (
           request.resource.data.diff(resource.data).affectedKeys()
             .hasOnly(['ratingSum', 'ratingCount'])
+          && isVisitor()
           && request.resource.data.ratingCount == resource.data.ratingCount + 1
           && request.resource.data.ratingSum >= resource.data.ratingSum + 1
           && request.resource.data.ratingSum <= resource.data.ratingSum + 5
+          && !exists(/databases/$(database)/documents/artworks/$(artworkId)/raters/$(request.auth.uid))
+          && getAfter(/databases/$(database)/documents/artworks/$(artworkId)/raters/$(request.auth.uid)).data.value
+             == request.resource.data.ratingSum - resource.data.ratingSum
         )
-        // Anonymous like toggle: only likeCount changes by exactly ±1, stays >= 0.
+        // Like: +1 only as this visitor's liker doc appears, -1 only as their own
+        // liker doc disappears. You can never un-like on someone else's behalf.
         || (
-          request.resource.data.diff(resource.data).affectedKeys()
-            .hasOnly(['likeCount'])
-          && (request.resource.data.likeCount == resource.data.likeCount + 1
-              || request.resource.data.likeCount == resource.data.likeCount - 1)
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['likeCount'])
+          && isVisitor()
           && request.resource.data.likeCount >= 0
+          && (
+            (request.resource.data.likeCount == resource.data.likeCount + 1
+             && !exists(/databases/$(database)/documents/artworks/$(artworkId)/likers/$(request.auth.uid))
+             && getAfter(/databases/$(database)/documents/artworks/$(artworkId)/likers/$(request.auth.uid)) != null)
+            ||
+            (request.resource.data.likeCount == resource.data.likeCount - 1
+             && exists(/databases/$(database)/documents/artworks/$(artworkId)/likers/$(request.auth.uid))
+             && getAfter(/databases/$(database)/documents/artworks/$(artworkId)/likers/$(request.auth.uid)) == null)
+          )
         );
+
+      // A rating is written once and never revised — allowing an update would
+      // reopen vote-stuffing through the back door, since the aggregate above
+      // only checks the value on create.
+      match /raters/{uid} {
+        allow read:   if ownVote(uid) || isAdmin();
+        allow create: if ownVote(uid)
+                      && request.resource.data.keys().hasOnly(['value', 'createdAt'])
+                      && request.resource.data.value is int
+                      && request.resource.data.value >= 1
+                      && request.resource.data.value <= 5
+                      && request.resource.data.createdAt == request.time;
+        allow update: if false;
+        allow delete: if isAdmin();
+      }
+
+      match /likers/{uid} {
+        allow read:   if ownVote(uid) || isAdmin();
+        allow create: if ownVote(uid)
+                      && request.resource.data.keys().hasOnly(['createdAt'])
+                      && request.resource.data.createdAt == request.time;
+        allow update: if false;
+        allow delete: if ownVote(uid) || isAdmin();
+      }
+    }
+
+    // ── Reviews ───────────────────────────────────────────────────────────
+    // The one collection anonymous visitors may create in, so it carries the full
+    // validation. Three invariants:
+    //   1. Nothing is publicly readable until an admin sets approved = true.
+    //   2. A new review must arrive unapproved, unliked and server-stamped.
+    //   3. Afterwards the only field a visitor may touch is `likes`, by one, on a
+    //      published review, paired with their own liker document.
+
+    function reviewShapeOk(d) {
+      return d.authorName is string && d.authorName.size() >= 2 && d.authorName.size() <= 60
+        && d.rating is int && d.rating >= 1 && d.rating <= 5
+        && d.body is string && d.body.size() >= 10 && d.body.size() <= 2000
+        && d.title is string && d.title.size() <= 100
+        && d.role is string && d.role.size() <= 80
+        && d.subject is string && d.subject.size() <= 80;
+    }
+
+    // createdAt == request.time forces serverTimestamp(): a client cannot
+    // backdate itself to the top of the list or forge an older review.
+    function newPublicPost(d, allowedKeys) {
+      return d.keys().hasOnly(allowedKeys)
+        && d.approved == false
+        && d.createdAt == request.time;
+    }
+
+    match /reviews/{reviewId} {
+      // Rules are evaluated per returned document, so a list query that does not
+      // filter on approved == true will include a pending review and be rejected
+      // as a whole. That is intentional — it is what stops the moderation queue
+      // leaking through an unfiltered query.
+      allow read: if resource.data.approved == true || isAdmin();
+
+      allow create: if isVisitor()
+                    && newPublicPost(request.resource.data,
+                         ['authorName', 'rating', 'title', 'body', 'role', 'subject', 'approved', 'likes', 'createdAt'])
+                    && request.resource.data.likes == 0
+                    && reviewShapeOk(request.resource.data);
+
+      allow update: if isAdmin()
+        || (
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['likes'])
+          && isVisitor()
+          && resource.data.approved == true
+          && request.resource.data.likes is int
+          && request.resource.data.likes >= 0
+          && (
+            (request.resource.data.likes == resource.data.likes + 1
+             && !exists(/databases/$(database)/documents/reviews/$(reviewId)/likers/$(request.auth.uid))
+             && getAfter(/databases/$(database)/documents/reviews/$(reviewId)/likers/$(request.auth.uid)) != null)
+            ||
+            (request.resource.data.likes == resource.data.likes - 1
+             && exists(/databases/$(database)/documents/reviews/$(reviewId)/likers/$(request.auth.uid))
+             && getAfter(/databases/$(database)/documents/reviews/$(reviewId)/likers/$(request.auth.uid)) == null)
+          )
+        );
+
+      allow delete: if isAdmin();
+
+      match /likers/{uid} {
+        allow read:   if ownVote(uid) || isAdmin();
+        allow create: if ownVote(uid)
+                      && request.resource.data.keys().hasOnly(['createdAt'])
+                      && request.resource.data.createdAt == request.time;
+        allow update: if false;
+        allow delete: if ownVote(uid) || isAdmin();
+      }
+    }
+
+    // Replies live in a flat collection with a reviewId field rather than a
+    // subcollection: a subcollection would need collection-group queries to load
+    // and to moderate, and every collection-group query needs an explicitly
+    // deployed index, which this repo's deploy step does not ship.
+    match /review_comments/{commentId} {
+      allow read: if resource.data.approved == true || isAdmin();
+
+      // An admin creating a reply is Sunika answering publicly, so it arrives
+      // already approved and flagged `fromOwner` — a shape the visitor branch
+      // below deliberately forbids.
+      allow create: if isAdmin() || (
+                         isVisitor()
+                         && newPublicPost(request.resource.data,
+                              ['reviewId', 'authorName', 'body', 'approved', 'createdAt'])
+                         && request.resource.data.authorName is string
+                         && request.resource.data.authorName.size() >= 2
+                         && request.resource.data.authorName.size() <= 60
+                         && request.resource.data.body is string
+                         && request.resource.data.body.size() >= 2
+                         && request.resource.data.body.size() <= 700
+                         // Don't let replies pile up on a review that is not (or is
+                         // no longer) public — an unmoderated back door.
+                         && get(/databases/$(database)/documents/reviews/$(request.resource.data.reviewId)).data.approved == true
+                       );
+
+      allow update, delete: if isAdmin();
+    }
+
+    // ── Accomplishments (wins / features on the About section) ─────────────
+    match /accomplishments/{id} {
+      allow read: if true;
+      allow write: if isAdmin();
     }
 
     // ── Projects (the Projects page) ──────────────────────────────────────

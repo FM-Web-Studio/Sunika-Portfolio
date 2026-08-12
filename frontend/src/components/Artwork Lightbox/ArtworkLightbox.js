@@ -27,7 +27,12 @@ const ArtworkLightbox = ({ artwork, open, onClose }) => {
       setMyRating(value);
       showToast?.('success', 'Thank you!', 'Your rating was recorded.');
     } catch (err) {
-      showToast?.('error', 'Could not rate', err.message || 'Please try again.');
+      if (err.code === 'already-rated') {
+        setMyRating(getMyRating(artwork.id));
+        showToast?.('info', 'Already rated', 'You have already rated this piece.');
+      } else {
+        showToast?.('error', 'Could not rate', err.message || 'Please try again.');
+      }
     } finally {
       setSubmitting(false);
     }

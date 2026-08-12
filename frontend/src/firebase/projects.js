@@ -1,24 +1,15 @@
 import {
-  collection, doc, setDoc, updateDoc, deleteDoc, getDocs,
+  collection, doc, setDoc, updateDoc, deleteDoc,
   query, onSnapshot, serverTimestamp,
 } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 import { db, storage } from './app';
 import { COLLECTIONS, STORAGE_FOLDERS } from './config';
+import { sortByOrder } from '../utils/ordering';
 
 const COL = COLLECTIONS.projects;
 
 const mapDoc = (d) => ({ id: d.id, ...d.data() });
-
-// Projects sort by `order` (asc); docs without an order fall to the end,
-// tie-broken by most-recent createdAt.
-const sortProjects = (list) =>
-  [...list].sort((a, b) => {
-    const ao = typeof a.order === 'number' ? a.order : Number.POSITIVE_INFINITY;
-    const bo = typeof b.order === 'number' ? b.order : Number.POSITIVE_INFINITY;
-    if (ao !== bo) return ao - bo;
-    return (b.createdAt?.seconds ?? 0) - (a.createdAt?.seconds ?? 0);
-  });
 
 const uploadProjectFile = async (file, projectId) => {
   const path = `${STORAGE_FOLDERS.projects}/${projectId}/${Date.now()}_${file.name}`;
@@ -37,7 +28,7 @@ const removeFile = async (path) => {
 export const subscribeProjects = (cb, onError) =>
   onSnapshot(
     query(collection(db, COL)),
-    (snap) => cb(sortProjects(snap.docs.map(mapDoc))),
+    (snap) => cb(sortByOrder(snap.docs.map(mapDoc))),
     onError,
   );
 

@@ -320,7 +320,18 @@
    smooth scrolling fights its interpolation, which reads as stutter. */
 html {
     scroll-behavior: auto;
+    /* `clip`, not `hidden`. overflow-x:hidden silently makes <html> a scroll
+       container, and a scroll container clips position:sticky descendants — which
+       is why the sticky heading column in the About section would drift and snap
+       instead of holding. `clip` suppresses the horizontal overflow without
+       creating a scroll container, so sticky behaves and the decorative blobs that
+       hang past the edge still do not cause a sideways scrollbar.
+
+       The `hidden` line first is the fallback for Safari below 16, which ignores
+       `clip` — those browsers keep the old behaviour rather than gaining a
+       horizontal scrollbar. */
     overflow-x: hidden;
+    overflow-x: clip;
 }
 
 body {
@@ -387,12 +398,19 @@ body, #root {
         opacity 0.8s var(--ease-out-expo),
         transform 0.9s var(--ease-out-expo);
     transition-delay: var(--reveal-delay, 0s);
+    /* will-change only while the element is still waiting to animate. Left on
+       permanently — as it was — every card in the gallery, every review and every
+       project row keeps its own compositor layer for the whole session. Dozens of
+       those exhausts GPU memory and the browser starts falling back to software
+       paint mid-scroll, which is felt as intermittent stutter that gets worse the
+       further down the page you are. The hint is dropped the moment it is spent. */
     will-change: opacity, transform;
 }
 
 [data-reveal].is-revealed {
     opacity: 1;
     transform: none;
+    will-change: auto;
 }
 
 /* Lenis owns scrolling; a sheet marked [data-lenis-prevent] scrolls on its own

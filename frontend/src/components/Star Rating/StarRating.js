@@ -7,7 +7,13 @@ const STARS = [1, 2, 3, 4, 5];
 /**
  * Dual-mode star rating.
  * - readOnly: renders the average with half-star precision + an optional count.
- * - interactive: hover to preview, click to rate. Locks once `myRating` is set.
+ * - interactive: hover to preview, click to rate.
+ *
+ * `lockAfterRate` is what separates the two interactive uses. Rating an artwork is a
+ * one-shot vote, so the control locks the moment it is used — that is the point. A
+ * star field inside the review form is just a form input, and locking it means
+ * picking 3 by accident leaves someone unable to correct it to 4 without reloading
+ * the page and retyping their review. Callers editing a value pass false.
  */
 const StarRating = ({
   value = 0,
@@ -17,9 +23,10 @@ const StarRating = ({
   onRate,
   size = 'md',
   showCount = true,
+  lockAfterRate = true,
 }) => {
   const [hover, setHover] = useState(0);
-  const locked = !readOnly && myRating > 0;
+  const locked = !readOnly && lockAfterRate && myRating > 0;
 
   const display = readOnly ? value : (hover || myRating || 0);
 

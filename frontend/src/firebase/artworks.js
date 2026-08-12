@@ -1,10 +1,11 @@
 import {
-  collection, doc, setDoc, updateDoc, deleteDoc, getDocs,
-  query, orderBy, onSnapshot, serverTimestamp,
+  collection, doc, setDoc, updateDoc, deleteDoc,
+  query, onSnapshot, serverTimestamp,
 } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 import { db, storage } from './app';
 import { CATEGORIES, COLLECTIONS, STORAGE_FOLDERS } from './config';
+import { sortByOrder } from '../utils/ordering';
 
 const COL = COLLECTIONS.artworks;
 
@@ -23,10 +24,20 @@ const removeImage = async (path) => {
 
 const mapDoc = (d) => ({ id: d.id, ...d.data() });
 
+/*
+ * Sorted in JS, deliberately — this used to be orderBy('order', 'asc'), which was a
+ * trap on two counts.
+ *
+ * Firestore excludes any document missing the ordered field from an orderBy query, so
+ * an artwork created without `order` (imported, or written from the console) would
+ * simply not appear in the gallery, with no error anywhere to explain it. And the work
+ * was wasted regardless: the Gallery page re-sorts client-side in every branch of its
+ * sort switch, including the default, so the server's order was always thrown away.
+ */
 export const subscribeArtworks = (cb, onError) =>
   onSnapshot(
-    query(collection(db, COL), orderBy('order', 'asc')),
-    (snap) => cb(snap.docs.map(mapDoc)),
+    query(collection(db, COL)),
+    (snap) => cb(sortByOrder(snap.docs.map(mapDoc))),
     onError,
   );
 

@@ -29,6 +29,11 @@
 ══════════════════════════════════════ */
 
 /* Static background colour pops. */
+/* A 60px blur over a 420px box. Left as-is, the browser re-rasterises that blur
+   every frame the element moves through the viewport, which on a long scrolling
+   page is most frames — the single biggest source of the grittiness this page had.
+   translateZ(0) + will-change promotes it to its own compositor layer: the blur is
+   rasterised once and thereafter only translated by the GPU. */
 .blob {
   position: absolute;
   border-radius: 50%;
@@ -36,6 +41,8 @@
   opacity: 0.28;
   z-index: 0;
   pointer-events: none;
+  transform: translateZ(0);
+  will-change: transform;
 }
 .blob[data-b="1"] {
   width: 420px; height: 420px; top: -110px; left: -80px;
@@ -75,10 +82,13 @@
 }
 
 /* Fine dotted texture over the hero. */
+/* A repeating gradient tiled every 26px across the whole hero. Cheap to declare,
+   expensive to repaint — same treatment as .blob, for the same reason. */
 .grain {
   position: absolute; inset: 0; z-index: 0; pointer-events: none; opacity: 0.5;
   background-image: radial-gradient(rgba(var(--accent-1-rgb), 0.06) 1px, transparent 1px);
   background-size: 26px 26px;
+  transform: translateZ(0);
 }
 
 /* ══════════════════════════════════════
@@ -320,9 +330,21 @@
   font-size: var(--font-size-md); line-height: 1.75;
 }
 
-.heroSkeleton {
+/* The skeleton and the real text it replaces are held to the same minimum height.
+   Otherwise the hero's buttons jump the instant the profile document arrives —
+   which is the first thing a visitor sees, and often lands exactly as they start
+   scrolling, so the whole page appears to lurch. */
+.heroSkeleton,
+.heroTextBlock {
   width: 100%; max-width: 46ch;
-  display: flex; flex-direction: column; align-items: center; gap: var(--spacing-sm);
+  min-height: 7.5rem;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: var(--spacing-sm);
+}
+
+@media (max-width: 700px) {
+  .heroSkeleton,
+  .heroTextBlock { min-height: 9.5rem; }
 }
 
 .heroCtas {
@@ -524,6 +546,114 @@
   font-size: var(--font-size-sm); line-height: 1.7;
 }
 
+/* ══════════════════════════════════════
+   ACCOMPLISHMENTS
+   The featured entry is a full card with its photo; the rest are one-line rows.
+   Giving every win an identical tile would flatten "won a national competition,
+   here is the photo" into the same weight as a passing mention.
+══════════════════════════════════════ */
+.winLead {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  gap: clamp(1rem, 3vw, 1.75rem);
+  align-items: center;
+  margin-top: var(--spacing-md);
+  padding: clamp(0.9rem, 2.5vw, 1.35rem);
+  background: var(--background-1);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-md);
+}
+
+@media (max-width: 720px) {
+  .winLead { grid-template-columns: 1fr; }
+}
+
+/* aspect-ratio, not height:auto. The photo is lazy-loaded, so without a reserved
+   box the text below it jumps down the moment it decodes — and under Lenis a
+   mid-scroll reflow reads as the whole page stuttering. */
+.winImage {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: var(--background-3);
+}
+.winImage img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.winText { display: flex; flex-direction: column; align-items: flex-start; gap: 0.5rem; }
+
+.winBadge {
+  padding: 0.25rem 0.7rem;
+  font-family: var(--font-heading); font-size: var(--font-size-xs); font-weight: 700;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--accent-1);
+  background: var(--accent-1-background);
+  border-radius: var(--radius-full);
+}
+
+.winTitle {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-size: var(--font-size-lg); font-weight: 700; line-height: 1.25;
+  letter-spacing: -0.01em;
+  color: var(--primary-text-color);
+}
+
+.winDesc {
+  margin: 0;
+  font-size: var(--font-size-sm); line-height: 1.7;
+  color: var(--secondary-text-color);
+}
+
+.winLink,
+.winItemLink {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-family: var(--font-heading); font-size: var(--font-size-xs); font-weight: 700;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--accent-1); text-decoration: none;
+  transition: gap 0.2s var(--ease-out), color 0.2s ease;
+}
+.winLink:hover,
+.winItemLink:hover { gap: 10px; color: var(--accent-hover); text-decoration: none; }
+
+.winList {
+  list-style: none;
+  margin: var(--spacing-md) 0 0;
+  padding: 0;
+  display: flex; flex-direction: column; gap: var(--spacing-xs);
+}
+
+.winItem {
+  display: flex; align-items: center; gap: var(--spacing-sm);
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: var(--background-2);
+  border-radius: var(--radius-lg);
+  border-left: 3px solid var(--accent-sec);
+}
+
+.winThumb {
+  flex-shrink: 0;
+  width: 44px; height: 44px;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: var(--background-3);
+}
+.winThumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+.winItemText { display: flex; flex-direction: column; min-width: 0; }
+.winItemText strong {
+  font-family: var(--font-heading); font-size: var(--font-size-sm); font-weight: 600;
+  color: var(--primary-text-color);
+}
+.winItemMeta { font-size: var(--font-size-xs); color: var(--tertiary-text-color); }
+.winItemLink { margin-left: auto; }
+
 .chips { display: flex; flex-wrap: wrap; gap: var(--spacing-sm); }
 .chip {
   font-family: var(--font-heading); font-size: var(--font-size-sm); font-weight: 600;
@@ -565,6 +695,44 @@
   .stickyInner { position: static; }
   .portrait { max-width: 240px; }
 }
+
+/* ══════════════════════════════════════
+   REVIEWS HIGHLIGHT STRIP
+   Three compact cards on a tinted band, so it reads as a pause between the
+   timeline and the closing call to action rather than as another content section.
+══════════════════════════════════════ */
+.reviews {
+  position: relative;
+  padding: var(--section-pad-y) 0;
+  background: var(--background-1);
+  overflow: hidden;
+}
+
+.reviewsScore {
+  display: flex; align-items: center; gap: var(--spacing-sm);
+  margin-top: var(--spacing-sm);
+}
+.reviewsScoreText {
+  font-size: var(--font-size-sm);
+  color: var(--tertiary-text-color);
+}
+
+.reviewsGrid {
+  position: relative; z-index: 1;
+  max-width: var(--measure); margin: 0 auto; padding: 0 var(--gutter);
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: var(--spacing-lg);
+  align-items: stretch;
+}
+
+.botReviews {
+  bottom: 8%; left: 3%;
+  width: clamp(50px, 6vw, 96px);
+  color: var(--accent-ter);
+  opacity: 0.35;
+}
+@media (max-width: 768px) { .botReviews { display: none; } }
 
 /* ══════════════════════════════════════
    JOURNEY

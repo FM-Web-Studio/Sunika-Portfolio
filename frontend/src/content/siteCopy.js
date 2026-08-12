@@ -9,6 +9,12 @@
  * anything untouched.
  *
  * `resolveGroup(fields, overrides)` overlays saved overrides onto the defaults.
+ *
+ * EMOJI BELONG IN THESE STRINGS. Several headings used to render as
+ * `{t.aboutTitle} <span>👋</span>`, which meant the admin could edit the words but
+ * the emoji was welded into the JSX — changing "Nice to meet you!" to something
+ * else left a waving hand stuck on the end, and there was no way to remove it or
+ * swap it. Anything a visitor reads as part of the title is part of the field.
  */
 
 // Brand / footer
@@ -20,7 +26,7 @@ export const BRAND_FIELDS = [
 
 // Home page
 export const HOME_FIELDS = [
-  { key: 'heroEyebrow',    label: 'Hero: greeting',        type: 'text',     default: 'Hi there!' },
+  { key: 'heroEyebrow',    label: 'Hero: greeting',        type: 'text',     default: 'Hi there! 🌷' },
   { key: 'heroCtaPrimary', label: 'Hero: primary button',  type: 'text',     default: 'Come see my work' },
   { key: 'heroCtaGhost',   label: 'Hero: second button',   type: 'text',     default: 'Say hello 👋' },
 
@@ -34,16 +40,24 @@ export const HOME_FIELDS = [
   { key: 'workEmpty',      label: 'Work: empty note',      type: 'text',     default: 'Projects are on their way, check back soon.' },
 
   { key: 'aboutKicker',    label: 'About: kicker',         type: 'text',     default: 'A little about me' },
-  { key: 'aboutTitle',     label: 'About: title',          type: 'text',     default: 'Nice to meet you!' },
+  { key: 'aboutTitle',     label: 'About: title',          type: 'text',     default: 'Nice to meet you! 👋' },
   { key: 'aboutNote',      label: 'About: note',           type: 'textarea', default: 'A few of the things that keep me curious and inspired' },
   { key: 'interestsLabel', label: 'About: interests label', type: 'text',    default: 'Things I love' },
+
+  { key: 'winsLabel',      label: 'About: wins label',     type: 'text',     default: 'Recent highlights 🏆' },
+  { key: 'winsNote',       label: 'About: wins note',      type: 'textarea', default: 'Moments I am proud of.' },
 
   { key: 'journeyKicker',  label: 'Journey: kicker',       type: 'text',     default: 'My path so far' },
   { key: 'journeyTitle',   label: 'Journey: title',        type: 'text',     default: 'How I got here.' },
   { key: 'journeyExpLabel', label: 'Journey: experience label', type: 'text', default: 'Experience' },
   { key: 'journeyEduLabel', label: 'Journey: education label',  type: 'text', default: 'Education' },
 
-  { key: 'contactEyebrow', label: 'Contact: eyebrow',      type: 'text',     default: "Let's talk" },
+  { key: 'reviewsKicker',  label: 'Reviews: kicker',       type: 'text',     default: 'Kind words 💛' },
+  { key: 'reviewsTitle',   label: 'Reviews: title',        type: 'text',     default: 'What people say.' },
+  { key: 'reviewsViewAll', label: 'Reviews: view all link', type: 'text',    default: 'Read all reviews' },
+  { key: 'reviewsEmpty',   label: 'Reviews: empty note',   type: 'text',     default: 'No reviews yet — yours could be the first.' },
+
+  { key: 'contactEyebrow', label: 'Contact: eyebrow',      type: 'text',     default: "Let's talk 🌸" },
   { key: 'contactTitle',   label: 'Contact: title',        type: 'text',     default: "Let's make something lovely together." },
   { key: 'contactCta',     label: 'Contact: button',       type: 'text',     default: 'Say hello' },
   { key: 'backTop',        label: 'Contact: back to top',  type: 'text',     default: 'Back to top' },
@@ -68,6 +82,24 @@ export const GALLERY_FIELDS = [
   { key: 'errorText',     label: 'Load error message', type: 'text',     default: 'Something went wrong loading the gallery.' },
 ];
 
+// Reviews page
+export const REVIEWS_FIELDS = [
+  { key: 'overline',      label: 'Header: overline',    type: 'text',     default: 'Sunika · Kind Words' },
+  { key: 'heading',       label: 'Header: title',       type: 'text',     default: 'Reviews ⭐' },
+  { key: 'subtitle',      label: 'Header: subtitle',    type: 'textarea', default: 'Honest words from the people I have made things for.' },
+  { key: 'writeBlurb',    label: 'Write: blurb',        type: 'text',     default: 'Worked with me?' },
+  { key: 'writeBtn',      label: 'Write: button',       type: 'text',     default: 'Write a review' },
+  { key: 'moderationNote', label: 'Write: small print', type: 'textarea', default: 'Reviews are read before they go live, so yours may take a little while to appear.' },
+  { key: 'formTitle',     label: 'Form: title',         type: 'text',     default: 'Share your experience' },
+  { key: 'submitBtn',     label: 'Form: submit button',  type: 'text',     default: 'Send review 🌷' },
+  { key: 'privacyNote',   label: 'Form: privacy note',  type: 'textarea', default: 'Your name and review are shown publicly. I never ask for your email or phone number here — if you need to reach me, use the contact page.' },
+  { key: 'thanksNote',    label: 'Form: thank-you',     type: 'textarea', default: 'Your review has been sent and will appear once it has been read.' },
+  { key: 'emptySummary',  label: 'Empty: summary',      type: 'text',     default: 'No reviews yet' },
+  { key: 'emptyList',     label: 'Empty: list',         type: 'textarea', default: 'No reviews just yet — be the first to share your experience.' },
+  { key: 'emptyFiltered', label: 'No results message',  type: 'text',     default: 'No reviews with that rating yet.' },
+  { key: 'errorText',     label: 'Load error message',  type: 'text',     default: 'Something went wrong loading the reviews.' },
+];
+
 // Contact page copy
 export const CONTACT_PAGE_FIELDS = [
   { key: 'kicker',      label: 'Header: kicker',    type: 'text',     default: 'Say hello' },
@@ -86,6 +118,7 @@ export const COPY_SCHEMA = [
   { key: 'home',        label: 'Home',           fields: HOME_FIELDS },
   { key: 'projects',    label: 'Projects',       fields: PROJECTS_FIELDS },
   { key: 'gallery',     label: 'Gallery',        fields: GALLERY_FIELDS },
+  { key: 'reviews',     label: 'Reviews',        fields: REVIEWS_FIELDS },
   { key: 'contactPage', label: 'Contact page',   fields: CONTACT_PAGE_FIELDS },
 ];
 
@@ -95,6 +128,7 @@ export const GROUP_FIELDS = {
   home:        HOME_FIELDS,
   projects:    PROJECTS_FIELDS,
   gallery:     GALLERY_FIELDS,
+  reviews:     REVIEWS_FIELDS,
   contactPage: CONTACT_PAGE_FIELDS,
 };
 

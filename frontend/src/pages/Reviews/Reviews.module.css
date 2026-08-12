@@ -1,0 +1,445 @@
+/* Reviews page.
+ *
+ * The header mirrors Gallery / Projects (hero panel, blobs, botanical accent) so
+ * the three list pages read as one site. Below the header the page is its own
+ * thing: a score panel, then a single column of cards.
+ *
+ * Deliberately one column, not a grid. Reviews are read, not scanned — a
+ * multi-column masonry of ragged text blocks makes the eye hunt for where each
+ * one starts, and the whole point of this page is that someone reads two or three
+ * of them properly. */
+
+.page { width: 100%; }
+
+/* ── Header ───────────────────────────────────────────────────────────────── */
+.headerWrapper {
+  position: relative;
+  width: 100%;
+  background:
+    radial-gradient(110% 120% at 88% 0%, rgba(var(--accent-1-rgb), 0.22) 0%, transparent 55%),
+    radial-gradient(90% 120% at 5% 100%, rgba(var(--accent-sec-rgb), 0.20) 0%, transparent 55%),
+    var(--hero-bg);
+  overflow: hidden;
+}
+
+/* The blob is a 60px blur on a 360px box. Painting that on every scroll frame is
+   what makes a page feel gritty, so it is promoted to its own compositor layer:
+   rasterised once, then only translated. See Home.module.css for the same note. */
+.blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(56px);
+  opacity: 0.3;
+  z-index: 0;
+  pointer-events: none;
+  transform: translateZ(0);
+  will-change: transform;
+}
+.blob[data-b="1"] { width: 360px; height: 360px; top: -120px; right: 4%; background: radial-gradient(circle, rgba(var(--accent-1-rgb), 0.55), transparent 70%); }
+.blob[data-b="2"] { width: 300px; height: 300px; bottom: -120px; left: -40px; background: radial-gradient(circle, rgba(var(--accent-sec-rgb), 0.5), transparent 70%); }
+
+.botanical {
+  position: absolute;
+  z-index: 0;
+  pointer-events: none;
+  display: block;
+  line-height: 0;
+  top: 24%; right: 6%;
+  width: clamp(60px, 7vw, 120px);
+  color: var(--accent-sec);
+  opacity: 0.5;
+}
+@media (max-width: 768px) { .botanical { display: none; } }
+
+.header {
+  position: relative;
+  z-index: 1;
+  max-width: 1400px;
+  margin: 0 auto;
+  /* The extra 64px clears the fixed top bar. */
+  padding: calc(var(--spacing-5xl) + 64px) clamp(1.25rem, 5vw, 5rem) var(--spacing-4xl);
+}
+
+.overline {
+  display: block;
+  font-family: var(--font-heading);
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--accent-1);
+  margin: 0 0 var(--spacing-md);
+}
+
+.heading {
+  font-family: var(--font-heading);
+  font-size: clamp(3rem, 10vw, 6.5rem);
+  font-weight: 700;
+  letter-spacing: -0.012em;
+  line-height: 0.98;
+  margin: 0 0 var(--spacing-md);
+  color: var(--hero-text);
+}
+
+.subtitle {
+  margin: 0;
+  max-width: 52ch;
+  color: var(--hero-text-sub);
+  font-size: var(--font-size-md);
+  line-height: 1.7;
+}
+
+/* ── Body ─────────────────────────────────────────────────────────────────── */
+.body {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: var(--spacing-3xl) clamp(1.25rem, 5vw, 5rem) var(--spacing-5xl);
+}
+
+/* ── Summary panel ────────────────────────────────────────────────────────── */
+.summary {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: clamp(1.5rem, 4vw, 3rem);
+  align-items: center;
+  padding: clamp(1.5rem, 4vw, 2.25rem);
+  margin-bottom: var(--spacing-2xl);
+  background: var(--background-1);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-sm);
+}
+
+.score {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  text-align: center;
+}
+
+.average {
+  font-family: var(--font-heading);
+  font-size: clamp(2.75rem, 7vw, 3.75rem);
+  font-weight: 700;
+  line-height: 1;
+  color: var(--accent-1);
+}
+
+.count {
+  font-size: var(--font-size-sm);
+  color: var(--tertiary-text-color);
+}
+
+.breakdown {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  min-width: 0;
+}
+
+.barRow {
+  display: grid;
+  grid-template-columns: 3rem 1fr 2rem;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: 0.2rem 0.35rem;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  box-shadow: none;
+  transition: border-color var(--transition-fast), background var(--transition-fast);
+}
+
+.barRow:hover:not(:disabled) {
+  border-color: var(--border-color-hover);
+  background: var(--background-2);
+  box-shadow: none;
+}
+
+.barActive {
+  border-color: var(--accent-1);
+  background: var(--accent-1-background);
+}
+
+/* A bar with no reviews behind it is not a filter, so it stops looking like a
+   control rather than looking enabled and doing nothing. */
+.barRow:disabled { cursor: default; opacity: 0.5; }
+
+.barLabel {
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  color: var(--secondary-text-color);
+  text-align: left;
+  white-space: nowrap;
+}
+
+.barTrack {
+  height: 8px;
+  background: var(--background-3);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+
+.barFill {
+  display: block;
+  height: 100%;
+  border-radius: var(--radius-full);
+  background: linear-gradient(90deg, var(--accent-1), var(--accent-sec));
+  transition: width 0.4s var(--ease-out);
+}
+
+.barCount {
+  font-size: var(--font-size-xs);
+  color: var(--tertiary-text-color);
+  text-align: right;
+}
+
+.writeCta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--spacing-xs);
+  max-width: 22ch;
+}
+
+.writeBlurb {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-size: var(--font-size-md);
+  font-weight: 600;
+  color: var(--primary-text-color);
+}
+
+.writeBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.65rem 1.35rem;
+  font-family: var(--font-heading);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: #fff;
+  background: var(--accent-1);
+  border: none;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: background var(--transition-fast), transform var(--transition-fast);
+}
+.writeBtn:hover { background: var(--accent-hover); transform: translateY(-1px); }
+
+.moderationNote {
+  margin: 0;
+  font-size: var(--font-size-xs);
+  line-height: 1.5;
+  color: var(--tertiary-text-color);
+}
+
+@media (max-width: 900px) {
+  .summary { grid-template-columns: auto 1fr; }
+  .writeCta {
+    grid-column: 1 / -1;
+    max-width: none;
+    padding-top: var(--spacing-md);
+    border-top: 1px solid var(--border-color);
+    width: 100%;
+  }
+}
+
+@media (max-width: 560px) {
+  .summary { grid-template-columns: 1fr; text-align: left; }
+  .score { flex-direction: row; align-items: baseline; gap: var(--spacing-sm); }
+}
+
+/* ── Toolbar ──────────────────────────────────────────────────────────────── */
+.toolbar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-xl);
+}
+
+.sorts {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  flex-wrap: wrap;
+}
+
+.sortBtn {
+  padding: 0.4rem 1rem;
+  background: transparent;
+  border: 1.5px solid var(--border-color);
+  border-radius: var(--radius-full);
+  color: var(--secondary-text-color);
+  font-family: var(--font-heading);
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  cursor: pointer;
+  box-shadow: none;
+  transition: border-color 0.2s ease, color 0.2s ease, background 0.2s ease;
+}
+
+.sortBtn:hover {
+  border-color: var(--accent-1);
+  color: var(--accent-1);
+  background: var(--accent-1-background);
+  box-shadow: none;
+}
+
+.sortActive {
+  border-color: var(--accent-1);
+  background: var(--accent-1);
+  color: #fff;
+}
+.sortActive:hover { background: var(--accent-hover); color: #fff; }
+
+.clearFilter {
+  margin-left: auto;
+  padding: 0.35rem 0.85rem;
+  font-size: var(--font-size-xs);
+  color: var(--accent-1);
+  background: var(--accent-1-background);
+  border: 1px solid var(--accent-1);
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  box-shadow: none;
+}
+
+/* ── List ─────────────────────────────────────────────────────────────────── */
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+
+.empty {
+  padding: var(--spacing-4xl) var(--spacing-lg);
+  text-align: center;
+  color: var(--tertiary-text-color);
+  font-size: var(--font-size-md);
+  line-height: 1.7;
+}
+
+/* ── Write-a-review form ──────────────────────────────────────────────────── */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.ratingField {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-md);
+  background: var(--accent-1-background);
+  border-radius: var(--radius-lg);
+}
+
+.formGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-md);
+}
+@media (max-width: 560px) {
+  .formGrid { grid-template-columns: 1fr; }
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  min-width: 0;
+}
+
+.label {
+  font-family: var(--font-heading);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--primary-text-color);
+}
+
+.hint {
+  font-weight: 400;
+  color: var(--tertiary-text-color);
+}
+
+.input,
+.select,
+.textarea {
+  width: 100%;
+  padding: 0.65rem 0.85rem;
+  font-family: var(--font-body);
+  font-size: var(--font-size-base);
+  color: var(--primary-text-color);
+  background: var(--background-1);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+}
+
+.textarea { resize: vertical; line-height: 1.6; }
+
+.input:focus,
+.select:focus,
+.textarea:focus {
+  outline: none;
+  border-color: var(--accent-1);
+  box-shadow: 0 0 0 3px var(--accent-1-background);
+}
+
+.counter {
+  align-self: flex-end;
+  font-size: var(--font-size-xs);
+  color: var(--tertiary-text-color);
+}
+
+.privacyNote {
+  margin: 0;
+  padding: var(--spacing-sm) var(--spacing-md);
+  font-size: var(--font-size-xs);
+  line-height: 1.6;
+  color: var(--secondary-text-color);
+  background: var(--info-background-color);
+  border-radius: var(--radius-md);
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--spacing-sm);
+  padding-top: var(--spacing-xs);
+}
+
+.cancel,
+.submit {
+  padding: 0.65rem 1.4rem;
+  font-family: var(--font-heading);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: background var(--transition-fast), opacity var(--transition-fast);
+}
+
+.cancel {
+  color: var(--secondary-text-color);
+  background: transparent;
+  border-color: var(--border-color);
+}
+.cancel:hover { background: var(--background-2); }
+
+/* Green for the confirming action, per the site-wide button colour rule. */
+.submit {
+  color: var(--btn-confirm-contrast);
+  background: var(--btn-confirm);
+}
+.submit:hover:not(:disabled) { opacity: 0.9; }
+.submit:disabled,
+.cancel:disabled { background: var(--disabled-color); color: #fff; cursor: not-allowed; }

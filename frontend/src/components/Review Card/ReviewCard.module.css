@@ -1,0 +1,299 @@
+/* One review. The card is a quiet paper panel with a single oversized quote mark
+   as its only decoration — the words are the content, so nothing competes. */
+
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: clamp(1.25rem, 3vw, 1.9rem);
+  background: var(--background-1);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+/* A hairline of accent along the top edge, so a wall of cards still reads as
+   part of the site rather than as generic panels. */
+.card::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--accent-1), var(--accent-sec), transparent);
+  opacity: 0.7;
+}
+
+.quoteMark {
+  position: absolute;
+  top: -0.15em;
+  right: 0.4em;
+  font-family: var(--font-display, var(--font-heading));
+  font-size: 7rem;
+  line-height: 1;
+  color: var(--accent-1);
+  opacity: 0.09;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* ── Header ───────────────────────────────────────────────────────────────── */
+.head {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  position: relative;
+  z-index: 1;
+}
+
+.avatar,
+.avatarSk {
+  flex-shrink: 0;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: var(--radius-full);
+  display: grid;
+  place-items: center;
+  font-family: var(--font-heading);
+  font-size: var(--font-size-md);
+  font-weight: 700;
+  color: #fff;
+  background: linear-gradient(135deg, var(--accent-1), var(--accent-sec));
+}
+
+.who {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.author {
+  font-family: var(--font-heading);
+  font-size: var(--font-size-md);
+  font-weight: 600;
+  color: var(--primary-text-color);
+  overflow-wrap: anywhere;
+}
+
+.byline {
+  font-size: var(--font-size-xs);
+  color: var(--tertiary-text-color);
+}
+
+/* Stars and date sit together on the right, and drop under the name on narrow
+   screens rather than squeezing the name into two characters. */
+.headMeta {
+  margin-left: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.2rem;
+}
+
+.date {
+  font-size: var(--font-size-xs);
+  color: var(--tertiary-text-color);
+  white-space: nowrap;
+}
+
+/* ── Body ─────────────────────────────────────────────────────────────────── */
+.title {
+  margin: var(--spacing-md) 0 var(--spacing-xs);
+  font-family: var(--font-heading);
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  line-height: 1.3;
+  color: var(--primary-text-color);
+  position: relative;
+  z-index: 1;
+}
+
+.body {
+  margin: var(--spacing-xs) 0 0;
+  font-size: var(--font-size-base);
+  line-height: 1.7;
+  color: var(--secondary-text-color);
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+  position: relative;
+  z-index: 1;
+}
+
+/* ── Compact (home page strip) ────────────────────────────────────────────── */
+.compact {
+  height: 100%;
+}
+
+.compact .body {
+  display: -webkit-box;
+  -webkit-line-clamp: 5;
+  -webkit-box-orient: vertical;
+  line-clamp: 5;
+  overflow: hidden;
+}
+
+.compact .title {
+  font-size: var(--font-size-md);
+}
+
+/* ── Actions ──────────────────────────────────────────────────────────────── */
+.actions {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-lg);
+  padding-top: var(--spacing-sm);
+  border-top: 1px solid var(--border-color);
+}
+
+.likeBtn,
+.replyToggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.8rem;
+  font-family: var(--font-body);
+  font-size: var(--font-size-sm);
+  color: var(--secondary-text-color);
+  background: var(--background-2);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: color var(--transition-fast), border-color var(--transition-fast),
+              background var(--transition-fast);
+}
+
+.likeBtn:hover,
+.replyToggle:hover {
+  color: var(--accent-1);
+  border-color: var(--accent-1);
+}
+
+/* Liked is the danger/heart red rather than the accent, so the state is obvious
+   at a glance instead of being a subtle tint of the resting colour. */
+.liked {
+  color: var(--btn-danger);
+  border-color: var(--btn-danger);
+  background: var(--background-1);
+}
+.liked:hover { color: var(--btn-danger); border-color: var(--btn-danger); }
+
+/* ── Thread ───────────────────────────────────────────────────────────────── */
+.thread {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-md);
+}
+
+.comment {
+  display: flex;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: var(--background-2);
+  border-radius: var(--radius-lg);
+}
+
+/* Sunika's own replies get the accent edge, so a reply from the artist is never
+   mistaken for a reply from a stranger. */
+.commentOwner {
+  background: var(--accent-1-background);
+  border-left: 3px solid var(--accent-1);
+}
+
+.commentArrow {
+  flex-shrink: 0;
+  margin-top: 0.2rem;
+  color: var(--tertiary-text-color);
+}
+
+.commentBody { min-width: 0; }
+
+.commentHead {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0 0 0.25rem;
+  font-size: var(--font-size-sm);
+  color: var(--primary-text-color);
+}
+
+.ownerBadge {
+  padding: 0.1rem 0.45rem;
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  color: #fff;
+  background: var(--accent-1);
+  border-radius: var(--radius-full);
+}
+
+.commentText {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  line-height: 1.65;
+  color: var(--secondary-text-color);
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+
+/* ── Reply form ───────────────────────────────────────────────────────────── */
+.replyForm {
+  display: grid;
+  gap: var(--spacing-xs);
+  padding: var(--spacing-md);
+  background: var(--background-2);
+  border: 1px dashed var(--border-color);
+  border-radius: var(--radius-lg);
+}
+
+.replyName,
+.replyBody {
+  width: 100%;
+  padding: 0.55rem 0.75rem;
+  font-family: var(--font-body);
+  font-size: var(--font-size-sm);
+  color: var(--primary-text-color);
+  background: var(--background-1);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+}
+
+.replyBody { resize: vertical; }
+
+.replyName:focus,
+.replyBody:focus {
+  outline: none;
+  border-color: var(--accent-1);
+}
+
+.replySubmit {
+  justify-self: start;
+  padding: 0.5rem 1.1rem;
+  font-family: var(--font-body);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: #fff;
+  background: var(--btn-confirm);
+  border: none;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: opacity var(--transition-fast);
+}
+
+.replySubmit:hover:not(:disabled) { opacity: 0.9; }
+.replySubmit:disabled { background: var(--disabled-color); cursor: not-allowed; }
+
+/* ── Narrow screens ───────────────────────────────────────────────────────── */
+@media (max-width: 520px) {
+  .head { flex-wrap: wrap; }
+  .headMeta {
+    margin-left: calc(2.75rem + var(--spacing-sm));
+    align-items: flex-start;
+    flex-direction: row;
+    gap: var(--spacing-sm);
+    width: 100%;
+  }
+  .quoteMark { font-size: 5rem; }
+}

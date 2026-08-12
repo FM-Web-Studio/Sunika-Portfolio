@@ -31,7 +31,15 @@ const ArtworkCard = ({ artwork, onOpen, index = 0 }) => {
       setMyRating(value);
       showToast?.('success', 'Thank you!', 'Your rating was recorded.');
     } catch (err) {
-      showToast?.('error', 'Could not rate', err.message || 'Please try again.');
+      // The server is the authority on whether this visitor has already rated
+      // (their browser may simply have forgotten). Settle the stars on the real
+      // answer instead of leaving them empty and inviting another failed click.
+      if (err.code === 'already-rated') {
+        setMyRating(getMyRating(artwork.id));
+        showToast?.('info', 'Already rated', 'You have already rated this piece.');
+      } else {
+        showToast?.('error', 'Could not rate', err.message || 'Please try again.');
+      }
     } finally {
       setSubmitting(false);
     }
@@ -40,11 +48,11 @@ const ArtworkCard = ({ artwork, onOpen, index = 0 }) => {
   const handleLike = async () => {
     if (liking) return;
     setLiking(true);
-    setLiked(l => !l);
+    setLiked((l) => !l); // optimistic: a heart that waits on a round trip feels broken
     try {
-      await toggleLike(artwork.id);
+      setLiked(await toggleLike(artwork.id));
     } catch {
-      setLiked(l => !l);
+      setLiked(hasLiked(artwork.id));
       showToast?.('error', 'Could not save', 'Please try again.');
     } finally {
       setLiking(false);

@@ -3,6 +3,24 @@ name: Deploy to Firebase Hosting
 on:
   push:
     branches: [main]
+  # Cloud Functions are NOT deployed on every push. The contact-form trigger in
+  # functions/ previously had no automated path at all, so a change to it sat
+  # unreleased until someone remembered to run `firebase deploy --only functions`
+  # by hand — silent drift between the repo and what is actually running.
+  #
+  # It is opt-in rather than automatic because deploying functions needs broader IAM
+  # than hosting (Cloud Functions Developer + Service Account User on SERVICE_ACCOUNT)
+  # and access to the SMTP_PASSWORD secret. Wiring it into every push would turn main
+  # red on a permissions problem that has nothing to do with the site itself.
+  #
+  # To ship a functions change: Actions → this workflow → Run workflow → tick
+  # "deploy_functions".
+  workflow_dispatch:
+    inputs:
+      deploy_functions:
+        description: 'Also deploy Cloud Functions'
+        type: boolean
+        default: false
 
 jobs:
   build-and-deploy:
@@ -12,9 +30,12 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup Node.js
+        # 22 matches functions/package.json. Node 18 is past end of life and recent
+        # firebase-tools releases require 20+, so the old pin was a deploy waiting
+        # to break on someone else's release schedule.
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '22'
 
       - name: Install dependencies
         run: |
@@ -45,3 +66,11 @@ jobs:
 
       - name: Deploy to Firebase Hosting, Firestore & Storage Rules
         run: firebase deploy --only hosting:portfolio,firestore:rules,storage --project sunika-project
+
+      - name: Deploy Cloud Functions
+        if: ${{ inputs.deploy_functions }}
+        run: |
+          cd functions
+          npm ci
+          cd ..
+          firebase deploy --only functions --project sunika-project

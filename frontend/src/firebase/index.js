@@ -11,3 +11,5 @@ export * from './content';
 export * from './artworks';
 export * from './ratings';
 export * from './likes';
+export * from './reviews';
+export * from './accomplishments';

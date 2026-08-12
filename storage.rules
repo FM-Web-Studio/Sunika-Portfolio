@@ -36,6 +36,13 @@ service firebase.storage {
       allow delete: if isAdmin();
     }
 
+    // accomplishments/{id}/{file} — the photo that goes with a win or feature
+    match /accomplishments/{allPaths=**} {
+      allow read: if true;
+      allow write: if isAdminImageWrite();
+      allow delete: if isAdmin();
+    }
+
     // profile/{file} — the profile photo
     match /profile/{allPaths=**} {
       allow read: if true;

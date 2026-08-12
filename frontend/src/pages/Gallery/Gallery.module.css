@@ -18,7 +18,11 @@
 }
 
 .blob {
+  /* Promoted to its own compositor layer so the 56px blur is rasterised once and
+     then only translated, instead of being repainted on every scroll frame. */
   position: absolute; border-radius: 50%; filter: blur(56px); opacity: 0.3; z-index: 0; pointer-events: none;
+  transform: translateZ(0);
+  will-change: transform;
 }
 .blob[data-b="1"] { width: 360px; height: 360px; top: -120px; right: 4%; background: radial-gradient(circle, rgba(var(--accent-1-rgb), 0.55), transparent 70%); }
 .blob[data-b="2"] { width: 300px; height: 300px; bottom: -120px; left: -40px; background: radial-gradient(circle, rgba(var(--accent-sec-rgb), 0.5), transparent 70%); }

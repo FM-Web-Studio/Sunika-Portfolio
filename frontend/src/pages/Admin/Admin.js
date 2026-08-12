@@ -17,6 +17,8 @@ import InterestsSection from './InterestsSection';
 import SocialsSection from './SocialsSection';
 import ContactSection from './ContactSection';
 import RecordSection from './RecordSection';
+import ReviewsSection from './ReviewsSection';
+import AccomplishmentsSection from './AccomplishmentsSection';
 import SiteCopySection from './sections/SiteCopySection';
 import styles from './Admin.module.css';
 import '../../styles/admin.css';
@@ -45,19 +47,21 @@ const EXPERIENCE_FIELDS = [
   { name: 'order',       label: 'Order',       type: 'number', hint: 'lower shows first' },
 ];
 
-const GROUPS = ['Portfolio', 'Gallery', 'About', 'Contact', 'Site'];
+const GROUPS = ['Portfolio', 'Gallery', 'Reviews', 'About', 'Contact', 'Site'];
 
 const SECTIONS = [
-  { id: 'projects',   group: 'Portfolio', title: 'Projects',        icon: '🎨', description: 'The pieces shown on the Work grid and the Home page.' },
-  { id: 'artworks',   group: 'Gallery',   title: 'Artworks',        icon: '🖼️', description: 'Original pieces in the gallery grid, with price and sold status.' },
-  { id: 'profile',    group: 'About',     title: 'Profile',         icon: '👤', description: 'Your photo, name, title and bio.' },
-  { id: 'skills',     group: 'About',     title: 'Skills',          icon: '🧩', description: 'Grouped skill categories listed on the About section.' },
-  { id: 'experience', group: 'About',     title: 'Experience',      icon: '💼', description: 'Roles and internships on the journey timeline.' },
-  { id: 'education',  group: 'About',     title: 'Education',       icon: '🎓', description: 'Qualifications on the journey timeline.' },
-  { id: 'interests',  group: 'About',     title: 'Interests',       icon: '🌷', description: 'The short interest chips shown beside your bio.' },
-  { id: 'socials',    group: 'Contact',   title: 'Social Links',    icon: '🔗', description: 'Profile links shown in the footer and on the Contact page.' },
-  { id: 'contact',    group: 'Contact',   title: 'Contact Details', icon: '📇', description: 'Email, phone and location shown in the footer and on the Contact page.' },
-  { id: 'copy',       group: 'Site',      title: 'Site Copy',       icon: '📝', description: 'Headings and wording used across the public pages.' },
+  { id: 'projects',        group: 'Portfolio', title: 'Projects',        icon: '🎨', description: 'The pieces shown on the Work grid and the Home page.' },
+  { id: 'artworks',        group: 'Gallery',   title: 'Artworks',        icon: '🖼️', description: 'Original pieces in the gallery grid, with price and sold status.' },
+  { id: 'reviews',         group: 'Reviews',   title: 'Reviews',         icon: '⭐', description: 'Reviews and replies people have written. Nothing appears on the site until you publish it.' },
+  { id: 'profile',         group: 'About',     title: 'Profile',         icon: '👤', description: 'Your photo, name, title and bio.' },
+  { id: 'accomplishments', group: 'About',     title: 'Accomplishments', icon: '🏆', description: 'Wins, features and press moments shown above your projects on the home page.' },
+  { id: 'skills',          group: 'About',     title: 'Skills',          icon: '🧩', description: 'Grouped skill categories listed on the About section.' },
+  { id: 'experience',      group: 'About',     title: 'Experience',      icon: '💼', description: 'Roles and internships on the journey timeline.' },
+  { id: 'education',       group: 'About',     title: 'Education',       icon: '🎓', description: 'Qualifications on the journey timeline.' },
+  { id: 'interests',       group: 'About',     title: 'Interests',       icon: '🌷', description: 'The short interest chips shown beside your bio.' },
+  { id: 'socials',         group: 'Contact',   title: 'Social Links',    icon: '🔗', description: 'Profile links shown in the footer and on the Contact page.' },
+  { id: 'contact',         group: 'Contact',   title: 'Contact Details', icon: '📇', description: 'Email, phone and location shown in the footer and on the Contact page.' },
+  { id: 'copy',            group: 'Site',      title: 'Site Copy',       icon: '📝', description: 'Headings and wording used across the public pages, emoji included.' },
 ];
 
 const Admin = () => {
@@ -113,7 +117,9 @@ const Admin = () => {
     switch (view) {
       case 'projects':   return <ProjectsSection />;
       case 'artworks':   return <ArtworksSection />;
+      case 'reviews':    return <ReviewsSection />;
       case 'profile':    return <ProfileSection />;
+      case 'accomplishments': return <AccomplishmentsSection />;
       case 'skills':     return <SkillsSection />;
       case 'interests':  return <InterestsSection />;
       case 'socials':    return <SocialsSection />;

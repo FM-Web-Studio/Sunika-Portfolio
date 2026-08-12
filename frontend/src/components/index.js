@@ -20,3 +20,6 @@ export { default as ArtworkCard }       from './Artwork Card';
 export { default as ArtworkLightbox }   from './Artwork Lightbox';
 export { default as FilterPanel }       from './Filter Panel/FilterPanel';
 export { default as FilterDock }        from './Filter Dock';
+
+// ── Reviews ──────────────────────────────────────────────────────────────────
+export { default as ReviewCard, ReviewCardSkeleton, formatReviewDate } from './Review Card';
