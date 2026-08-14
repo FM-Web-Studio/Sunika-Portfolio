@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FcGoogle } from 'react-icons/fc';
+import {
+  FiGrid, FiImage, FiStar, FiUser, FiAward, FiLayers, FiBriefcase,
+  FiBookOpen, FiTag, FiLink, FiMail, FiEdit3, FiMenu,
+} from 'react-icons/fi';
 import { useToast } from '../../components';
 import { useAuth } from '../../hooks';
 import {
@@ -49,19 +53,23 @@ const EXPERIENCE_FIELDS = [
 
 const GROUPS = ['Portfolio', 'Gallery', 'Reviews', 'About', 'Contact', 'Site'];
 
+// `icon` is a react-icons component, not an emoji. The sidebar icons do real work
+// helping someone find a section at a glance, so they are drawn as SVG rather than
+// simply dropped. Emoji also render differently on every OS and cannot be coloured
+// to match the theme.
 const SECTIONS = [
-  { id: 'projects',        group: 'Portfolio', title: 'Projects',        icon: '🎨', description: 'The pieces shown on the Work grid and the Home page.' },
-  { id: 'artworks',        group: 'Gallery',   title: 'Artworks',        icon: '🖼️', description: 'Original pieces in the gallery grid, with price and sold status.' },
-  { id: 'reviews',         group: 'Reviews',   title: 'Reviews',         icon: '⭐', description: 'Reviews and replies people have written. Nothing appears on the site until you publish it.' },
-  { id: 'profile',         group: 'About',     title: 'Profile',         icon: '👤', description: 'Your photo, name, title and bio.' },
-  { id: 'accomplishments', group: 'About',     title: 'Accomplishments', icon: '🏆', description: 'Wins, features and press moments shown above your projects on the home page.' },
-  { id: 'skills',          group: 'About',     title: 'Skills',          icon: '🧩', description: 'Grouped skill categories listed on the About section.' },
-  { id: 'experience',      group: 'About',     title: 'Experience',      icon: '💼', description: 'Roles and internships on the journey timeline.' },
-  { id: 'education',       group: 'About',     title: 'Education',       icon: '🎓', description: 'Qualifications on the journey timeline.' },
-  { id: 'interests',       group: 'About',     title: 'Interests',       icon: '🌷', description: 'The short interest chips shown beside your bio.' },
-  { id: 'socials',         group: 'Contact',   title: 'Social Links',    icon: '🔗', description: 'Profile links shown in the footer and on the Contact page.' },
-  { id: 'contact',         group: 'Contact',   title: 'Contact Details', icon: '📇', description: 'Email, phone and location shown in the footer and on the Contact page.' },
-  { id: 'copy',            group: 'Site',      title: 'Site Copy',       icon: '📝', description: 'Headings and wording used across the public pages, emoji included.' },
+  { id: 'projects',        group: 'Portfolio', title: 'Projects',        icon: FiGrid,      description: 'The pieces shown on the Work grid and the Home page.' },
+  { id: 'artworks',        group: 'Gallery',   title: 'Artworks',        icon: FiImage,     description: 'Original pieces in the gallery grid, with price and sold status.' },
+  { id: 'reviews',         group: 'Reviews',   title: 'Reviews',         icon: FiStar,      description: 'Reviews and replies people have written. Nothing appears on the site until you publish it.' },
+  { id: 'profile',         group: 'About',     title: 'Profile',         icon: FiUser,      description: 'Your photo, name, title and bio.' },
+  { id: 'accomplishments', group: 'About',     title: 'Accomplishments', icon: FiAward,     description: 'Wins, features and press moments shown above your projects on the home page.' },
+  { id: 'skills',          group: 'About',     title: 'Skills',          icon: FiLayers,    description: 'Grouped skill categories listed on the About section.' },
+  { id: 'experience',      group: 'About',     title: 'Experience',      icon: FiBriefcase, description: 'Roles and internships on the journey timeline.' },
+  { id: 'education',       group: 'About',     title: 'Education',       icon: FiBookOpen,  description: 'Qualifications on the journey timeline.' },
+  { id: 'interests',       group: 'About',     title: 'Interests',       icon: FiTag,       description: 'The short interest chips shown beside your bio.' },
+  { id: 'socials',         group: 'Contact',   title: 'Social Links',    icon: FiLink,      description: 'Profile links shown in the footer and on the Contact page.' },
+  { id: 'contact',         group: 'Contact',   title: 'Contact Details', icon: FiMail,      description: 'Email, phone and location shown in the footer and on the Contact page.' },
+  { id: 'copy',            group: 'Site',      title: 'Site Copy',       icon: FiEdit3,     description: 'Headings and wording used across the public pages.' },
 ];
 
 const Admin = () => {
@@ -112,6 +120,7 @@ const Admin = () => {
   }
 
   const activeSection = SECTIONS.find((s) => s.id === view) ?? SECTIONS[0];
+  const ActiveIcon = activeSection.icon;
 
   const renderSection = () => {
     switch (view) {
@@ -163,8 +172,9 @@ const Admin = () => {
     <div className={`admin-scope ${styles.shellPage}`}>
       <div className={styles.topbar}>
         <div className={styles.topbarLeft}>
-          <button type="button" className={styles.menuBtn} onClick={() => setNavOpen(true)} aria-label="Open sections menu">☰</button>
-          <span className={styles.topbarIcon}>🌷</span>
+          <button type="button" className={styles.menuBtn} onClick={() => setNavOpen(true)} aria-label="Open sections menu">
+            <FiMenu aria-hidden="true" />
+          </button>
           <span className={styles.topbarTitle}>Sunika Admin</span>
         </div>
         <div className={styles.topbarRight}>
@@ -182,6 +192,7 @@ const Admin = () => {
               <p className={styles.navGroupLabel}>{group}</p>
               {SECTIONS.filter((s) => s.group === group).map((s) => {
                 const active = s.id === view;
+                const Icon = s.icon;
                 return (
                   <div key={s.id} className={[styles.navItem, active ? styles.navItemActive : ''].join(' ')}>
                     <button
@@ -190,7 +201,7 @@ const Admin = () => {
                       onClick={() => openSection(s.id)}
                       aria-current={active ? 'page' : undefined}
                     >
-                      <span className={styles.navIcon} aria-hidden="true">{s.icon}</span>
+                      <span className={styles.navIcon} aria-hidden="true"><Icon /></span>
                       <span className={styles.navLabel}>{s.title}</span>
                     </button>
                   </div>
@@ -203,7 +214,7 @@ const Admin = () => {
         <main className={styles.content}>
           {/* Single source of the page heading, sections never repeat it. */}
           <header className={styles.pageHeader}>
-            <span className={styles.pageIcon} aria-hidden="true">{activeSection.icon}</span>
+            <span className={styles.pageIcon} aria-hidden="true"><ActiveIcon /></span>
             <div className={styles.pageHeadText}>
               <p className={styles.pageEyebrow}>{activeSection.group}</p>
               <h1 className={styles.contentTitle}>{activeSection.title}</h1>

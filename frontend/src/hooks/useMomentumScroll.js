@@ -47,7 +47,7 @@ export default function useMomentumScroll() {
 
       /*
        * Lenis caches the scrollable height. Every page here loads its content after
-       * first paint — projects, artworks, reviews, the accomplishment photo — so the
+       * first paint, projects, artworks, reviews, the accomplishment photo, so the
        * document grows several times while someone is already scrolling. Against a
        * stale height Lenis clamps to the wrong maximum, which feels like the scroll
        * hitting an invisible wall and springing back. Watching the body for size

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import styles from './Loading.module.css';
 
 const BIBLE_VERSES = [
@@ -33,14 +34,30 @@ const Loading = ({ message = 'Loading', showVerse = true }) => {
     return () => { clearInterval(interval); clearTimeout(swapTimeout); };
   }, [showVerse]);
 
-  return (
-    <div className={styles.wrapper}>
+  /*
+   * Portalled to <body>, which is what actually makes this a full-screen overlay.
+   *
+   * Raising z-index alone could never work. Loading renders inside AppLayout's
+   * .pageContent, which is `position: relative; z-index: 2` and therefore creates a
+   * STACKING CONTEXT. A z-index on a descendant only competes inside that context,
+   * so the overlay's 1200 was being compared against nothing useful, while the
+   * Footer, a sibling of .pageContent at the same z-index: 2 but later in the DOM,
+   * won on document order and painted over the bottom of the screen. The footer's
+   * backdrop-filter puts it on its own layer as well.
+   *
+   * Escaping the subtree is the fix, not a bigger number. Modal, Settings and
+   * MobileNav in this codebase all portal to <body> for the same reason.
+   */
+  const overlay = (
+    <div className={styles.wrapper} role="status" aria-live="polite">
       <span className={styles.blob} data-b="1" aria-hidden="true" />
       <span className={styles.blob} data-b="2" aria-hidden="true" />
       <span className={styles.blob} data-b="3" aria-hidden="true" />
 
       <div className={styles.card}>
-        <div className={styles.balls} role="status" aria-label="Loading">
+        {/* Decorative only. The wrapper above is the single live region, so these
+            do not announce themselves a second time. */}
+        <div className={styles.balls} aria-hidden="true">
           {Array.from({ length: BALL_COUNT }).map((_, i) => (
             <span key={i} className={styles.ball} style={{ animationDelay: `${i * 0.16}s` }} />
           ))}
@@ -62,6 +79,10 @@ const Loading = ({ message = 'Loading', showVerse = true }) => {
       </div>
     </div>
   );
+
+  // Guarded so the component is still safe to render outside a browser, e.g. in a
+  // unit test environment without a document.
+  return typeof document === 'undefined' ? overlay : createPortal(overlay, document.body);
 };
 
 export default Loading;

@@ -22,28 +22,28 @@ service firebase.storage {
              && request.resource.contentType.matches('image/.*');
     }
 
-    // artworks/{artworkId}/{file} — one image per artwork
+    // artworks/{artworkId}/{file}, one image per artwork
     match /artworks/{allPaths=**} {
       allow read: if true;
       allow write: if isAdminImageWrite();
       allow delete: if isAdmin();
     }
 
-    // projects/{projectId}/{file} — many images per project
+    // projects/{projectId}/{file}, many images per project
     match /projects/{allPaths=**} {
       allow read: if true;
       allow write: if isAdminImageWrite();
       allow delete: if isAdmin();
     }
 
-    // accomplishments/{id}/{file} — the photo that goes with a win or feature
+    // accomplishments/{id}/{file}, the photo that goes with a win or feature
     match /accomplishments/{allPaths=**} {
       allow read: if true;
       allow write: if isAdminImageWrite();
       allow delete: if isAdmin();
     }
 
-    // profile/{file} — the profile photo
+    // profile/{file}, the profile photo
     match /profile/{allPaths=**} {
       allow read: if true;
       allow write: if isAdminImageWrite();

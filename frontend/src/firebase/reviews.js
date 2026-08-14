@@ -15,8 +15,8 @@ import { byNewest } from '../utils/reviewMath';
  *     authorName, rating (1-5), title, body, role, subject,
  *     approved, likes, createdAt
  *
- *   reviews/{reviewId}/likers/{uid}      — one doc per visitor who liked it
- *   review_comments/{commentId}          — { reviewId, authorName, body, approved, createdAt }
+ *   reviews/{reviewId}/likers/{uid}, one doc per visitor who liked it
+ *   review_comments/{commentId}, { reviewId, authorName, body, approved, createdAt }
  *
  * Four design decisions, each enforced in firestore.rules rather than trusted
  * from the client:
@@ -27,18 +27,18 @@ import { byNewest } from '../utils/reviewMath';
  *    published" confirmation instead of a live post.
  *
  * 2. NO CONTACT DETAILS. Reviews are world-readable, so anything on the document
- *    is public the moment the page loads. Reviewers give a display name only —
- *    an email field here would be a PII leak, not a feature.
+ *    is public the moment the page loads. Reviewers give a display name only.
+ *    An email field here would be a PII leak, not a feature.
  *
  * 3. ONE LIKE PER VISITOR, enforced by a per-uid document under the review (see
  *    firebase/auth.js for why anonymous auth is what makes this possible). The
  *    counter and the liker doc move in one batch, and rules require them to
- *    agree — so `likes` cannot be set to 999999, cannot be driven negative by
+ *    agree, so `likes` cannot be set to 999999, cannot be driven negative by
  *    someone spamming un-likes, and cannot smuggle an edit into another field.
  *
  * 4. COMMENTS ARE FLAT, not a subcollection. A subcollection would need
  *    collection-group queries to load or moderate, and every collection-group
- *    query needs an explicitly deployed index — which this repo cannot ship,
+ *    query needs an explicitly deployed index, which this repo cannot ship,
  *    because firebase.json is shared with another app and its deploy step never
  *    includes firestore:indexes. A flat collection filtered by one `where` runs
  *    on Firestore's automatic single-field indexes. For the same reason every
@@ -89,7 +89,7 @@ export async function getApprovedCommentsByReview() {
   return byReview;
 }
 
-/** Every review, pending included. Admin only — rules reject this otherwise. */
+/** Every review, pending included. Admin only, rules reject this otherwise. */
 export async function getAllReviews() {
   return mapDocs(await getDocs(reviewsCol())).sort(byNewest);
 }
@@ -98,7 +98,7 @@ export async function getAllReviews() {
  * Every comment, pending included, as one flat list. Admin only.
  *
  * The moderation screen needs this to surface a pending comment without first
- * knowing which review it hangs off — otherwise a reply awaiting approval on an
+ * knowing which review it hangs off, otherwise a reply awaiting approval on an
  * already-published review is invisible until someone opens the right thread.
  */
 export async function getAllComments() {
@@ -150,7 +150,7 @@ export const hasLikedReview = (reviewId) => cachedLike(reviewId);
  * The liker document and the counter move in one batch so they cannot drift
  * apart, and rules verify the pair: a +1 is only allowed alongside a liker doc
  * appearing, a -1 only alongside one disappearing. Liking twice is not "allowed
- * but pointless" — it is rejected. Server state is read first so a stale cache
+ * but pointless", it is rejected. Server state is read first so a stale cache
  * costs one read rather than producing a rejected write and a bogus error.
  */
 export async function toggleReviewLike(reviewId) {
@@ -179,7 +179,7 @@ export const setCommentApproved = (id, approved) =>
 export const deleteComment = (id) => deleteDoc(commentDoc(id));
 
 /**
- * Delete a review with its comments and likers. Firestore does not cascade —
+ * Delete a review with its comments and likers. Firestore does not cascade:
  * deleting the parent alone would strand both as unreachable-but-billed
  * documents that reappear if the id is ever reused.
  */
@@ -201,7 +201,7 @@ export async function deleteReview(id) {
 
 /**
  * Reply to a review as the owner. Written pre-approved and flagged `fromOwner`
- * so the card can badge it — a reply from Sunika reads very differently from a
+ * so the card can badge it, a reply from Sunika reads very differently from a
  * reply by a stranger, and readers should be able to tell without checking names.
  */
 export const replyAsOwner = (reviewId, { authorName, body }) =>

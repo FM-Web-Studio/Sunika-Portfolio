@@ -5,7 +5,7 @@ import { ensureVisitor } from './auth';
 import { cachedLike, cacheLike } from '../utils/voteCache';
 
 /*
- * One like per visitor, per artwork — the same shape as ratings.js: a counter on
+ * One like per visitor, per artwork, the same shape as ratings.js: a counter on
  * the artwork plus a per-uid record at artworks/{id}/likers/{uid}, written together
  * in one batch and required to agree by firestore.rules.
  *
@@ -18,7 +18,7 @@ import { cachedLike, cacheLike } from '../utils/voteCache';
 const artworkRef = (id) => doc(db, COLLECTIONS.artworks, id);
 const likerRef = (artworkId, uid) => doc(db, COLLECTIONS.artworks, artworkId, ARTWORK_VOTES.likers, uid);
 
-/** This browser's remembered like state. Synchronous — see utils/voteCache.js. */
+/** This browser's remembered like state. Synchronous, see utils/voteCache.js. */
 export const hasLiked = (artworkId) => cachedLike(artworkId);
 
 /**

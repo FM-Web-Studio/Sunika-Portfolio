@@ -16,7 +16,7 @@ export const isAdminEmail = (email) =>
  *
  * Ratings, likes and review likes are all "one per visitor", and the only way
  * firestore.rules can hold that line is if each vote is a document keyed by an
- * identity the server issued. A localStorage flag cannot be enforced — clearing
+ * identity the server issued. A localStorage flag cannot be enforced, clearing
  * it lets the same person vote again, and nothing stops a crafted client from
  * driving a counter anywhere it likes. An anonymous account is a real uid the
  * rules can key on, so one visitor genuinely gets one vote.
@@ -38,7 +38,7 @@ export const ensureVisitor = async () => {
     return user.uid;
   } catch (err) {
     // If Anonymous sign-in is not switched on, EVERY visitor interaction that needs
-    // an identity fails at once — ratings, likes, reviews, replies. Firebase reports
+    // an identity fails at once, ratings, likes, reviews, replies. Firebase reports
     // that as `auth/admin-restricted-operation`, which tells whoever is looking at
     // the console nothing about the actual cause. Say it plainly instead.
     if (err?.code === 'auth/admin-restricted-operation' || err?.code === 'auth/operation-not-allowed') {
@@ -58,10 +58,33 @@ export const ensureVisitor = async () => {
 export const currentUid = () => auth.currentUser?.uid ?? null;
 
 /**
+ * Force a fresh ID token for the current user.
+ *
+ * Signing in with Google on top of an anonymous session swaps the account under a
+ * Firestore client that may still be holding a stream authenticated as the previous
+ * identity. An admin-only read issued in that window comes back permission-denied
+ * even though the person IS an admin, and a page reload "fixes" it, which is the
+ * worst kind of bug to chase. Refreshing the token and retrying once turns that into
+ * a self-healing hiccup.
+ *
+ * Returns false when there is nobody to refresh, so callers can skip the retry.
+ */
+export const refreshToken = async () => {
+  const user = auth.currentUser;
+  if (!user) return false;
+  try {
+    await user.getIdToken(true);
+    return true;
+  } catch {
+    return false;
+  }
+};
+
+/**
  * The identity firestore.rules will actually see, for diagnosing a permission error.
  *
  * Worth having as a named helper because reviews are the only collection on this site
- * whose READ requires isAdmin() — everything else in the admin reads a publicly
+ * whose READ requires isAdmin(), everything else in the admin reads a publicly
  * readable collection. That makes the Reviews section the first and only place an
  * identity mismatch surfaces, and "permission denied" on its own does not distinguish
  * between "signed in as the wrong account", "still an anonymous session", "email not

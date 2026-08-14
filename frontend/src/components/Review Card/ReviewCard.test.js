@@ -81,7 +81,7 @@ describe('ReviewCard', () => {
     await userEvent.click(screen.getByRole('button', { name: /post reply/i }));
 
     // The clear happens after an awaited promise, so it lands a tick after the click
-    // settles — waitFor rather than a bare assertion.
+    // settles, waitFor rather than a bare assertion.
     await waitFor(() =>
       expect(screen.getByPlaceholderText('Add a reply…').value).toBe(''));
   });
@@ -94,6 +94,26 @@ describe('ReviewCard', () => {
     await userEvent.click(screen.getByRole('button', { name: /1 reply/i }));
     expect(screen.getByText('Artist')).toBeTruthy();
     expect(screen.getByText('Thank you!')).toBeTruthy();
+  });
+
+  /*
+   * The reveal opt-in, guarded because getting it wrong hides content silently.
+   *
+   * [data-reveal] is `opacity: 0` in Theme.css until useReveal's observer adds
+   * `.is-revealed`. A card that sets the attribute by default is therefore invisible
+   * on every page that does not run that hook, which is what emptied the home page's
+   * review strip. The default must stay off.
+   */
+  it('does not mark itself for scroll-reveal by default', () => {
+    render(<ReviewCard review={review} />);
+    expect(document.querySelector('[data-reveal]')).toBeNull();
+  });
+
+  it('marks itself for scroll-reveal only when the page asks', () => {
+    render(<ReviewCard review={review} reveal index={2} />);
+    const el = document.querySelector('[data-reveal]');
+    expect(el).toBeTruthy();
+    expect(el.style.getPropertyValue('--reveal-delay')).toBe('0.12s');
   });
 
   it('does not badge an ordinary reply', async () => {

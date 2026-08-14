@@ -7,7 +7,7 @@ import { onAuthChange, isAdminEmail } from '../firebase';
 // Anonymous users are deliberately reported as signed OUT. The public pages sign
 // visitors in anonymously so their ratings and likes can be enforced one-per-
 // person (see firebase/auth.js). An anonymous session is an identity for voting,
-// not a login — without this check, visiting the gallery first and then /admin
+// not a login, without this check, visiting the gallery first and then /admin
 // would show "not authorised" instead of the Google sign-in button.
 export const useAuth = () => {
   const [user, setUser] = useState(undefined);

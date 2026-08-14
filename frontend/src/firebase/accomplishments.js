@@ -9,7 +9,7 @@ import { sortByOrder } from '../utils/ordering';
 
 /*
  * Accomplishments: wins, features and press moments shown in the About section
- * on the home page — a competition win with the photo the sponsor took, a piece
+ * on the home page, a competition win with the photo the sponsor took, a piece
  * published somewhere, an award.
  *
  * A separate collection rather than another `profile` singleton because these
@@ -18,8 +18,8 @@ import { sortByOrder } from '../utils/ordering';
  * rewriting the whole list (and re-resolving every image) to add one.
  *
  * Sorted by `order` ascending in JS, not by the query. An orderBy would silently
- * drop any document missing the field — the doc would simply vanish from the site
- * with no error — which is the trap subscribeArtworks used to fall into.
+ * drop any document missing the field, the doc would simply vanish from the site
+ * with no error, which is the trap subscribeArtworks used to fall into.
  */
 
 const COL = COLLECTIONS.accomplishments;

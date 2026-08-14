@@ -13,7 +13,7 @@
     visibility var(--transition-base);
 }
 
-/* Panel open — the trigger steps back so it never floats over the backdrop. */
+/* Panel open, the trigger steps back so it never floats over the backdrop. */
 .hidden {
   opacity: 0;
   visibility: hidden;
@@ -57,7 +57,7 @@
 
 .button:focus-visible { outline: 2px solid var(--accent-1); outline-offset: 2px; }
 
-/* Filters applied — same accent tint as the switch's active segment, so
+/* Filters applied, same accent tint as the switch's active segment, so
    "something is filtered" is readable without opening the panel. */
 .buttonActive,
 .buttonActive:hover:not(:disabled) {

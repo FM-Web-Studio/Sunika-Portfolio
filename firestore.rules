@@ -48,6 +48,19 @@ service cloud.firestore {
       return isVisitor() && request.auth.uid == uid;
     }
 
+    // A counter's value before the write, treating a missing field as 0.
+    //
+    // This matters more than it looks. Artworks created before likeCount,
+    // ratingSum and ratingCount existed simply have no such field, and
+    // `resource.data.likeCount + 1` on a missing field raises an error, which makes
+    // the whole rule deny the write. increment() meanwhile happily starts from 0,
+    // so the client sent a perfectly valid like and the rule rejected it, but only
+    // on those older documents. That is exactly why liking SOME artworks failed
+    // while others worked.
+    function oldCount(res, field) {
+      return res.data.get(field, 0);
+    }
+
     // ── Artworks (the Gallery page) ───────────────────────────────────────
     // Ratings and likes keep a denormalised aggregate on the artwork so the
     // gallery can sort without reading every vote. The aggregate is only allowed
@@ -66,12 +79,12 @@ service cloud.firestore {
           request.resource.data.diff(resource.data).affectedKeys()
             .hasOnly(['ratingSum', 'ratingCount'])
           && isVisitor()
-          && request.resource.data.ratingCount == resource.data.ratingCount + 1
-          && request.resource.data.ratingSum >= resource.data.ratingSum + 1
-          && request.resource.data.ratingSum <= resource.data.ratingSum + 5
+          && request.resource.data.ratingCount == oldCount(resource, 'ratingCount') + 1
+          && request.resource.data.ratingSum >= oldCount(resource, 'ratingSum') + 1
+          && request.resource.data.ratingSum <= oldCount(resource, 'ratingSum') + 5
           && !exists(/databases/$(database)/documents/artworks/$(artworkId)/raters/$(request.auth.uid))
           && getAfter(/databases/$(database)/documents/artworks/$(artworkId)/raters/$(request.auth.uid)).data.value
-             == request.resource.data.ratingSum - resource.data.ratingSum
+             == request.resource.data.ratingSum - oldCount(resource, 'ratingSum')
         )
         // Like: +1 only as this visitor's liker doc appears, -1 only as their own
         // liker doc disappears. You can never un-like on someone else's behalf.
@@ -80,17 +93,17 @@ service cloud.firestore {
           && isVisitor()
           && request.resource.data.likeCount >= 0
           && (
-            (request.resource.data.likeCount == resource.data.likeCount + 1
+            (request.resource.data.likeCount == oldCount(resource, 'likeCount') + 1
              && !exists(/databases/$(database)/documents/artworks/$(artworkId)/likers/$(request.auth.uid))
              && getAfter(/databases/$(database)/documents/artworks/$(artworkId)/likers/$(request.auth.uid)) != null)
             ||
-            (request.resource.data.likeCount == resource.data.likeCount - 1
+            (request.resource.data.likeCount == oldCount(resource, 'likeCount') - 1
              && exists(/databases/$(database)/documents/artworks/$(artworkId)/likers/$(request.auth.uid))
              && getAfter(/databases/$(database)/documents/artworks/$(artworkId)/likers/$(request.auth.uid)) == null)
           )
         );
 
-      // A rating is written once and never revised — allowing an update would
+      // A rating is written once and never revised, allowing an update would
       // reopen vote-stuffing through the back door, since the aggregate above
       // only checks the value on create.
       match /raters/{uid} {
@@ -143,7 +156,7 @@ service cloud.firestore {
     match /reviews/{reviewId} {
       // Rules are evaluated per returned document, so a list query that does not
       // filter on approved == true will include a pending review and be rejected
-      // as a whole. That is intentional — it is what stops the moderation queue
+      // as a whole. That is intentional, it is what stops the moderation queue
       // leaking through an unfiltered query.
       allow read: if resource.data.approved == true || isAdmin();
 
@@ -191,7 +204,7 @@ service cloud.firestore {
       allow read: if resource.data.approved == true || isAdmin();
 
       // An admin creating a reply is Sunika answering publicly, so it arrives
-      // already approved and flagged `fromOwner` — a shape the visitor branch
+      // already approved and flagged `fromOwner`, a shape the visitor branch
       // below deliberately forbids.
       allow create: if isAdmin() || (
                          isVisitor()
@@ -204,7 +217,7 @@ service cloud.firestore {
                          && request.resource.data.body.size() >= 2
                          && request.resource.data.body.size() <= 700
                          // Don't let replies pile up on a review that is not (or is
-                         // no longer) public — an unmoderated back door.
+                         // no longer) public, an unmoderated back door.
                          && get(/databases/$(database)/documents/reviews/$(request.resource.data.reviewId)).data.approved == true
                        );
 

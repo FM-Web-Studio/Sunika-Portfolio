@@ -2,7 +2,7 @@
  * Pure review arithmetic: the average, the breakdown, the sort orders.
  *
  * Kept out of firebase/reviews.js so it can be tested without initialising a
- * Firebase app. It is also the part most worth testing — an average that quietly
+ * Firebase app. It is also the part most worth testing, an average that quietly
  * divides by zero, or a comparator that leaves equal ratings in random order, is
  * the kind of bug that looks like a design problem rather than a maths one.
  */
@@ -17,7 +17,7 @@ export const byNewest = (a, b) => seconds(b?.createdAt) - seconds(a?.createdAt);
  *
  * Ratings outside 1-5 and non-numeric ratings are excluded from BOTH the sum and the
  * total, so a single malformed document cannot drag the displayed average down. An
- * empty list returns `average: 0` so callers can render without guarding — but they
+ * empty list returns `average: 0` so callers can render without guarding, but they
  * should show `total` rather than "0.0 stars", which reads as a terrible score.
  */
 export function ratingSummary(reviews = []) {

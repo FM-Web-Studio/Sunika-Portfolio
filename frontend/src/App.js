@@ -94,7 +94,7 @@ const AppLayout = () => {
 const AppContent = () => (
   <>
     <ScrollToTop />
-    {/* Admin sits outside AppLayout, so it needs its own boundary — the layout's
+    {/* Admin sits outside AppLayout, so it needs its own boundary, the layout's
         Suspense only covers the public Outlet. Every route is lazy now (see
         pages/index.js), and a lazy element without a boundary above it throws. */}
     <Suspense fallback={<Loading />}>

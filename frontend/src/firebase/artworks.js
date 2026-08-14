@@ -25,7 +25,7 @@ const removeImage = async (path) => {
 const mapDoc = (d) => ({ id: d.id, ...d.data() });
 
 /*
- * Sorted in JS, deliberately — this used to be orderBy('order', 'asc'), which was a
+ * Sorted in JS, deliberately, this used to be orderBy('order', 'asc'), which was a
  * trap on two counts.
  *
  * Firestore excludes any document missing the ordered field from an orderBy query, so

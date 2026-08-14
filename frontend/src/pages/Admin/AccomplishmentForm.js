@@ -3,7 +3,7 @@ import { FiCheck, FiX } from 'react-icons/fi';
 import styles from './AdminForms.module.css';
 
 /*
- * One accomplishment: a win, a feature, a press moment — with the photo that goes
+ * One accomplishment: a win, a feature, a press moment, with the photo that goes
  * with it.
  *
  * The image is optional on purpose. An award with no photo is still worth listing,

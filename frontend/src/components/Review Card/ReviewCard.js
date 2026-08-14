@@ -12,8 +12,8 @@ import styles from './ReviewCard.module.css';
 /*
  * One published review.
  *
- *   full    — the Reviews page: like button, expandable replies, reply form.
- *   compact — the home page highlight strip: body clamped, no interaction, the
+ *   full, the Reviews page: like button, expandable replies, reply form.
+ *   compact, the home page highlight strip: body clamped, no interaction, the
  *             whole card is a link through to the Reviews page.
  *
  * Replies arrive already grouped by review (see firebase/reviews.js), so opening
@@ -30,6 +30,20 @@ export const formatReviewDate = (ts) => {
   return d.toLocaleDateString('en-ZA', { day: 'numeric', month: 'short', year: 'numeric' });
 };
 
+/*
+ * `reveal` is opt-in, and that is a bug fix rather than an option for its own sake.
+ *
+ * This card used to set `data-reveal` unconditionally. Theme.css styles
+ * `[data-reveal]` as `opacity: 0` until useReveal's IntersectionObserver adds
+ * `.is-revealed`, so on any page that does not call useReveal the card renders into
+ * the DOM, takes up space, and is permanently invisible. That is exactly what
+ * happened on the home page: the "What people say" heading appeared with nothing
+ * under it, and the reviews were loading correctly the whole time.
+ *
+ * Only a page that runs useReveal may ask for the animation, so the decision belongs
+ * to the page, not to the card. Forgetting the prop costs an animation; the old
+ * default cost the content.
+ */
 const ReviewCard = ({
   review,
   variant = 'full',
@@ -38,6 +52,7 @@ const ReviewCard = ({
   onToggleLike,
   onSubmitComment,
   index = 0,
+  reveal = false,
 }) => {
   const compact = variant === 'compact';
   const [open, setOpen] = useState(false);
@@ -48,7 +63,7 @@ const ReviewCard = ({
     e.preventDefault();
     setSending(true);
     try {
-      // Only clear the box when the reply actually landed — otherwise a failed
+      // Only clear the box when the reply actually landed, otherwise a failed
       // submit silently eats what the visitor typed.
       if (await onSubmitComment?.(review.id, form)) setForm({ authorName: '', body: '' });
     } finally {
@@ -61,8 +76,9 @@ const ReviewCard = ({
   return (
     <article
       className={`${styles.card} ${compact ? styles.compact : ''}`}
-      data-reveal
-      style={{ '--reveal-delay': `${Math.min(index, 8) * 0.06}s` }}
+      {...(reveal
+        ? { 'data-reveal': true, style: { '--reveal-delay': `${Math.min(index, 8) * 0.06}s` } }
+        : {})}
     >
       <span className={styles.quoteMark} aria-hidden="true">&ldquo;</span>
 
@@ -114,7 +130,7 @@ const ReviewCard = ({
               <div className={styles.commentBody}>
                 <p className={styles.commentHead}>
                   <strong>{c.authorName}</strong>
-                  {/* "Artist", not the name again — the name is already right beside
+                  {/* "Artist", not the name again, the name is already right beside
                       it, and a badge repeating it read as "Sunika · Sunika". */}
                   {c.fromOwner && <span className={styles.ownerBadge}>Artist</span>}
                   <span className={styles.date}>{formatReviewDate(c.createdAt)}</span>

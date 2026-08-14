@@ -10,7 +10,7 @@ const STARS = [1, 2, 3, 4, 5];
  * - interactive: hover to preview, click to rate.
  *
  * `lockAfterRate` is what separates the two interactive uses. Rating an artwork is a
- * one-shot vote, so the control locks the moment it is used — that is the point. A
+ * one-shot vote, so the control locks the moment it is used, that is the point. A
  * star field inside the review form is just a form input, and locking it means
  * picking 3 by accident leaves someone unable to correct it to 4 without reloading
  * the page and retyping their review. Callers editing a value pass false.

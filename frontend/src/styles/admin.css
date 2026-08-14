@@ -6,7 +6,7 @@
  * --spacing-*, --font-size-*, --radius-*, --z-modal, transitions, shadows).
  *
  * This site's Theme.css already defines every one of those names natively and
- * flips them in dark mode, so no bridging is needed — they inherit straight
+ * flips them in dark mode, so no bridging is needed, they inherit straight
  * through. The real work of this file is the border-color promotion and the
  * .admin-scope scoped scrollbar.
  *
@@ -21,7 +21,7 @@
      to nothing for this element and every descendant. That silently killed
      --background-0/1/2 and the accents across the whole admin (transparent
      topbar, transparent mobile nav drawer, text showing through). The accent,
-     background and z-index tokens already inherit from Theme.css — leave them
+     background and z-index tokens already inherit from Theme.css, leave them
      alone. Only genuine remappings belong in this block.
 
      The public site's hairline is a blush #F2DFE4, which all but disappears

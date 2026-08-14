@@ -43,7 +43,7 @@
    * of page moving underneath it every frame. Animating the blur RADIUS on top of
    * that forces a differently-sized blur to be recomputed on each frame of the
    * transition, and that quarter-second lands exactly on the first scroll of every
-   * page — which is what the stutter at the top of the page was. The blur now
+   * page, which is what the stutter at the top of the page was. The blur now
    * switches on in one step while only colour and border fade.
    *
    * It stays out of the base rule on purpose: while the page is at the top the bar

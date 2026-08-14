@@ -56,8 +56,10 @@ const FilterPanel = ({
     { value: 'oldest',     label: 'Oldest first' },
     { value: 'top-rated',  label: 'Top rated' },
     { value: 'most-liked', label: 'Most liked' },
-    { value: 'price-asc',  label: 'Price ↑' },
-    { value: 'price-desc', label: 'Price ↓' },
+    // Spelled out rather than an arrow glyph. The arrows were ambiguous anyway:
+    // an up arrow beside "Price" reads as easily as "expensive first".
+    { value: 'price-asc',  label: 'Price: low to high' },
+    { value: 'price-desc', label: 'Price: high to low' },
   ];
 
   return createPortal(

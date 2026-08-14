@@ -92,6 +92,11 @@
     --z-modal: 1050;
     --z-popover: 1060;
     --z-tooltip: 1070;
+    /* The full-screen loading state sits above EVERYTHING, including the mobile
+       burger at calc(--z-modal + 2) and the Settings cog at --z-modal. Both are
+       portalled to <body>, so they land after the app content in DOM order and
+       used to paint straight through the loading screen. */
+    --z-loading: 1200;
 
     /* ─── COLOR PALETTE, PASTEL FLORAL ─────────────────────────────────────── */
 
@@ -321,14 +326,14 @@
 html {
     scroll-behavior: auto;
     /* `clip`, not `hidden`. overflow-x:hidden silently makes <html> a scroll
-       container, and a scroll container clips position:sticky descendants — which
+       container, and a scroll container clips position:sticky descendants, which
        is why the sticky heading column in the About section would drift and snap
        instead of holding. `clip` suppresses the horizontal overflow without
        creating a scroll container, so sticky behaves and the decorative blobs that
        hang past the edge still do not cause a sideways scrollbar.
 
        The `hidden` line first is the fallback for Safari below 16, which ignores
-       `clip` — those browsers keep the old behaviour rather than gaining a
+       `clip`, those browsers keep the old behaviour rather than gaining a
        horizontal scrollbar. */
     overflow-x: hidden;
     overflow-x: clip;
@@ -399,7 +404,7 @@ body, #root {
         transform 0.9s var(--ease-out-expo);
     transition-delay: var(--reveal-delay, 0s);
     /* will-change only while the element is still waiting to animate. Left on
-       permanently — as it was — every card in the gallery, every review and every
+       permanently, as it was, every card in the gallery, every review and every
        project row keeps its own compositor layer for the whole session. Dozens of
        those exhausts GPU memory and the browser starts falling back to software
        paint mid-scroll, which is felt as intermittent stutter that gets worse the

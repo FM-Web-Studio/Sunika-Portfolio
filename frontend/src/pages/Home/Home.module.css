@@ -31,7 +31,7 @@
 /* Static background colour pops. */
 /* A 60px blur over a 420px box. Left as-is, the browser re-rasterises that blur
    every frame the element moves through the viewport, which on a long scrolling
-   page is most frames — the single biggest source of the grittiness this page had.
+   page is most frames, the single biggest source of the grittiness this page had.
    translateZ(0) + will-change promotes it to its own compositor layer: the blur is
    rasterised once and thereafter only translated by the GPU. */
 .blob {
@@ -83,7 +83,7 @@
 
 /* Fine dotted texture over the hero. */
 /* A repeating gradient tiled every 26px across the whole hero. Cheap to declare,
-   expensive to repaint — same treatment as .blob, for the same reason. */
+   expensive to repaint, same treatment as .blob, for the same reason. */
 .grain {
   position: absolute; inset: 0; z-index: 0; pointer-events: none; opacity: 0.5;
   background-image: radial-gradient(rgba(var(--accent-1-rgb), 0.06) 1px, transparent 1px);
@@ -166,21 +166,12 @@
   gap: var(--spacing-lg); flex-wrap: wrap;
 }
 
-.viewAll {
-  display: inline-flex; align-items: center; gap: 6px;
-  font-family: var(--font-heading); font-size: var(--font-size-xs); font-weight: 600;
-  letter-spacing: 0.08em; text-transform: uppercase; color: var(--primary-text-color);
-  text-decoration: none; white-space: nowrap;
-  transition: color 0.2s ease, gap 0.2s ease;
-}
-.viewAll:hover { color: var(--accent-1); gap: 10px; text-decoration: none; }
-
 /* ══════════════════════════════════════
    GLOBAL BUTTON RESET
 
    Components.css styles bare `button` elements with a frosted surface and a
    hover lift, driven by --_btn-* tokens. Its `button:hover:not(:disabled)`
-   selector scores 0,2,1 — higher than a plain `.class:hover` at 0,2,0 — so
+   selector scores 0,2,1, higher than a plain `.class:hover` at 0,2,0, so
    overriding the hover background with a normal rule silently loses. The
    codebase's idiom is to redefine the tokens instead, which is what this does.
 ══════════════════════════════════════ */
@@ -229,19 +220,6 @@
 .ctaPrimary svg { transition: transform 0.22s var(--ease-out); }
 .ctaPrimary:hover svg { transform: translateX(3px); }
 .ctaBig { padding: 1.05rem 2.3rem; font-size: var(--font-size-md); }
-
-.ctaGhost {
-  display: inline-flex; align-items: center; gap: var(--spacing-sm);
-  padding: 0.9rem 1.9rem; background: var(--background-1); color: var(--hero-text);
-  border: 1.5px solid var(--border-color); border-radius: var(--radius-full);
-  font-family: var(--font-heading); font-weight: 700; font-size: var(--font-size-sm); letter-spacing: 0.04em;
-  text-decoration: none; box-shadow: var(--shadow-sm);
-  transition: transform 0.22s var(--ease-out), border-color 0.22s ease, color 0.22s ease;
-}
-.ctaGhost:hover {
-  border-color: var(--accent-1); color: var(--accent-1);
-  transform: translateY(-2px); text-decoration: none;
-}
 
 /* ══════════════════════════════════════
    HERO
@@ -331,8 +309,7 @@
 }
 
 /* The skeleton and the real text it replaces are held to the same minimum height.
-   Otherwise the hero's buttons jump the instant the profile document arrives —
-   which is the first thing a visitor sees, and often lands exactly as they start
+   Otherwise the hero's buttons jump the instant the profile document arrives, which is the first thing a visitor sees, and often lands exactly as they start
    scrolling, so the whole page appears to lurch. */
 .heroSkeleton,
 .heroTextBlock {
@@ -345,11 +322,6 @@
 @media (max-width: 700px) {
   .heroSkeleton,
   .heroTextBlock { min-height: 9.5rem; }
-}
-
-.heroCtas {
-  display: flex; gap: var(--spacing-md); flex-wrap: wrap; justify-content: center;
-  margin-top: var(--spacing-lg);
 }
 
 @media (max-width: 700px) {
@@ -570,7 +542,7 @@
 }
 
 /* aspect-ratio, not height:auto. The photo is lazy-loaded, so without a reserved
-   box the text below it jumps down the moment it decodes — and under Lenis a
+   box the text below it jumps down the moment it decodes, and under Lenis a
    mid-scroll reflow reads as the whole page stuttering. */
 .winImage {
   position: relative;
@@ -701,6 +673,70 @@
    Three compact cards on a tinted band, so it reads as a pause between the
    timeline and the closing call to action rather than as another content section.
 ══════════════════════════════════════ */
+/* ══════════════════════════════════════
+   EXPLORE PILLS
+   One centred row, directly under the hero.
+
+   These were four full cards with a line of description each, which filled most of
+   a screen and read as page content arguing with the hero. Navigation does not need
+   explaining: a labelled pill row is instantly recognisable as "the other pages",
+   costs one line, and lets the hero stay the thing you look at.
+
+   Sized in em so the pill scales with its own label rather than needing a separate
+   mobile rule, and it wraps instead of scrolling on a narrow screen.
+══════════════════════════════════════ */
+.explore {
+  position: relative;
+  z-index: 1;
+  max-width: var(--measure);
+  margin: 0 auto;
+  padding: 0 var(--gutter) var(--spacing-2xl);
+}
+
+.exploreList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--spacing-sm);
+}
+
+.explorePill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  padding: 0.55em 1.15em;
+  font-family: var(--font-heading);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--secondary-text-color);
+  background: var(--background-1);
+  border: 1.5px solid var(--border-color);
+  border-radius: var(--radius-full);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease,
+              transform 0.2s var(--ease-out);
+}
+
+/* Tint and lift, no underline. Three signals for one affordance is noise. */
+.page .explorePill:hover,
+.page .explorePill:focus-visible {
+  color: var(--accent-1);
+  border-color: var(--accent-1);
+  background: var(--accent-1-background);
+  transform: translateY(-2px);
+  text-decoration: none;
+}
+
+.exploreIcon {
+  flex-shrink: 0;
+  font-size: 1.05em;
+  color: var(--accent-1);
+}
+
 .reviews {
   position: relative;
   padding: var(--section-pad-y) 0;

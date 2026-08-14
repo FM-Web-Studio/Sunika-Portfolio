@@ -3,7 +3,7 @@
  * accomplishments).
  *
  * All three sort by an `order` number the admin controls, and all three sort in JS
- * rather than with a Firestore orderBy — Firestore drops documents that are missing
+ * rather than with a Firestore orderBy, Firestore drops documents that are missing
  * the ordered field from the result set entirely, so one document written without an
  * `order` would silently vanish from the site with no error to explain it.
  *
@@ -16,7 +16,7 @@ const seconds = (ts) => ts?.seconds ?? 0;
 
 /**
  * Ascending by `order`. Documents with no numeric `order` sort last rather than
- * first — an unordered item is "not placed yet", and floating it to the top of the
+ * first, an unordered item is "not placed yet", and floating it to the top of the
  * gallery would be worse than leaving it at the end. Ties break on newest first.
  */
 export const byOrderThenNewest = (a, b) => {

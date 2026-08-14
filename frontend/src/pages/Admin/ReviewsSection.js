@@ -3,7 +3,7 @@ import { Modal, StarRating, useToast } from '../../components';
 import {
   getAllReviews, getAllComments, setReviewApproved, setCommentApproved,
   deleteReview, deleteComment, replyAsOwner, ratingSummary,
-  describeVisitor, REVIEW_LIMITS,
+  describeVisitor, refreshToken, REVIEW_LIMITS,
 } from '../../firebase';
 import { useContent } from '../../context/ContentContext';
 import styles from './Admin.module.css';
@@ -14,7 +14,7 @@ import formStyles from './AdminForms.module.css';
  *
  * Everything loads up front in two reads, and pending items of BOTH kinds appear
  * in one list. Loading a review's replies only when it is expanded would mean a
- * reply awaiting approval on an already-published review is invisible — there
+ * reply awaiting approval on an already-published review is invisible, there
  * would be no way to know it existed without opening every review in turn.
  *
  * Pending items render fully expanded. A queue exists to be read and cleared, and
@@ -29,9 +29,9 @@ const FILTERS = [
 ];
 
 const fmt = (ts) => {
-  if (!ts) return '—';
+  if (!ts) return '-';
   const d = ts.toDate ? ts.toDate() : new Date(ts);
-  if (Number.isNaN(d.getTime())) return '—';
+  if (Number.isNaN(d.getTime())) return '-';
   return d.toLocaleDateString('en-ZA', {
     day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit',
   });
@@ -53,8 +53,29 @@ const ReviewsSection = () => {
 
   const load = useCallback(async () => {
     setLoading(true);
+    const fetchBoth = () => Promise.all([getAllReviews(), getAllComments()]);
     try {
-      const [r, c] = await Promise.all([getAllReviews(), getAllComments()]);
+      let pair;
+      try {
+        pair = await fetchBoth();
+      } catch (err) {
+        /*
+         * One retry behind a forced token refresh.
+         *
+         * Signing in with Google on top of an anonymous visitor session swaps the
+         * account underneath a Firestore client that may still be holding a stream
+         * authenticated as the previous identity. The first admin-only read in that
+         * window comes back permission-denied to somebody who genuinely IS an admin,
+         * and a page reload clears it, which makes the bug look intermittent and
+         * unexplainable. Reviews are the only read on this site that can hit it,
+         * because every other admin section reads a publicly readable collection.
+         */
+        if (err?.code !== 'permission-denied' || !(await refreshToken())) throw err;
+        console.warn('[Admin] reviews read denied; retrying with a refreshed token');
+        pair = await fetchBoth();
+      }
+
+      const [r, c] = pair;
       setReviews(r);
       setComments(c);
       setError(null);
@@ -63,7 +84,7 @@ const ReviewsSection = () => {
       /*
        * Name the cause rather than saying "could not load".
        *
-       * Reviews are the only collection whose READ requires isAdmin() — every other
+       * Reviews are the only collection whose READ requires isAdmin(), every other
        * admin section reads a publicly readable collection, so it loads regardless of
        * whether the rules recognise you. That makes permission-denied here ambiguous
        * in a way it is nowhere else, so the identity the rules actually saw is logged
@@ -74,7 +95,7 @@ const ReviewsSection = () => {
         console.error('[Admin] identity firestore.rules saw:', who);
         setError(
           who.isAnonymous || !who.signedIn
-            ? 'You are not signed in as an admin in this browser — the session is anonymous. Sign out and sign in with Google again.'
+            ? 'You are not signed in as an admin in this browser, the session is anonymous. Sign out and sign in with Google again.'
             : `Permission denied reading reviews as ${who.tokenEmail || who.email || 'unknown'}`
               + `${who.tokenEmailVerified === false ? ' (email not verified)' : ''}. `
               + 'Check this address is in the isAdmin() allowlist in firestore.rules and that the rules are deployed.',
@@ -118,7 +139,7 @@ const ReviewsSection = () => {
       if (successMessage) showToast?.('success', 'Done', successMessage);
     } catch (err) {
       const reason = err?.code === 'permission-denied'
-        ? 'Permission denied — check you are still signed in as an admin.'
+        ? 'Permission denied, check you are still signed in as an admin.'
         : err?.message || 'Unknown error.';
       showToast?.('error', 'Failed', reason);
     } finally {
@@ -151,7 +172,7 @@ const ReviewsSection = () => {
   /* Publish everything waiting, in one go. Confirmed because it is the one action
      here that puts text on the live site without anyone having read it. */
   const publishAllPending = () => {
-    if (!window.confirm(`Publish all ${pendingTotal} waiting item(s)? Read them first — this puts them straight on the site.`)) return;
+    if (!window.confirm(`Publish all ${pendingTotal} waiting item(s)? Read them first, this puts them straight on the site.`)) return;
     guard('bulk', async () => {
       await Promise.all([
         ...pendingReviews.map((r) => setReviewApproved(r.id, true)),
@@ -164,7 +185,7 @@ const ReviewsSection = () => {
     e.preventDefault();
     const review = replyTo;
     if (!review || replyBody.trim().length < REVIEW_LIMITS.comment.min) return;
-    // The display name comes from the editable brand copy, not a literal — otherwise
+    // The display name comes from the editable brand copy, not a literal, otherwise
     // renaming the site in Site Copy would leave old replies signed with the old name
     // and new ones hardcoded to it too.
     await guard(`reply-${review.id}`, () => replyAsOwner(review.id, {
@@ -211,7 +232,7 @@ const ReviewsSection = () => {
           {showParent && (
             <span className={styles.rowMeta}>
               on <strong>{parent?.authorName || 'a review'}</strong>
-              {parent?.title ? ` — “${parent.title}”` : ''}
+              {parent?.title ? `, “${parent.title}”` : ''}
               {parent && !parent.approved && ' · parent review not published'}
             </span>
           )}
@@ -249,8 +270,8 @@ const ReviewsSection = () => {
         <span className={styles.sectionCount}>
           {pendingTotal > 0
             ? `${pendingReviews.length} review(s) · ${pendingComments.length} reply(s) waiting`
-            : 'Nothing waiting — the queue is clear.'}
-          {summary.total > 0 && ` · published average ${summary.average.toFixed(1)}★ from ${summary.total}`}
+            : 'Nothing waiting, the queue is clear.'}
+          {summary.total > 0 && `, published average ${summary.average.toFixed(1)} stars from ${summary.total}`}
         </span>
         <div className={styles.subTabs}>
           {FILTERS.map((f) => (
@@ -350,7 +371,7 @@ const ReviewsSection = () => {
                     aria-expanded={isOpen}
                   >
                     <span className={styles.rowTitle}>
-                      {review.authorName} · {Number(review.rating) || 0}★
+                      {review.authorName}, {Number(review.rating) || 0} stars
                       {!review.approved && ' · Hidden'}
                       {thread.length > 0 && ` · ${thread.length} reply(s)`}
                       {waiting > 0 && ` · ${waiting} waiting`}

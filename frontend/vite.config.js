@@ -24,7 +24,7 @@ export default defineConfig({
         /*
          * Split the big third-party libraries into their own chunks.
          *
-         * This does not reduce what a first-time visitor downloads — the app needs
+         * This does not reduce what a first-time visitor downloads, the app needs
          * Firestore on first paint to read site content, so the SDK cannot be
          * deferred. What it buys is caching: previously every app change produced a
          * new 800 kB entry chunk, so a one-line copy edit made returning visitors

@@ -1,4 +1,7 @@
 import { describe, it, expect } from 'vitest';
+import { readFileSync, readdirSync, statSync } from 'node:fs';
+import { join, dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { resolveGroup, GROUP_FIELDS, COPY_SCHEMA } from './siteCopy';
 
 /*
@@ -47,7 +50,7 @@ describe('resolveGroup', () => {
 
 describe('copy schema wiring', () => {
   // The admin editor renders COPY_SCHEMA; pages read GROUP_FIELDS. If they drift, a
-  // group becomes editable but unread, or read but not editable — and both failures
+  // group becomes editable but unread, or read but not editable, and both failures
   // are invisible until someone notices an edit doing nothing.
   it('every editable group is also resolvable by a page', () => {
     for (const group of COPY_SCHEMA) {
@@ -68,5 +71,44 @@ describe('copy schema wiring', () => {
         expect(typeof field.default, `${group.key}.${field.key}`).toBe('string');
       }
     }
+  });
+
+  /*
+   * Every editable field must actually be rendered somewhere.
+   *
+   * This is the guard for a real drift that happened: removing duplicate navigation
+   * links from the home page orphaned three copy fields, which stayed in the admin
+   * editor looking editable while changing nothing. A field that silently does
+   * nothing is worse than no field, because someone edits it, saves, sees no change
+   * and reasonably concludes the admin is broken.
+   *
+   * Deliberately a loose substring search rather than a parse. It is looking for
+   * abandoned keys, and a false pass (the name appearing only in a comment) costs
+   * nothing, while a parse would be brittle against every access pattern.
+   */
+  it('has no orphaned field that nothing on the site renders', () => {
+    const srcRoot = join(dirname(fileURLToPath(import.meta.url)), '..');
+
+    const collect = (dir, out = []) => {
+      for (const entry of readdirSync(dir)) {
+        const full = join(dir, entry);
+        if (statSync(full).isDirectory()) collect(full, out);
+        else if (/\.js$/.test(entry) && !/\.test\.js$/.test(entry)) out.push(full);
+      }
+      return out;
+    };
+
+    const haystack = collect(join(srcRoot, 'pages'))
+      .concat(collect(join(srcRoot, 'components')))
+      .map((f) => readFileSync(f, 'utf8'))
+      .join('\n');
+
+    const orphaned = [];
+    for (const group of COPY_SCHEMA) {
+      for (const field of group.fields) {
+        if (!haystack.includes(`.${field.key}`)) orphaned.push(`${group.key}.${field.key}`);
+      }
+    }
+    expect(orphaned, 'copy fields nothing renders').toEqual([]);
   });
 });

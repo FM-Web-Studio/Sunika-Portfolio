@@ -9,7 +9,7 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 // Every message creates a document and fires an email notification, so an
 // unthrottled form is a way to flood Sunika's inbox one submit at a time. This is
-// a courtesy gate, not a security control — it lives in localStorage and someone
+// a courtesy gate, not a security control, it lives in localStorage and someone
 // determined can clear it. Real rate limiting needs App Check or reCAPTCHA
 // verified in the rule; see the note in the handover.
 const COOLDOWN_MS = 60 * 1000;

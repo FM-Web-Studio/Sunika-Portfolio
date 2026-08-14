@@ -46,7 +46,7 @@ const NotFound = () => {
 
         <div className={styles.codeDisplay} aria-hidden="true">404</div>
 
-        <h1 className={styles.heading}>This page wandered off 🌿</h1>
+        <h1 className={styles.heading}>This page wandered off</h1>
         <p className={styles.subtext}>
           The link might be a little old, or this page has gone to bloom elsewhere.
           Let&rsquo;s get you back home.

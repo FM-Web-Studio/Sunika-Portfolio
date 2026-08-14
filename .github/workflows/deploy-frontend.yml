@@ -6,7 +6,7 @@ on:
   # Cloud Functions are NOT deployed on every push. The contact-form trigger in
   # functions/ previously had no automated path at all, so a change to it sat
   # unreleased until someone remembered to run `firebase deploy --only functions`
-  # by hand — silent drift between the repo and what is actually running.
+  # by hand, silent drift between the repo and what is actually running.
   #
   # It is opt-in rather than automatic because deploying functions needs broader IAM
   # than hosting (Cloud Functions Developer + Service Account User on SERVICE_ACCOUNT)

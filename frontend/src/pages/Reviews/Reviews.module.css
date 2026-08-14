@@ -4,7 +4,7 @@
  * the three list pages read as one site. Below the header the page is its own
  * thing: a score panel, then a single column of cards.
  *
- * Deliberately one column, not a grid. Reviews are read, not scanned — a
+ * Deliberately one column, not a grid. Reviews are read, not scanned, a
  * multi-column masonry of ragged text blocks makes the eye hunt for where each
  * one starts, and the whole point of this page is that someone reads two or three
  * of them properly. */
@@ -370,15 +370,17 @@
   color: var(--tertiary-text-color);
 }
 
+/* background-COLOR, never the `background` shorthand. The shorthand also resets
+   background-image and background-repeat, which is what tiled the chevron across the
+   old native select. See the --select-arrow note in styles/Components.css. */
 .input,
-.select,
 .textarea {
   width: 100%;
   padding: 0.65rem 0.85rem;
   font-family: var(--font-body);
   font-size: var(--font-size-base);
   color: var(--primary-text-color);
-  background: var(--background-1);
+  background-color: var(--background-1);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
 }
@@ -386,7 +388,6 @@
 .textarea { resize: vertical; line-height: 1.6; }
 
 .input:focus,
-.select:focus,
 .textarea:focus {
   outline: none;
   border-color: var(--accent-1);

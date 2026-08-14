@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { FiArrowRight, FiExternalLink } from 'react-icons/fi';
+import {
+  FiArrowRight, FiExternalLink, FiGrid, FiImage, FiStar,
+} from 'react-icons/fi';
 import {
   ProjectLightbox, Skeleton, SkeletonText, Botanical,
   ReviewCard, ReviewCardSkeleton, StarRating,
@@ -36,6 +38,28 @@ const FEATURED_COUNT = 4;
 // How many reviews the highlight strip carries. Three fits one row on a desktop
 // and stays scannable on a phone; more turns the home page into the Reviews page.
 const HIGHLIGHT_REVIEWS = 3;
+
+/*
+ * The browse destinations, for the pill row under the hero.
+ *
+ * Every destination on this page has exactly ONE owner, which is why Contact is not
+ * in this list and why the old per-section "See everything" and "Read all reviews"
+ * links are gone. Before, /contact had three separate buttons on one page (a hero
+ * ghost button, a pill, and the closing call to action) and /projects and /reviews
+ * had two each. Repeating a link does not make it easier to find, it just makes the
+ * page louder and leaves the reader wondering whether the two go to the same place.
+ *
+ *   Projects / Gallery / Reviews -> these pills
+ *   Contact                      -> the closing section, which is the page's
+ *                                   conversion point and already a full section
+ *                                   with its own heading
+ *   Home                         -> the logo in the top bar
+ */
+const PAGE_LINKS = [
+  { to: '/projects', label: 'Projects', Icon: FiGrid },
+  { to: '/gallery',  label: 'Gallery',  Icon: FiImage },
+  { to: '/reviews',  label: 'Reviews',  Icon: FiStar },
+];
 
 const Home = () => {
   const { copy } = useContent();
@@ -78,8 +102,8 @@ const Home = () => {
 
   /*
    * Reviews are fetched once, not subscribed to. The home page only shows three of
-   * them and they change when an admin approves something, not second by second —
-   * a listener would hold an open channel all session for nothing. Failing quietly
+   * them and they change when an admin approves something, not second by second.
+   * A listener would hold an open channel all session for nothing. Failing quietly
    * is deliberate too: no reviews yet is the same visual outcome as a failed read,
    * and neither is worth an error banner on a landing page.
    */
@@ -112,8 +136,8 @@ const Home = () => {
   const hasReviews   = topReviews.length > 0;
 
   /*
-   * About comes BEFORE work. It carries the accomplishments — a competition win,
-   * a feature, the photo that came with it — and those are the strongest thing on
+   * About comes BEFORE work. It carries the accomplishments, a competition win,
+   * a feature, the photo that came with it, and those are the strongest thing on
    * the page. Leading with a project grid buries them below a scroll that plenty
    * of visitors never finish.
    */
@@ -185,7 +209,7 @@ const Home = () => {
         <span className={`${styles.bot} ${styles.botHeroBR}`} aria-hidden="true"><Botanical variant="sprig" /></span>
 
         <div className={styles.heroInner}>
-          {/* Any emoji lives inside the copy field, not beside it — see siteCopy.js. */}
+          {/* Any emoji lives inside the copy field, not beside it, see siteCopy.js. */}
           <p className={styles.heroEyebrow}>{t.heroEyebrow}</p>
 
           <h1 className={styles.heroTitle}>
@@ -212,24 +236,22 @@ const Home = () => {
               {personal.bio && <p className={styles.heroBio}>{personal.bio}</p>}
             </div>
           )}
-
-          <div className={styles.heroCtas}>
-            <button type="button" className={styles.ctaPrimary} onClick={() => goTo('work')}>
-              {t.heroCtaPrimary} <FiArrowRight aria-hidden="true" />
-            </button>
-            <Link to="/contact" className={styles.ctaGhost}>{t.heroCtaGhost}</Link>
-          </div>
         </div>
       </section>
 
-      {/* ════════ ABOUT ════════
-          Sits above the work grid on purpose. This is where the accomplishments
-          live — a competition win, a feature, the photo that came with it — and
-          those are the strongest thing on the page. Behind a four-row project
-          scroll, plenty of visitors would never reach them.
+      <nav className={styles.explore} aria-label="Browse">
+        <ul className={styles.exploreList}>
+          {PAGE_LINKS.map(({ to, label, Icon }) => (
+            <li key={to}>
+              <Link to={to} className={styles.explorePill}>
+                <Icon className={styles.exploreIcon} aria-hidden="true" />
+                {label}
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </nav>
 
-          Two columns: the heading sticks while the content scrolls past it.
-          Sticky is layout, not animation, and it reads well under momentum. */}
       {hasAbout && (
         <section ref={setRef('about')} data-section="about" className={styles.about}>
           <span className={styles.blob} data-b="3" aria-hidden="true" />
@@ -255,11 +277,6 @@ const Home = () => {
             <div className={styles.flowCol}>
               {personal.bio && <p className={styles.aboutBio}>{personal.bio}</p>}
 
-              {/* ── Accomplishments ──
-                  The featured entry gets its photo at full width, because a photo
-                  of Sunika holding the prize IS the story. The rest are one-liners:
-                  a wall of equally-sized cards would flatten the newest win into
-                  just another tile. */}
               {hasWins && (
                 <div className={styles.block}>
                   <p className={styles.blockLabel}>{t.winsLabel}</p>
@@ -362,18 +379,12 @@ const Home = () => {
         </section>
       )}
 
-      {/* ════════ WORK ════════
-          Alternating full-width rows rather than one spotlight widget, so the
-          artwork gets real estate and the scroll gains a left/right rhythm. */}
       <section ref={setRef('work')} data-section="work" className={styles.work}>
         <div className={styles.sectionHead}>
           <div>
             <p className={styles.kicker}>{t.workKicker}</p>
             <h2 className={styles.sectionTitle}>{t.workTitle}</h2>
           </div>
-          <Link to="/projects" className={styles.viewAll}>
-            {t.workViewAll} <FiArrowRight aria-hidden="true" />
-          </Link>
         </div>
 
         {!projectsLoaded ? (
@@ -475,15 +486,6 @@ const Home = () => {
         </section>
       )}
 
-      {/* ════════ REVIEWS ════════
-          A short highlight strip, not the whole list — the Reviews page is one
-          click away and this only has to earn that click. The average sits in the
-          header so the number is visible without counting cards.
-
-          Rendered only when there is something to show: an empty "what people say"
-          heading over nothing reads worse than no section at all. The one exception
-          is while they are still loading, where skeletons hold the space so the
-          page below does not jump when they arrive. */}
       {(hasReviews || !reviewsLoaded) && (
         <section ref={setRef('reviews')} data-section="reviews" className={styles.reviews}>
           <span className={styles.blob} data-b="1" aria-hidden="true" />
@@ -503,9 +505,6 @@ const Home = () => {
                 </div>
               )}
             </div>
-            <Link to="/reviews" className={styles.viewAll}>
-              {t.reviewsViewAll} <FiArrowRight aria-hidden="true" />
-            </Link>
           </div>
 
           <div className={styles.reviewsGrid}>
@@ -535,7 +534,7 @@ const Home = () => {
             {t.contactCta} <FiArrowRight aria-hidden="true" />
           </Link>
           <button type="button" className={styles.backTop} onClick={() => goTo('hero')}>
-            {t.backTop} ↑
+            {t.backTop}
           </button>
         </div>
       </section>

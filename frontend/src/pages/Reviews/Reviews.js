@@ -1,7 +1,8 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { FiEdit3 } from 'react-icons/fi';
+import { FiEdit3, FiX } from 'react-icons/fi';
 import {
-  ReviewCard, ReviewCardSkeleton, StarRating, Modal, Botanical, useToast,
+  ReviewCard, ReviewCardSkeleton, StarRating, Modal, Botanical,
+  SearchableDropdown, useToast,
 } from '../../components';
 import {
   getApprovedReviews, getApprovedCommentsByReview, submitReview, submitComment,
@@ -82,7 +83,7 @@ const Reviews = () => {
 
   /*
    * Optimistic: the heart and counter move immediately and the write goes out
-   * behind them. A like is low-stakes and high-frequency — waiting on a round
+   * behind them. A like is low-stakes and high-frequency, waiting on a round
    * trip makes the button feel broken. On failure both go back.
    */
   const handleToggleLike = async (id) => {
@@ -192,7 +193,7 @@ const Reviews = () => {
         {/* ── Summary: the score, the breakdown, and the way in ────────────── */}
         <section className={styles.summary} data-reveal>
           <div className={styles.score}>
-            <strong className={styles.average}>{hasAny ? summary.average.toFixed(1) : '—'}</strong>
+            <strong className={styles.average}>{hasAny ? summary.average.toFixed(1) : '-'}</strong>
             <StarRating value={summary.average} size="lg" showCount={false} />
             <span className={styles.count}>
               {hasAny
@@ -201,7 +202,7 @@ const Reviews = () => {
             </span>
           </div>
 
-          {/* Each bar doubles as a filter — a breakdown you can only look at is a
+          {/* Each bar doubles as a filter, a breakdown you can only look at is a
               missed affordance, since "show me the 3-star ones" is the whole
               reason to read a breakdown. */}
           <div className={styles.breakdown}>
@@ -219,7 +220,7 @@ const Reviews = () => {
                   disabled={!n}
                   aria-label={`${n} ${star}-star ${n === 1 ? 'review' : 'reviews'}. ${active ? 'Clear filter' : 'Filter by this rating'}`}
                 >
-                  <span className={styles.barLabel}>{star} ★</span>
+                  <span className={styles.barLabel}>{star} stars</span>
                   <span className={styles.barTrack}>
                     <span className={styles.barFill} style={{ width: `${pct}%` }} />
                   </span>
@@ -256,7 +257,7 @@ const Reviews = () => {
             </div>
             {filterRating > 0 && (
               <button type="button" className={styles.clearFilter} onClick={() => setFilterRating(0)}>
-                Showing {filterRating}★ only — clear ✕
+                Showing {filterRating} stars only, clear <FiX aria-hidden="true" />
               </button>
             )}
           </div>
@@ -286,6 +287,9 @@ const Reviews = () => {
                 onToggleLike={handleToggleLike}
                 onSubmitComment={handleSubmitComment}
                 index={i}
+                // Safe here, and only here: this page runs useReveal above, so the
+                // observer exists to un-hide the card. See the note in ReviewCard.
+                reveal
               />
             ))}
           </div>
@@ -346,13 +350,20 @@ const Reviews = () => {
               />
             </label>
 
-            <label className={styles.field}>
+            {/* SearchableDropdown, not a native select. The rest of the site uses
+                this component and it is already theme-aware; a raw <select> also
+                picks up the global select styling, which is where the tiled-arrow
+                bug came from. */}
+            <div className={styles.field}>
               <span className={styles.label}>What was it for? <span className={styles.hint}>(optional)</span></span>
-              <select className={styles.select} value={form.subject} onChange={set('subject')}>
-                <option value="">Select…</option>
-                {REVIEW_SUBJECTS.map((s) => <option key={s} value={s}>{s}</option>)}
-              </select>
-            </label>
+              <SearchableDropdown
+                options={REVIEW_SUBJECTS.map((v) => ({ value: v, label: v }))}
+                value={form.subject ? { value: form.subject, label: form.subject } : null}
+                onChange={(opt) => setForm((f) => ({ ...f, subject: opt?.value ?? '' }))}
+                placeholder="Select"
+                isClearable
+              />
+            </div>
           </div>
 
           <label className={styles.field}>

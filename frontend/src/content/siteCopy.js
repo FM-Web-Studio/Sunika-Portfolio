@@ -10,11 +10,12 @@
  *
  * `resolveGroup(fields, overrides)` overlays saved overrides onto the defaults.
  *
- * EMOJI BELONG IN THESE STRINGS. Several headings used to render as
- * `{t.aboutTitle} <span>👋</span>`, which meant the admin could edit the words but
- * the emoji was welded into the JSX — changing "Nice to meet you!" to something
- * else left a waving hand stuck on the end, and there was no way to remove it or
- * swap it. Anything a visitor reads as part of the title is part of the field.
+ * DECORATION BELONGS IN THESE STRINGS, never beside them in the JSX. Several
+ * headings used to render their text from a field with a decorative glyph hardcoded
+ * next to it, so an admin could edit the words but could not remove or change the
+ * glyph. Anything a visitor reads as part of the title is part of the field.
+ *
+ * The defaults are deliberately plain text. Keep them that way.
  */
 
 // Brand / footer
@@ -26,25 +27,22 @@ export const BRAND_FIELDS = [
 
 // Home page
 export const HOME_FIELDS = [
-  { key: 'heroEyebrow',    label: 'Hero: greeting',        type: 'text',     default: 'Hi there! 🌷' },
-  { key: 'heroCtaPrimary', label: 'Hero: primary button',  type: 'text',     default: 'Come see my work' },
-  { key: 'heroCtaGhost',   label: 'Hero: second button',   type: 'text',     default: 'Say hello 👋' },
+  { key: 'heroEyebrow',    label: 'Hero: greeting',        type: 'text',     default: 'Hi there!' },
 
   { key: 'makingKicker',   label: 'Craft: kicker',         type: 'text',     default: 'What I love making' },
   { key: 'makingTitle',    label: 'Craft: title',          type: 'text',     default: 'I turn ideas into happy things.' },
 
   { key: 'workKicker',     label: 'Work: kicker',          type: 'text',     default: 'Recent favourites' },
   { key: 'workTitle',      label: 'Work: title',           type: 'text',     default: "A few things I'm proud of." },
-  { key: 'workViewAll',    label: 'Work: view all link',   type: 'text',     default: 'See everything' },
   { key: 'workViewOne',    label: 'Work: per-project link', type: 'text',    default: 'Take a closer look' },
   { key: 'workEmpty',      label: 'Work: empty note',      type: 'text',     default: 'Projects are on their way, check back soon.' },
 
   { key: 'aboutKicker',    label: 'About: kicker',         type: 'text',     default: 'A little about me' },
-  { key: 'aboutTitle',     label: 'About: title',          type: 'text',     default: 'Nice to meet you! 👋' },
+  { key: 'aboutTitle',     label: 'About: title',          type: 'text',     default: 'Nice to meet you!' },
   { key: 'aboutNote',      label: 'About: note',           type: 'textarea', default: 'A few of the things that keep me curious and inspired' },
   { key: 'interestsLabel', label: 'About: interests label', type: 'text',    default: 'Things I love' },
 
-  { key: 'winsLabel',      label: 'About: wins label',     type: 'text',     default: 'Recent highlights 🏆' },
+  { key: 'winsLabel',      label: 'About: wins label',     type: 'text',     default: 'Recent highlights' },
   { key: 'winsNote',       label: 'About: wins note',      type: 'textarea', default: 'Moments I am proud of.' },
 
   { key: 'journeyKicker',  label: 'Journey: kicker',       type: 'text',     default: 'My path so far' },
@@ -52,12 +50,10 @@ export const HOME_FIELDS = [
   { key: 'journeyExpLabel', label: 'Journey: experience label', type: 'text', default: 'Experience' },
   { key: 'journeyEduLabel', label: 'Journey: education label',  type: 'text', default: 'Education' },
 
-  { key: 'reviewsKicker',  label: 'Reviews: kicker',       type: 'text',     default: 'Kind words 💛' },
+  { key: 'reviewsKicker',  label: 'Reviews: kicker',       type: 'text',     default: 'Kind words' },
   { key: 'reviewsTitle',   label: 'Reviews: title',        type: 'text',     default: 'What people say.' },
-  { key: 'reviewsViewAll', label: 'Reviews: view all link', type: 'text',    default: 'Read all reviews' },
-  { key: 'reviewsEmpty',   label: 'Reviews: empty note',   type: 'text',     default: 'No reviews yet — yours could be the first.' },
 
-  { key: 'contactEyebrow', label: 'Contact: eyebrow',      type: 'text',     default: "Let's talk 🌸" },
+  { key: 'contactEyebrow', label: 'Contact: eyebrow',      type: 'text',     default: "Let's talk" },
   { key: 'contactTitle',   label: 'Contact: title',        type: 'text',     default: "Let's make something lovely together." },
   { key: 'contactCta',     label: 'Contact: button',       type: 'text',     default: 'Say hello' },
   { key: 'backTop',        label: 'Contact: back to top',  type: 'text',     default: 'Back to top' },
@@ -85,17 +81,17 @@ export const GALLERY_FIELDS = [
 // Reviews page
 export const REVIEWS_FIELDS = [
   { key: 'overline',      label: 'Header: overline',    type: 'text',     default: 'Sunika · Kind Words' },
-  { key: 'heading',       label: 'Header: title',       type: 'text',     default: 'Reviews ⭐' },
+  { key: 'heading',       label: 'Header: title',       type: 'text',     default: 'Reviews' },
   { key: 'subtitle',      label: 'Header: subtitle',    type: 'textarea', default: 'Honest words from the people I have made things for.' },
   { key: 'writeBlurb',    label: 'Write: blurb',        type: 'text',     default: 'Worked with me?' },
   { key: 'writeBtn',      label: 'Write: button',       type: 'text',     default: 'Write a review' },
   { key: 'moderationNote', label: 'Write: small print', type: 'textarea', default: 'Reviews are read before they go live, so yours may take a little while to appear.' },
   { key: 'formTitle',     label: 'Form: title',         type: 'text',     default: 'Share your experience' },
-  { key: 'submitBtn',     label: 'Form: submit button',  type: 'text',     default: 'Send review 🌷' },
-  { key: 'privacyNote',   label: 'Form: privacy note',  type: 'textarea', default: 'Your name and review are shown publicly. I never ask for your email or phone number here — if you need to reach me, use the contact page.' },
+  { key: 'submitBtn',     label: 'Form: submit button',  type: 'text',     default: 'Send review' },
+  { key: 'privacyNote',   label: 'Form: privacy note',  type: 'textarea', default: 'Your name and review are shown publicly. I never ask for your email or phone number here, if you need to reach me, use the contact page.' },
   { key: 'thanksNote',    label: 'Form: thank-you',     type: 'textarea', default: 'Your review has been sent and will appear once it has been read.' },
   { key: 'emptySummary',  label: 'Empty: summary',      type: 'text',     default: 'No reviews yet' },
-  { key: 'emptyList',     label: 'Empty: list',         type: 'textarea', default: 'No reviews just yet — be the first to share your experience.' },
+  { key: 'emptyList',     label: 'Empty: list',         type: 'textarea', default: 'No reviews just yet, be the first to share your experience.' },
   { key: 'emptyFiltered', label: 'No results message',  type: 'text',     default: 'No reviews with that rating yet.' },
   { key: 'errorText',     label: 'Load error message',  type: 'text',     default: 'Something went wrong loading the reviews.' },
 ];

@@ -67,7 +67,6 @@
   z-index: var(--z-sticky);
 }
 .topbarLeft  { display: flex; align-items: center; gap: 0.6rem; }
-.topbarIcon  { font-size: 1.3rem; }
 .topbarTitle { font-size: var(--font-size-lg); font-weight: 700; color: var(--accent-1); font-family: var(--font-heading); }
 .topbarRight { display: flex; align-items: center; gap: 0.6rem; }
 .userEmail   { font-size: var(--font-size-sm); color: var(--tertiary-text-color); }
@@ -393,6 +392,9 @@
   font-size: 1.5rem;
   flex-shrink: 0;
 }
+/* `all: unset` above also resets font-size, and a react-icons SVG sizes itself
+   at 1em, so the glyph needs an explicit size. */
+.menuBtn svg { width: 22px; height: 22px; }
 .menuBtn:hover { background: rgba(var(--accent-1-rgb), 0.1); color: var(--accent-1); }
 .navBackdrop { display: none; }
 

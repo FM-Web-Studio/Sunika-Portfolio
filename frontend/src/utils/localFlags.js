@@ -15,7 +15,7 @@ const read = (key) => {
     const raw = localStorage.getItem(key);
     return raw ? JSON.parse(raw) : null;
   } catch {
-    return null; // private mode / storage disabled — degrade to "nothing remembered"
+    return null; // private mode / storage disabled, degrade to "nothing remembered"
   }
 };
 

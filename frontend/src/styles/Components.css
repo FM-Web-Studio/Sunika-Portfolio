@@ -433,6 +433,32 @@ textarea {
 
 /* ─── SELECT ─────────────────────────────────────────────────────────────── */
 
+/*
+ * The chevron is a TOKEN, and the dark theme swaps the token instead of
+ * re-declaring background-image on a more specific selector.
+ *
+ * That is a bug fix, not a style preference. The arrow used to live in
+ * `select { background-image: ... }` (specificity 0,0,1) with its dark variant in
+ * `[data-theme="dark"] select { ... }` (0,1,1). Any component that set the
+ * `background` SHORTHAND on a class, for example
+ * `.select { background: var(--background-1) }` (0,1,0), reset background-repeat to
+ * its initial value of `repeat` while still LOSING the image fight to the
+ * dark-theme rule. The result was no arrow at all in light mode and a single
+ * chevron tiled across the whole control in dark mode, which is why the dropdowns
+ * looked like they were filled with arrows.
+ *
+ * With the image declared once at one specificity, a shorthand elsewhere either
+ * wins outright or loses outright. It can no longer split the image from its
+ * repeat setting.
+ */
+:root {
+    --select-arrow: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23B83B63' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+}
+
+[data-theme="dark"] {
+    --select-arrow: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23F08AAC' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+}
+
 select {
     cursor: pointer;
     -webkit-appearance: none;
@@ -440,13 +466,10 @@ select {
     appearance: none;
     padding-right: calc(var(--spacing-xl) + var(--spacing-sm));
     min-height: 42px;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23B83B63' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+    background-image: var(--select-arrow);
     background-position: right var(--spacing-md) center;
     background-repeat: no-repeat;
-}
-
-[data-theme="dark"] select {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23F08AAC' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+    background-size: 12px;
 }
 
 select:focus option:checked {

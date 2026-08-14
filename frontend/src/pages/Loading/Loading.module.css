@@ -3,13 +3,28 @@
    Floating blobs + bouncing balls + rotating verse.
 ════════════════════════════════════════════════════════════════ */
 
+/*
+ * A genuinely full-screen state.
+ *
+ * Two things used to break that. It sat at --z-modal, the same layer as the
+ * Settings cog and BELOW the mobile burger at calc(--z-modal + 2); both are
+ * portalled to <body>, so they painted over it and the screen looked cut off,
+ * worst on mobile where the burger only exists. And overflow:hidden with an
+ * uncapped card meant a long verse on a short phone was clipped with no way to
+ * reach it. It now outranks all chrome and the card always fits.
+ */
 .wrapper {
   position: fixed;
   inset: 0;
-  z-index: var(--z-modal);
+  /* dvh so a mobile browser's collapsing toolbar cannot leave a strip of the page
+     showing along the bottom edge. */
+  height: 100dvh;
+  z-index: var(--z-loading);
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: var(--spacing-lg);
+  box-sizing: border-box;
   overflow: hidden;
   background:
     radial-gradient(110% 90% at 85% 12%, rgba(var(--accent-1-rgb), 0.16) 0%, transparent 55%),
@@ -44,9 +59,12 @@
   align-items: center;
   gap: var(--spacing-xl);
   padding: var(--spacing-3xl) var(--spacing-4xl);
-  min-width: 300px;
+  min-width: 0;
   max-width: 480px;
-  width: 88vw;
+  width: min(88vw, 480px);
+  /* Never taller than the space available; scroll the verse rather than clip it. */
+  max-height: 100%;
+  overflow-y: auto;
   border-radius: var(--radius-xl);
   background: var(--background-1);
   border: 1px solid var(--border-color);
@@ -139,7 +157,7 @@
 
 /* ── Responsive ── */
 @media (max-width: 600px) {
-  .card { padding: var(--spacing-2xl) var(--spacing-xl); border-radius: 22px; width: 80vw; min-width: 240px; max-width: 360px; }
+  .card { padding: var(--spacing-2xl) var(--spacing-xl); border-radius: 22px; width: min(88vw, 360px); min-width: 0; max-width: 360px; }
   .blob { filter: blur(48px); }
   .blob[data-b="1"] { width: 280px; height: 280px; }
   .blob[data-b="2"] { width: 240px; height: 240px; }

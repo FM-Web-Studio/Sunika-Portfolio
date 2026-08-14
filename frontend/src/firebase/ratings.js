@@ -10,7 +10,7 @@ import { cachedRating, cacheRating } from '../utils/voteCache';
  * A rating lands in TWO places that must agree: the aggregate on the artwork
  * (ratingSum / ratingCount, so the gallery can sort without reading every vote)
  * and a per-visitor record at artworks/{id}/raters/{uid}. Both are written in one
- * batch, and firestore.rules requires the pair — the aggregate may only move if a
+ * batch, and firestore.rules requires the pair, the aggregate may only move if a
  * matching rater document appears in the same commit carrying the same value.
  *
  * This replaces a localStorage-only guard, which was not a guard at all: clearing
@@ -29,7 +29,7 @@ export const averageRating = ({ ratingSum = 0, ratingCount = 0 } = {}) =>
   ratingCount > 0 ? ratingSum / ratingCount : 0;
 
 /**
- * This browser's remembered rating for an artwork, or 0. Synchronous and free —
+ * This browser's remembered rating for an artwork, or 0. Synchronous and free:
  * it reads the display cache, not Firestore.
  */
 export const getMyRating = (artworkId) => cachedRating(artworkId);

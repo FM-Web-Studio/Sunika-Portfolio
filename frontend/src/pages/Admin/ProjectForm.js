@@ -1,4 +1,5 @@
 import React, { useState, useRef } from 'react';
+import { FiStar } from 'react-icons/fi';
 import styles from './AdminForms.module.css';
 
 let tempId = 0;
@@ -74,7 +75,7 @@ const ProjectForm = ({ initial, onSubmit, onCancel, submitting }) => {
                 <img src={item.url} alt="" />
                 {idx === 0 && <span className={styles.coverBadge}>Cover</span>}
                 {idx !== 0 && (
-                  <button type="button" className={`${styles.tileBtn} ${styles.coverTile}`} onClick={() => makeCover(item.id)} title="Make cover" aria-label="Make cover">★</button>
+                  <button type="button" className={`${styles.tileBtn} ${styles.coverTile}`} onClick={() => makeCover(item.id)} title="Make cover" aria-label="Make cover"><FiStar aria-hidden="true" /></button>
                 )}
                 <button type="button" className={`${styles.tileBtn} ${styles.removeTile}`} onClick={() => removeItem(item.id)} title="Remove" aria-label="Remove image">×</button>
               </div>
