@@ -1,13 +1,10 @@
 /*
- * "Has this browser already done that?" memory: which reviews it has liked, and
- * when it last posted a review or a contact message.
+ * "Has this browser already done that?" memory: when it last posted a contact
+ * message.
  *
- * This is NOT a security control, and nothing here is trusted by the server.
- *   • Review / artwork votes are enforced by firestore.rules against the
- *     visitor's anonymous uid (see firebase/auth.js). These flags only let the
- *     UI paint the right state before the server round-trip.
- *   • The post cooldowns are courtesy throttles. Someone determined can clear
- *     storage; moderation is what actually keeps junk off the site.
+ * This is NOT a security control, and nothing here is trusted by the server. The
+ * cooldown is a courtesy throttle. Someone determined can clear storage; the
+ * server-side validation in firestore.rules is what actually holds the line.
  */
 
 const read = (key) => {
@@ -22,31 +19,6 @@ const read = (key) => {
 const write = (key, value) => {
   try { localStorage.setItem(key, JSON.stringify(value)); } catch { /* nothing we can do */ }
 };
-
-// ── Likes ────────────────────────────────────────────────────────────────────
-const LIKES_KEY = 'sunika.likedIds';
-
-/** The set of review ids this browser has liked. */
-export function likedIds() {
-  const list = read(LIKES_KEY);
-  return new Set(Array.isArray(list) ? list : []);
-}
-
-/** Flip an id's liked state and persist. Returns true if it is now liked. */
-export function toggleLiked(id) {
-  const set = likedIds();
-  const nowLiked = !set.has(id);
-  if (nowLiked) set.add(id); else set.delete(id);
-  write(LIKES_KEY, [...set]);
-  return nowLiked;
-}
-
-/** Force an id's liked state, e.g. to undo an optimistic update that failed. */
-export function setLiked(id, liked) {
-  const set = likedIds();
-  if (liked) set.add(id); else set.delete(id);
-  write(LIKES_KEY, [...set]);
-}
 
 // ── Post cooldowns ───────────────────────────────────────────────────────────
 /**

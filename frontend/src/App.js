@@ -1,6 +1,6 @@
 import React, { Suspense, useCallback, useMemo, useState, useTransition, useEffect } from 'react';
 import { Routes, Route, useNavigate, Outlet, useLocation, Link } from 'react-router-dom';
-import { NotFound, Loading, Home, Projects, Gallery, Reviews, Contact, Admin } from './pages';
+import { NotFound, Loading, Home, Projects, Gallery, Contact, Admin } from './pages';
 import { NavigationBar, Settings, ToastProvider, Footer } from './components';
 import { ContentProvider } from './context/ContentContext';
 import { useTheme, useAnimations, useMomentumScroll, getLenis } from './hooks';
@@ -10,7 +10,6 @@ import styles from './App.module.css';
 const NAVIGATION_PAGES = [
   { label: 'Projects', to: '/projects' },
   { label: 'Gallery',  to: '/gallery'  },
-  { label: 'Reviews',  to: '/reviews'  },
   { label: 'Contact',  to: '/contact'  },
 ];
 
@@ -104,7 +103,6 @@ const AppContent = () => (
           <Route index             element={<Home />} />
           <Route path="projects"   element={<Projects />} />
           <Route path="gallery"    element={<Gallery />} />
-          <Route path="reviews"    element={<Reviews />} />
           <Route path="contact"    element={<Contact />} />
           <Route path="loading"    element={<Loading />} />
           <Route path="*"          element={<NotFound />} />

@@ -7,13 +7,12 @@ import { useEffect } from 'react';
 // WARNING, and it has already cost one bug: [data-reveal] starts at `opacity: 0`,
 // and ONLY this hook ever clears it. Render a [data-reveal] element on a page that
 // does not call useReveal and the element is in the DOM, occupying layout, and
-// permanently invisible with no error anywhere. That is how the home page ended up
-// with a "What people say" heading above an empty space while the reviews underneath
-// it were loading perfectly.
+// permanently invisible with no error anywhere. That is how the home page once ended
+// up with a section heading above an empty space while the cards underneath it were
+// loading perfectly.
 //
 // So: a component must not set [data-reveal] on its own initiative. It takes a prop
 // and the page decides, because only the page knows whether this hook is running.
-// See the `reveal` prop on ReviewCard.
 //
 //  • Pass a deps array so it re-scans when content changes (e.g. after data
 //    loads or filters change) and observes any freshly-rendered elements.

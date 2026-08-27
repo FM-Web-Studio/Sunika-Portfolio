@@ -32,7 +32,7 @@ export const cacheRating = (artworkId, value) => {
   writeAll(all);
 };
 
-/** This browser's cached like state for a given id (artwork or review). */
+/** This browser's cached like state for a given artwork id. */
 export const cachedLike = (id) => readAll()[`l:${id}`] === true;
 
 export const cacheLike = (id, liked) => {

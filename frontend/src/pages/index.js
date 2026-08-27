@@ -17,7 +17,6 @@ export { default as Loading } from './Loading';
 export const Home     = lazy(() => import('./Home'));
 export const Projects = lazy(() => import('./Projects'));
 export const Gallery  = lazy(() => import('./Gallery'));
-export const Reviews  = lazy(() => import('./Reviews'));
 export const Contact  = lazy(() => import('./Contact'));
 export const NotFound = lazy(() => import('./Not Found'));
 export const Admin    = lazy(() => import('./Admin'));

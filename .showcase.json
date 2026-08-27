@@ -2,7 +2,7 @@
   "name": "Sunika Studio",
   "client": "Sunika",
   "tagline": "Portfolio and gallery for a design and illustration studio",
-  "description": "Design and illustration, made with heart. A gallery-led portfolio with a projects showcase, client reviews and a contact form wired to a Cloud Function, all managed from an admin area rather than in code.",
+  "description": "Design and illustration, made with heart. A gallery-led portfolio with a projects showcase and a contact form wired to a Cloud Function, all managed from an admin area rather than in code.",
 
   "featured": true,
   "order": 20,

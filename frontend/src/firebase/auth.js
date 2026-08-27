@@ -14,12 +14,12 @@ export const isAdminEmail = (email) =>
 /**
  * The uid of the current visitor, signing them in anonymously if needed.
  *
- * Ratings, likes and review likes are all "one per visitor", and the only way
- * firestore.rules can hold that line is if each vote is a document keyed by an
- * identity the server issued. A localStorage flag cannot be enforced, clearing
- * it lets the same person vote again, and nothing stops a crafted client from
- * driving a counter anywhere it likes. An anonymous account is a real uid the
- * rules can key on, so one visitor genuinely gets one vote.
+ * Ratings and likes are both "one per visitor", and the only way firestore.rules
+ * can hold that line is if each vote is a document keyed by an identity the server
+ * issued. A localStorage flag cannot be enforced, clearing it lets the same person
+ * vote again, and nothing stops a crafted client from driving a counter anywhere it
+ * likes. An anonymous account is a real uid the rules can key on, so one visitor
+ * genuinely gets one vote.
  *
  * It is not unbreakable: someone can sign out and get a fresh anonymous account.
  * It raises the cost from "clear one localStorage key" to "churn accounts", which
@@ -38,13 +38,13 @@ export const ensureVisitor = async () => {
     return user.uid;
   } catch (err) {
     // If Anonymous sign-in is not switched on, EVERY visitor interaction that needs
-    // an identity fails at once, ratings, likes, reviews, replies. Firebase reports
-    // that as `auth/admin-restricted-operation`, which tells whoever is looking at
-    // the console nothing about the actual cause. Say it plainly instead.
+    // an identity fails at once, ratings and likes. Firebase reports that as
+    // `auth/admin-restricted-operation`, which tells whoever is looking at the
+    // console nothing about the actual cause. Say it plainly instead.
     if (err?.code === 'auth/admin-restricted-operation' || err?.code === 'auth/operation-not-allowed') {
       console.error(
-        'Anonymous sign-in is disabled for this Firebase project, so ratings, likes and '
-        + 'reviews cannot work. Enable it under Authentication → Sign-in method → Anonymous.',
+        'Anonymous sign-in is disabled for this Firebase project, so ratings and likes '
+        + 'cannot work. Enable it under Authentication → Sign-in method → Anonymous.',
       );
       const friendly = new Error('Sign-in for visitors is not enabled on this site yet.');
       friendly.code = 'visitor-auth-disabled';
@@ -56,54 +56,3 @@ export const ensureVisitor = async () => {
 
 /** The current uid if one exists, without triggering a sign-in. */
 export const currentUid = () => auth.currentUser?.uid ?? null;
-
-/**
- * Force a fresh ID token for the current user.
- *
- * Signing in with Google on top of an anonymous session swaps the account under a
- * Firestore client that may still be holding a stream authenticated as the previous
- * identity. An admin-only read issued in that window comes back permission-denied
- * even though the person IS an admin, and a page reload "fixes" it, which is the
- * worst kind of bug to chase. Refreshing the token and retrying once turns that into
- * a self-healing hiccup.
- *
- * Returns false when there is nobody to refresh, so callers can skip the retry.
- */
-export const refreshToken = async () => {
-  const user = auth.currentUser;
-  if (!user) return false;
-  try {
-    await user.getIdToken(true);
-    return true;
-  } catch {
-    return false;
-  }
-};
-
-/**
- * The identity firestore.rules will actually see, for diagnosing a permission error.
- *
- * Worth having as a named helper because reviews are the only collection on this site
- * whose READ requires isAdmin(), everything else in the admin reads a publicly
- * readable collection. That makes the Reviews section the first and only place an
- * identity mismatch surfaces, and "permission denied" on its own does not distinguish
- * between "signed in as the wrong account", "still an anonymous session", "email not
- * verified" and "email missing from the allowlist in the rules".
- *
- * Reads the cached ID token result, so it costs no network round trip.
- */
-export const describeVisitor = async () => {
-  const user = auth.currentUser;
-  if (!user) return { signedIn: false };
-  let claims = {};
-  try { claims = (await user.getIdTokenResult()).claims ?? {}; } catch { /* token unavailable */ }
-  return {
-    signedIn: true,
-    uid: user.uid,
-    isAnonymous: user.isAnonymous,
-    email: user.email,
-    // These two are exactly what isAdmin() checks in firestore.rules.
-    tokenEmail: claims.email ?? null,
-    tokenEmailVerified: claims.email_verified ?? null,
-  };
-};

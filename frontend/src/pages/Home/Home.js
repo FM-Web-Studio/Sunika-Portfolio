@@ -1,17 +1,15 @@
-import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import {
-  FiArrowRight, FiExternalLink, FiGrid, FiImage, FiStar,
+  FiArrowRight, FiExternalLink, FiGrid, FiImage,
 } from 'react-icons/fi';
 import {
   ProjectLightbox, Skeleton, SkeletonText, Botanical,
-  ReviewCard, ReviewCardSkeleton, StarRating,
 } from '../../components';
 import {
   subscribePersonal, subscribeSkills, subscribeEducation,
   subscribeExperience, subscribeInterests, subscribeProjects,
-  subscribeAccomplishments, getApprovedReviews, highlightReviews, ratingSummary,
-  DEFAULT_PERSONAL,
+  subscribeAccomplishments, DEFAULT_PERSONAL,
 } from '../../firebase';
 import { useContent } from '../../context/ContentContext';
 import { getLenis } from '../../hooks';
@@ -35,30 +33,24 @@ const formatRange = (start, end, period) => {
 // How many projects the home page showcases as full editorial rows.
 const FEATURED_COUNT = 4;
 
-// How many reviews the highlight strip carries. Three fits one row on a desktop
-// and stays scannable on a phone; more turns the home page into the Reviews page.
-const HIGHLIGHT_REVIEWS = 3;
-
 /*
  * The browse destinations, for the pill row under the hero.
  *
  * Every destination on this page has exactly ONE owner, which is why Contact is not
- * in this list and why the old per-section "See everything" and "Read all reviews"
- * links are gone. Before, /contact had three separate buttons on one page (a hero
- * ghost button, a pill, and the closing call to action) and /projects and /reviews
- * had two each. Repeating a link does not make it easier to find, it just makes the
- * page louder and leaves the reader wondering whether the two go to the same place.
+ * in this list and why the old per-section "See everything" links are gone. Before,
+ * /contact had three separate buttons on one page (a hero ghost button, a pill, and
+ * the closing call to action) and /projects had two. Repeating a link does not make
+ * it easier to find, it just makes the page louder and leaves the reader wondering
+ * whether the two go to the same place.
  *
- *   Projects / Gallery / Reviews -> these pills
- *   Contact                      -> the closing section, which is the page's
- *                                   conversion point and already a full section
- *                                   with its own heading
- *   Home                         -> the logo in the top bar
+ *   Projects / Gallery -> these pills
+ *   Contact            -> the closing section, which is the page's conversion
+ *                         point and already a full section with its own heading
+ *   Home               -> the logo in the top bar
  */
 const PAGE_LINKS = [
   { to: '/projects', label: 'Projects', Icon: FiGrid },
   { to: '/gallery',  label: 'Gallery',  Icon: FiImage },
-  { to: '/reviews',  label: 'Reviews',  Icon: FiStar },
 ];
 
 const Home = () => {
@@ -71,12 +63,10 @@ const Home = () => {
   const [interests, setInterests] = useState({ items: [] });
   const [projects, setProjects] = useState([]);
   const [accomplishments, setAccomplishments] = useState([]);
-  const [reviews, setReviews] = useState([]);
   const [selected, setSelected] = useState(null);
   const [photoOk, setPhotoOk] = useState(true);
   const [heroLoaded, setHeroLoaded] = useState(false);
   const [projectsLoaded, setProjectsLoaded] = useState(false);
-  const [reviewsLoaded, setReviewsLoaded] = useState(false);
 
   const sectionEls = useRef({});   // id -> element, for the side dots + jump links
   const [active, setActive] = useState('hero');
@@ -100,27 +90,8 @@ const Home = () => {
     return () => unsubs.forEach((u) => u && u());
   }, []);
 
-  /*
-   * Reviews are fetched once, not subscribed to. The home page only shows three of
-   * them and they change when an admin approves something, not second by second.
-   * A listener would hold an open channel all session for nothing. Failing quietly
-   * is deliberate too: no reviews yet is the same visual outcome as a failed read,
-   * and neither is worth an error banner on a landing page.
-   */
-  useEffect(() => {
-    let alive = true;
-    getApprovedReviews()
-      .then((list) => { if (alive) setReviews(list); })
-      .catch((err) => console.error('[Home] reviews failed to load:', err))
-      .finally(() => { if (alive) setReviewsLoaded(true); });
-    return () => { alive = false; };
-  }, []);
-
   const featured     = projects.slice(0, FEATURED_COUNT);
   const selectedLive = selected ? projects.find((p) => p.id === selected.id) || selected : null;
-
-  const topReviews    = useMemo(() => highlightReviews(reviews, HIGHLIGHT_REVIEWS), [reviews]);
-  const reviewSummary = useMemo(() => ratingSummary(reviews), [reviews]);
 
   // The one entry that leads the section, and the rest as a compact list.
   const leadWin  = accomplishments.find((a) => a.featured) || accomplishments[0] || null;
@@ -133,7 +104,6 @@ const Home = () => {
   const hasJourney   = hasExp || hasEdu;
   const hasWins      = accomplishments.length > 0;
   const hasAbout     = hasInterests || hasSkills || hasWins || !!personal.bio;
-  const hasReviews   = topReviews.length > 0;
 
   /*
    * About comes BEFORE work. It carries the accomplishments, a competition win,
@@ -146,7 +116,6 @@ const Home = () => {
     ...(hasAbout   ? [{ id: 'about',   label: 'Me'   }] : []),
     { id: 'work',    label: 'Work'   },
     ...(hasJourney ? [{ id: 'journey', label: 'Path' }] : []),
-    ...(hasReviews ? [{ id: 'reviews', label: 'Words' }] : []),
     { id: 'contact', label: 'Say hi' },
   ];
   const sectionKey = sections.map((s) => s.id).join('|');
@@ -164,7 +133,7 @@ const Home = () => {
     );
     Object.values(sectionEls.current).forEach((el) => el && observer.observe(el));
     return () => observer.disconnect();
-  }, [sectionKey, heroLoaded, projectsLoaded, reviewsLoaded]);
+  }, [sectionKey, heroLoaded, projectsLoaded]);
 
   const goTo = useCallback((id) => {
     const el = sectionEls.current[id];
@@ -482,39 +451,6 @@ const Home = () => {
                 </div>
               </div>
             )}
-          </div>
-        </section>
-      )}
-
-      {(hasReviews || !reviewsLoaded) && (
-        <section ref={setRef('reviews')} data-section="reviews" className={styles.reviews}>
-          <span className={styles.blob} data-b="1" aria-hidden="true" />
-          <span className={`${styles.bot} ${styles.botReviews}`} aria-hidden="true"><Botanical variant="bloom" /></span>
-
-          <div className={styles.sectionHead}>
-            <div>
-              <p className={styles.kicker}>{t.reviewsKicker}</p>
-              <h2 className={styles.sectionTitle}>{t.reviewsTitle}</h2>
-              {reviewSummary.total > 0 && (
-                <div className={styles.reviewsScore}>
-                  <StarRating value={reviewSummary.average} size="sm" showCount={false} />
-                  <span className={styles.reviewsScoreText}>
-                    {reviewSummary.average.toFixed(1)} from {reviewSummary.total}
-                    {reviewSummary.total === 1 ? ' review' : ' reviews'}
-                  </span>
-                </div>
-              )}
-            </div>
-          </div>
-
-          <div className={styles.reviewsGrid}>
-            {!reviewsLoaded
-              ? Array.from({ length: HIGHLIGHT_REVIEWS }, (_, i) => (
-                  <ReviewCardSkeleton key={i} variant="compact" />
-                ))
-              : topReviews.map((review, i) => (
-                  <ReviewCard key={review.id} review={review} variant="compact" index={i} />
-                ))}
           </div>
         </section>
       )}

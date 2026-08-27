@@ -669,11 +669,6 @@
 }
 
 /* ══════════════════════════════════════
-   REVIEWS HIGHLIGHT STRIP
-   Three compact cards on a tinted band, so it reads as a pause between the
-   timeline and the closing call to action rather than as another content section.
-══════════════════════════════════════ */
-/* ══════════════════════════════════════
    EXPLORE PILLS
    One centred row, directly under the hero.
 
@@ -736,39 +731,6 @@
   font-size: 1.05em;
   color: var(--accent-1);
 }
-
-.reviews {
-  position: relative;
-  padding: var(--section-pad-y) 0;
-  background: var(--background-1);
-  overflow: hidden;
-}
-
-.reviewsScore {
-  display: flex; align-items: center; gap: var(--spacing-sm);
-  margin-top: var(--spacing-sm);
-}
-.reviewsScoreText {
-  font-size: var(--font-size-sm);
-  color: var(--tertiary-text-color);
-}
-
-.reviewsGrid {
-  position: relative; z-index: 1;
-  max-width: var(--measure); margin: 0 auto; padding: 0 var(--gutter);
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: var(--spacing-lg);
-  align-items: stretch;
-}
-
-.botReviews {
-  bottom: 8%; left: 3%;
-  width: clamp(50px, 6vw, 96px);
-  color: var(--accent-ter);
-  opacity: 0.35;
-}
-@media (max-width: 768px) { .botReviews { display: none; } }
 
 /* ══════════════════════════════════════
    JOURNEY

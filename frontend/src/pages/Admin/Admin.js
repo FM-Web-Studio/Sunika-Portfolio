@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FcGoogle } from 'react-icons/fc';
 import {
-  FiGrid, FiImage, FiStar, FiUser, FiAward, FiLayers, FiBriefcase,
+  FiGrid, FiImage, FiUser, FiAward, FiLayers, FiBriefcase,
   FiBookOpen, FiTag, FiLink, FiMail, FiEdit3, FiMenu,
 } from 'react-icons/fi';
 import { useToast } from '../../components';
@@ -21,7 +21,6 @@ import InterestsSection from './InterestsSection';
 import SocialsSection from './SocialsSection';
 import ContactSection from './ContactSection';
 import RecordSection from './RecordSection';
-import ReviewsSection from './ReviewsSection';
 import AccomplishmentsSection from './AccomplishmentsSection';
 import SiteCopySection from './sections/SiteCopySection';
 import styles from './Admin.module.css';
@@ -51,7 +50,7 @@ const EXPERIENCE_FIELDS = [
   { name: 'order',       label: 'Order',       type: 'number', hint: 'lower shows first' },
 ];
 
-const GROUPS = ['Portfolio', 'Gallery', 'Reviews', 'About', 'Contact', 'Site'];
+const GROUPS = ['Portfolio', 'Gallery', 'About', 'Contact', 'Site'];
 
 // `icon` is a react-icons component, not an emoji. The sidebar icons do real work
 // helping someone find a section at a glance, so they are drawn as SVG rather than
@@ -60,7 +59,6 @@ const GROUPS = ['Portfolio', 'Gallery', 'Reviews', 'About', 'Contact', 'Site'];
 const SECTIONS = [
   { id: 'projects',        group: 'Portfolio', title: 'Projects',        icon: FiGrid,      description: 'The pieces shown on the Work grid and the Home page.' },
   { id: 'artworks',        group: 'Gallery',   title: 'Artworks',        icon: FiImage,     description: 'Original pieces in the gallery grid, with price and sold status.' },
-  { id: 'reviews',         group: 'Reviews',   title: 'Reviews',         icon: FiStar,      description: 'Reviews and replies people have written. Nothing appears on the site until you publish it.' },
   { id: 'profile',         group: 'About',     title: 'Profile',         icon: FiUser,      description: 'Your photo, name, title and bio.' },
   { id: 'accomplishments', group: 'About',     title: 'Accomplishments', icon: FiAward,     description: 'Wins, features and press moments shown above your projects on the home page.' },
   { id: 'skills',          group: 'About',     title: 'Skills',          icon: FiLayers,    description: 'Grouped skill categories listed on the About section.' },
@@ -126,7 +124,6 @@ const Admin = () => {
     switch (view) {
       case 'projects':   return <ProjectsSection />;
       case 'artworks':   return <ArtworksSection />;
-      case 'reviews':    return <ReviewsSection />;
       case 'profile':    return <ProfileSection />;
       case 'accomplishments': return <AccomplishmentsSection />;
       case 'skills':     return <SkillsSection />;
