@@ -1,8 +1,8 @@
 {
   "name": "Sunika Studio",
   "client": "Sunika",
-  "tagline": "Portfolio and gallery for a design and illustration studio",
-  "description": "Design and illustration, made with heart. A gallery-led portfolio with a projects showcase and a contact form wired to a Cloud Function, all managed from an admin area rather than in code.",
+  "tagline": "Portfolio for a design and illustration studio",
+  "description": "Design and illustration, made with heart. A projects showcase with an about and journey timeline and a contact form wired to a Cloud Function, all managed from an admin area rather than in code. Shares one Firebase project with the separate Sunika Gallery site.",
 
   "featured": true,
   "order": 20,

@@ -7,6 +7,7 @@ import {
 } from 'react-icons/fi';
 import { useToast } from '../../components';
 import { useAuth } from '../../hooks';
+import { useContent } from '../../context/ContentContext';
 import {
   signInWithGoogle, signOutUser,
   subscribeEducation, createEducation, updateEducation, deleteEducation,
@@ -14,7 +15,6 @@ import {
 } from '../../firebase';
 import Loading from '../Loading';
 import ProjectsSection from './ProjectsSection';
-import ArtworksSection from './ArtworksSection';
 import ProfileSection from './ProfileSection';
 import SkillsSection from './SkillsSection';
 import InterestsSection from './InterestsSection';
@@ -50,7 +50,7 @@ const EXPERIENCE_FIELDS = [
   { name: 'order',       label: 'Order',       type: 'number', hint: 'lower shows first' },
 ];
 
-const GROUPS = ['Portfolio', 'Gallery', 'About', 'Contact', 'Site'];
+const GROUPS = ['Portfolio', 'About', 'Contact', 'Site'];
 
 // `icon` is a react-icons component, not an emoji. The sidebar icons do real work
 // helping someone find a section at a glance, so they are drawn as SVG rather than
@@ -58,7 +58,6 @@ const GROUPS = ['Portfolio', 'Gallery', 'About', 'Contact', 'Site'];
 // to match the theme.
 const SECTIONS = [
   { id: 'projects',        group: 'Portfolio', title: 'Projects',        icon: FiGrid,      description: 'The pieces shown on the Work grid and the Home page.' },
-  { id: 'artworks',        group: 'Gallery',   title: 'Artworks',        icon: FiImage,     description: 'Original pieces in the gallery grid, with price and sold status.' },
   { id: 'profile',         group: 'About',     title: 'Profile',         icon: FiUser,      description: 'Your photo, name, title and bio.' },
   { id: 'accomplishments', group: 'About',     title: 'Accomplishments', icon: FiAward,     description: 'Wins, features and press moments shown above your projects on the home page.' },
   { id: 'skills',          group: 'About',     title: 'Skills',          icon: FiLayers,    description: 'Grouped skill categories listed on the About section.' },
@@ -70,9 +69,21 @@ const SECTIONS = [
   { id: 'copy',            group: 'Site',      title: 'Site Copy',       icon: FiEdit3,     description: 'Headings and wording used across the public pages.' },
 ];
 
+/*
+ * Artworks are NOT managed here.
+ *
+ * The gallery is a separate site with its own admin at <gallery URL>/admin, backed
+ * by its own Firestore documents. Its section used to sit in this sidebar, so
+ * anyone who remembers it being here needs to be told where it went rather than
+ * left to conclude the admin lost a feature. The URL comes from the same copy
+ * field the public pages link with (Site Copy, Brand & Footer), so there is one
+ * place to change it.
+ */
+
 const Admin = () => {
   const { user, loading, isAdmin } = useAuth();
   const { showToast } = useToast();
+  const { copy } = useContent();
   const navigate = useNavigate();
   const [view, setView] = useState('projects');
   const [navOpen, setNavOpen] = useState(false);
@@ -123,7 +134,6 @@ const Admin = () => {
   const renderSection = () => {
     switch (view) {
       case 'projects':   return <ProjectsSection />;
-      case 'artworks':   return <ArtworksSection />;
       case 'profile':    return <ProfileSection />;
       case 'accomplishments': return <AccomplishmentsSection />;
       case 'skills':     return <SkillsSection />;
@@ -206,6 +216,24 @@ const Admin = () => {
               })}
             </div>
           ))}
+
+          {/* See the note above SECTIONS: where the artworks section went. */}
+          {copy('brand').galleryUrl && (
+            <div className={styles.navGroup}>
+              <p className={styles.navGroupLabel}>Elsewhere</p>
+              <div className={styles.navItem}>
+                <a
+                  className={styles.navItemBtn}
+                  href={`${copy('brand').galleryUrl.replace(/\/$/, '')}/admin`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <span className={styles.navIcon} aria-hidden="true"><FiImage /></span>
+                  <span className={styles.navLabel}>Artworks, on the gallery site</span>
+                </a>
+              </div>
+            </div>
+          )}
         </aside>
 
         <main className={styles.content}>

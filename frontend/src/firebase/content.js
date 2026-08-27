@@ -5,7 +5,10 @@ import { SETTINGS_DOCS } from './config';
 /*
  * Editable site copy lives in ONE document:
  *
- *   settings/content -> { brand:{...}, home:{...}, gallery:{...}, ... }
+ *   settings/portfolioContent -> { brand:{...}, home:{...}, projects:{...}, ... }
+ *
+ * The gallery keeps its own copy in settings/galleryContent. Same shape,
+ * different groups, and neither site reads the other's document.
  *
  * firestore.rules allows public read and admin-only write on settings/{docId}.
  */

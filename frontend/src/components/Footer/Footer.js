@@ -7,7 +7,6 @@ import styles from './Footer.module.css';
 const NAV = [
   { label: 'Home',     to: '/'         },
   { label: 'Projects', to: '/projects' },
-  { label: 'Gallery',  to: '/gallery'  },
   { label: 'Contact',  to: '/contact'  },
 ];
 
@@ -15,7 +14,7 @@ const Footer = () => {
   const { copy } = useContent();
   const brand = copy('brand');
 
-  // Contact details + socials come from settings/contact.
+  // Contact details + socials come from settings/portfolioContact.
   const [info, setInfo] = useState({ ...DEFAULT_CONTACT, socials: [] });
   useEffect(() => subscribeContact(setInfo, () => {}), []);
 
@@ -44,6 +43,17 @@ const Footer = () => {
           {NAV.map((n) => (
             <Link key={n.to} to={n.to} className={styles.navLink}>{n.label}</Link>
           ))}
+          {/* The other site. Blank URL means it is not live yet, so nothing renders. */}
+          {brand.galleryUrl && (
+            <a
+              href={brand.galleryUrl}
+              className={styles.navLink}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {brand.galleryLabel}
+            </a>
+          )}
           {socials.map((s) => (
             <a key={s.label} href={s.href} className={styles.navLink} target="_blank" rel="noopener noreferrer">{s.label}</a>
           ))}

@@ -43,19 +43,23 @@ const FEATURED_COUNT = 4;
  * it easier to find, it just makes the page louder and leaves the reader wondering
  * whether the two go to the same place.
  *
- *   Projects / Gallery -> these pills
- *   Contact            -> the closing section, which is the page's conversion
- *                         point and already a full section with its own heading
- *   Home               -> the logo in the top bar
+ *   Projects -> this pill
+ *   Gallery  -> the pill beside it, which is now an EXTERNAL link to the separate
+ *               gallery site. Its URL is a copy field (Site Copy, Brand & Footer)
+ *               rather than a constant, so moving that site does not need a code
+ *               change here. Blank means it is not live yet and nothing renders.
+ *   Contact  -> the closing section, which is the page's conversion point and
+ *               already a full section with its own heading
+ *   Home     -> the logo in the top bar
  */
 const PAGE_LINKS = [
   { to: '/projects', label: 'Projects', Icon: FiGrid },
-  { to: '/gallery',  label: 'Gallery',  Icon: FiImage },
 ];
 
 const Home = () => {
   const { copy } = useContent();
   const t = copy('home');
+  const brand = copy('brand');
   const [personal, setPersonal] = useState(DEFAULT_PERSONAL);
   const [skills, setSkills] = useState({ categories: [] });
   const [education, setEducation] = useState([]);
@@ -218,6 +222,19 @@ const Home = () => {
               </Link>
             </li>
           ))}
+          {brand.galleryUrl && (
+            <li>
+              <a
+                href={brand.galleryUrl}
+                className={styles.explorePill}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <FiImage className={styles.exploreIcon} aria-hidden="true" />
+                {brand.galleryLabel}
+              </a>
+            </li>
+          )}
         </ul>
       </nav>
 

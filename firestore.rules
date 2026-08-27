@@ -2,6 +2,22 @@ rules_version = '2';
 
 // Sunika.
 //
+// TWO SITES, ONE PROJECT. The portfolio (sunika-studio) and the gallery
+// (sunika-studio-gallery) are separate deploys from separate repos sharing this
+// database. It is project-wide, so it is the single place both sites' rules live, and
+// it is deployed from the Sunika-Portfolio repo ONLY. Deploying it from both repos
+// would mean the last push silently reverting the other site's rules.
+//
+//   portfolio   projects, education, experience, profile, accomplishments,
+//               portfolioMessages, settings/portfolioContent,
+//               settings/portfolioContact
+//   gallery     artworks (+ raters/likers), galleryMessages,
+//               settings/galleryContent, settings/galleryContact
+//
+// Every name has exactly one owner, so neither site can overwrite the other's
+// content. A new collection on either side needs a rule here, or the default-deny
+// at the bottom of the file rejects it.
+//
 // Everything public-facing is world-readable; writes are admin-only, with two
 // deliberate exceptions: anonymous visitors may submit a contact message, and
 // may nudge the rating / like counters on an artwork within tightly bounded
@@ -61,7 +77,7 @@ service cloud.firestore {
       return res.data.get(field, 0);
     }
 
-    // ── Artworks (the Gallery page) ───────────────────────────────────────
+    // ── Artworks (the gallery site) ───────────────────────────────────────
     // Ratings and likes keep a denormalised aggregate on the artwork so the
     // gallery can sort without reading every vote. The aggregate is only allowed
     // to move in lockstep with a per-visitor vote document appearing or
@@ -134,7 +150,7 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
-    // ── Projects (the Projects page) ──────────────────────────────────────
+    // ── Projects (the portfolio site) ─────────────────────────────────────
     match /projects/{id} {
       allow read: if true;
       allow write: if isAdmin();
@@ -145,16 +161,32 @@ service cloud.firestore {
     match /experience/{id} { allow read: if true; allow write: if isAdmin(); }
     match /profile/{doc}   { allow read: if true; allow write: if isAdmin(); }
 
-    // ── Contact-form messages ─────────────────────────────────────────────
+    // ── Contact-form messages, one inbox per site ─────────────────────────
     // Visitors may submit; only an admin may read or manage them.
-    match /messages/{doc} {
+    //
+    // Two collections rather than one shared `messages`, because each site's
+    // Cloud Function trigger watches its own and labels the notification email
+    // with the site the enquiry came from. A single collection could not tell a
+    // gallery enquiry about a painting from a portfolio enquiry about a project.
+    match /portfolioMessages/{doc} {
+      allow create: if isContactMessage();
+      allow read, update, delete: if isAdmin();
+    }
+
+    match /galleryMessages/{doc} {
       allow create: if isContactMessage();
       allow read, update, delete: if isAdmin();
     }
 
     // ── Settings ──────────────────────────────────────────────────────────
-    // settings/content : editable site copy, one group per page
-    // settings/contact : email / phone / location + social links
+    // settings/portfolioContent : the portfolio's editable site copy
+    // settings/portfolioContact : the portfolio's email / phone / location + socials
+    // settings/galleryContent   : the gallery's editable site copy
+    // settings/galleryContact   : the gallery's email / phone / location + socials
+    //
+    // Public read is deliberate: every one of these documents is rendered on a
+    // public page. The prefixes are what keep the two sites apart, so the rule
+    // itself does not need to know which document belongs to which site.
     match /settings/{doc} {
       allow read: if true;
       allow write: if isAdmin();

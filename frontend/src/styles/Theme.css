@@ -73,7 +73,7 @@
     --transition-base: 250ms ease;
     --transition-slow: 350ms ease;
 
-    /* Named easings, used by the scroll-reveal and the gallery components. */
+    /* Named easings. */
     --ease-out:      cubic-bezier(0.22, 1, 0.36, 1);
     --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
 
@@ -393,31 +393,6 @@ body, #root {
 }
 
 
-/* ─── SCROLL-REVEAL ─────────────────────────────────────────────────────────── */
-/* Elements marked [data-reveal] fade + rise as they enter the viewport.
-   useReveal adds .is-revealed via IntersectionObserver. Stagger via --reveal-delay. */
-[data-reveal] {
-    opacity: 0;
-    transform: translateY(26px);
-    transition:
-        opacity 0.8s var(--ease-out-expo),
-        transform 0.9s var(--ease-out-expo);
-    transition-delay: var(--reveal-delay, 0s);
-    /* will-change only while the element is still waiting to animate. Left on
-       permanently, as it was, every card in the gallery and every project row
-       keeps its own compositor layer for the whole session. Dozens of
-       those exhausts GPU memory and the browser starts falling back to software
-       paint mid-scroll, which is felt as intermittent stutter that gets worse the
-       further down the page you are. The hint is dropped the moment it is spent. */
-    will-change: opacity, transform;
-}
-
-[data-reveal].is-revealed {
-    opacity: 1;
-    transform: none;
-    will-change: auto;
-}
-
 /* Lenis owns scrolling; a sheet marked [data-lenis-prevent] scrolls on its own
    without the page gliding underneath it. */
 .lenis.lenis-smooth [data-lenis-prevent] {
@@ -433,11 +408,6 @@ body, #root {
         transition-duration: 0.01ms !important;
         scroll-behavior: auto !important;
     }
-
-    [data-reveal] {
-        opacity: 1 !important;
-        transform: none !important;
-    }
 }
 
 /* Manual animation override */
@@ -445,11 +415,6 @@ body, #root {
     transition: none !important;
     animation: none !important;
     scroll-behavior: auto !important;
-}
-
-[data-no-animations="true"] [data-reveal] {
-    opacity: 1 !important;
-    transform: none !important;
 }
 
 

@@ -8,7 +8,4 @@ export * from './education';
 export * from './experience';
 export * from './messages';
 export * from './content';
-export * from './artworks';
-export * from './ratings';
-export * from './likes';
 export * from './accomplishments';

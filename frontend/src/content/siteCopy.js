@@ -5,7 +5,7 @@
  * a page now lives here as a field with a `default`. The default is the exact
  * string the page shipped with, so the site renders identically until an admin
  * edits it. Only values that differ from the default are stored in Firestore
- * (settings/content). Code stays the single source of truth for
+ * (settings/portfolioContent). Code stays the single source of truth for
  * anything untouched.
  *
  * `resolveGroup(fields, overrides)` overlays saved overrides onto the defaults.
@@ -23,6 +23,18 @@ export const BRAND_FIELDS = [
   { key: 'brandName',     label: 'Brand name',     type: 'text',     default: 'Sunika' },
   { key: 'footerTagline', label: 'Footer tagline', type: 'textarea', default: 'Design and illustration, made with heart.' },
   { key: 'footerNote',    label: 'Footer note',    type: 'text',     default: 'Made with love' },
+
+  /*
+   * The link across to the gallery site.
+   *
+   * It is a copy field rather than a constant because the two sites are deployed
+   * separately and from separate repos: hardcoding the gallery's URL here would
+   * mean a code change and a redeploy of THIS site every time that one moved. Left
+   * blank, the link simply does not render, which is also the right behaviour
+   * before the gallery is live.
+   */
+  { key: 'galleryUrl',   label: 'Gallery site: URL',   type: 'text', default: '' },
+  { key: 'galleryLabel', label: 'Gallery site: label', type: 'text', default: 'The Gallery' },
 ];
 
 // Home page
@@ -65,16 +77,6 @@ export const PROJECTS_FIELDS = [
   { key: 'errorText', label: 'Error state',       type: 'text',     default: 'Something went wrong loading projects.' },
 ];
 
-// Gallery page (original artworks)
-export const GALLERY_FIELDS = [
-  { key: 'overline',      label: 'Header: overline',   type: 'text',     default: 'Sunika · Original Works' },
-  { key: 'heading',       label: 'Header: title',      type: 'text',     default: 'The Gallery' },
-  { key: 'subtitle',      label: 'Header: subtitle',   type: 'textarea', default: 'A curated collection of original paintings, drawings and artistic mixes, each one available to view and to own.' },
-  { key: 'filtersLabel',  label: 'Filters button',     type: 'text',     default: 'Filters' },
-  { key: 'emptyFiltered', label: 'No results message', type: 'text',     default: 'No pieces match this filter.' },
-  { key: 'errorText',     label: 'Load error message', type: 'text',     default: 'Something went wrong loading the gallery.' },
-];
-
 // Contact page copy
 export const CONTACT_PAGE_FIELDS = [
   { key: 'kicker',      label: 'Header: kicker',    type: 'text',     default: 'Say hello' },
@@ -85,14 +87,13 @@ export const CONTACT_PAGE_FIELDS = [
 ];
 
 // Tabs shown in the admin "Site Copy" editor. `key` matches the group name
-// pages read from the settings/content document. Contact details and social
-// links are edited separately (Contact / Social Links sections), backed by
-// settings/contact.
+// pages read from the settings/portfolioContent document. Contact details and
+// social links are edited separately (Contact / Social Links sections), backed by
+// settings/portfolioContact.
 export const COPY_SCHEMA = [
   { key: 'brand',       label: 'Brand & Footer', fields: BRAND_FIELDS },
   { key: 'home',        label: 'Home',           fields: HOME_FIELDS },
   { key: 'projects',    label: 'Projects',       fields: PROJECTS_FIELDS },
-  { key: 'gallery',     label: 'Gallery',        fields: GALLERY_FIELDS },
   { key: 'contactPage', label: 'Contact page',   fields: CONTACT_PAGE_FIELDS },
 ];
 
@@ -101,7 +102,6 @@ export const GROUP_FIELDS = {
   brand:       BRAND_FIELDS,
   home:        HOME_FIELDS,
   projects:    PROJECTS_FIELDS,
-  gallery:     GALLERY_FIELDS,
   contactPage: CONTACT_PAGE_FIELDS,
 };
 

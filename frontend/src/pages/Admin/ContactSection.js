@@ -4,7 +4,8 @@ import { subscribeContact, updateContact, DEFAULT_CONTACT } from '../../firebase
 import styles from './Admin.module.css';
 import form from './AdminForms.module.css';
 
-// Contact details live in settings/contact, read by the footer and Contact page.
+// Contact details live in settings/portfolioContact, read by the footer and the
+// Contact page. The gallery site keeps its own set in settings/galleryContact.
 const ContactSection = () => {
   const { showToast } = useToast();
   const [data, setData] = useState({ ...DEFAULT_CONTACT, socials: [] });
@@ -31,7 +32,7 @@ const ContactSection = () => {
       <section className={styles.card}>
         <div className={styles.cardHead}>
           <h2 className={styles.cardTitle}>How people reach you</h2>
-          <span className={styles.cardHint}>Also used by the gallery site</span>
+          <span className={styles.cardHint}>Shown on the portfolio site only</span>
         </div>
         <div className={styles.cardBody}>
           <div className={form.grid}>

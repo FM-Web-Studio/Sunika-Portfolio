@@ -19,7 +19,7 @@ import { sortByOrder } from '../utils/ordering';
  *
  * Sorted by `order` ascending in JS, not by the query. An orderBy would silently
  * drop any document missing the field, the doc would simply vanish from the site
- * with no error, which is the trap subscribeArtworks used to fall into.
+ * with no error, which is the trap the artwork and project lists used to fall into.
  */
 
 const COL = COLLECTIONS.accomplishments;

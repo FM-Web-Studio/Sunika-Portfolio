@@ -5,7 +5,11 @@ import { DEFAULT_CONTACT, SETTINGS_DOCS } from './config';
 // Contact details + social links, read by the footer and the Contact page and
 // edited from the admin. One document:
 //
-//   settings/contact -> { contact: { email, phone, location }, socials: [ { key, label, url } ] }
+//   settings/portfolioContact -> { contact: { email, phone, location }, socials: [ { key, label, url } ] }
+//
+// The gallery has its own settings/galleryContact. The two started life as one
+// shared document and were split so each site can advertise a different address,
+// or a different set of social links, without touching the other.
 //
 // The contact fields are NESTED under `contact`; only socials sit at the root.
 const contactRef = () => doc(db, 'settings', SETTINGS_DOCS.contact);

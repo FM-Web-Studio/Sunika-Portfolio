@@ -1,27 +1,31 @@
 // Static configuration shared across the data layer.
+//
+// The portfolio and the gallery are two separate sites sharing ONE Firebase
+// project, so every name here is picked so that it has exactly one owner.
+//
+// A collection only this site touches keeps its plain name (`projects`, and the
+// `projects/` folder in Storage). Anything both sites would otherwise have wanted
+// to call the same thing, the contact details, the editable copy, the contact-form
+// inbox, carries a `portfolio` prefix, because the gallery holds its own copy of
+// each of those and the two must never overwrite one another.
+//
+// The gallery's own names are `artworks`, `galleryMessages`,
+// `settings/galleryContent` and `settings/galleryContact`. Nothing in this repo
+// should ever read them.
 
 export const COLLECTIONS = {
-  artworks:        'artworks',
   projects:        'projects',
   education:       'education',
   experience:      'experience',
-  profile:         'profile',         // single-doc profile settings (see PROFILE_DOCS)
-  messages:        'messages',        // contact-form submissions
-  accomplishments: 'accomplishments', // wins / features shown in the About section
+  profile:         'profile',            // single-doc profile settings (see PROFILE_DOCS)
+  messages:        'portfolioMessages',  // contact-form submissions from THIS site
+  accomplishments: 'accomplishments',    // wins / features shown in the About section
 };
 
-// Per-visitor vote records, kept as subcollections of the artwork they belong to
-// and keyed by the visitor's anonymous auth uid. They are what makes one-vote-
-// per-visitor enforceable in firestore.rules rather than a localStorage promise.
-export const ARTWORK_VOTES = {
-  raters: 'raters',
-  likers: 'likers',
-};
-
-// Single documents in the `settings` collection.
+// Single documents in the `settings` collection, this site's half of it.
 export const SETTINGS_DOCS = {
-  content: 'content',   // editable site copy, one group per page
-  contact: 'contact',   // email / phone / location + social links
+  content: 'portfolioContent',   // editable site copy, one group per page
+  contact: 'portfolioContact',   // email / phone / location + social links
 };
 
 // Document ids inside the `profile` collection.
@@ -34,14 +38,14 @@ export const PROFILE_DOCS = {
 // Storage folders, one per collection that owns files. Matched by prefix in
 // storage.rules, so a new folder needs a matching rule.
 export const STORAGE_FOLDERS = {
-  artworks:        'artworks',
   projects:        'projects',
   profile:         'profile',
   accomplishments: 'accomplishments',
 };
 
 // Comma-separated allowlist of admin Google account emails (client-side UX gate).
-// Real enforcement lives in firestore.rules / storage.rules (managed separately).
+// Real enforcement lives in firestore.rules / storage.rules, which are deployed
+// from this repo and cover both sites.
 export const ADMIN_EMAILS = (import.meta.env.ADMIN_EMAILS || '')
   .split(',')
   .map((s) => s.trim().toLowerCase())
@@ -66,16 +70,4 @@ export const DEFAULT_CONTACT = {
   email:    '',
   phone:    '',
   location: '',
-};
-
-
-// ── Gallery ──────────────────────────────────────────────────────────────────
-export const CATEGORIES = ['Paintings', 'Drawings', 'Artistic Mix'];
-
-export const CURRENCY_SYMBOL = 'R';
-
-export const formatPrice = (price) => {
-  const n = Number(price);
-  if (!price || Number.isNaN(n) || n === 0) return 'Price on request';
-  return `${CURRENCY_SYMBOL}${n.toLocaleString()}`;
 };
