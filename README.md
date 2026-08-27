@@ -11,22 +11,26 @@ The gallery of original artworks is a separate repo and a separate deploy:
 
 ## One Firebase project, two sites
 
-Both sites live in the Firebase project `sunika-project`. They share the
-Firestore database, the Storage bucket and the admin allowlist. They do **not**
-share data.
+Both sites live in the Firebase project `sunika-project`, sharing the Firestore
+database, the Storage bucket and the admin allowlist.
 
 | | Portfolio (this repo) | Gallery |
 | --- | --- | --- |
-| Hosting target | `portfolio` → `sunika-studio` | `gallery` → `sunika-studio-gallery` |
-| Firebase web app | `…web:53e9bbc0cdc7941b4944cf` | `…web:a057f926f8e030ea4944cf` |
+| Hosting target | `portfolio` -> `sunika-studio` | `gallery` -> `sunika-studio-gallery` |
+| Firebase web app | `...web:53e9bbc0cdc7941b4944cf` | `...web:a057f926f8e030ea4944cf` |
 | Firestore | `projects`, `education`, `experience`, `profile`, `accomplishments` | `artworks` (+ `raters`/`likers`) |
 | Contact inbox | `portfolioMessages` | `galleryMessages` |
 | Editable copy | `settings/portfolioContent` | `settings/galleryContent` |
-| Contact details + socials | `settings/portfolioContact` | `settings/galleryContact` |
 | Storage | `projects/`, `profile/`, `accomplishments/` | `artworks/` |
 
-Every name has exactly one owner, so neither site can overwrite the other's
-content. Collection names are declared in one place, `frontend/src/firebase/config.js`.
+**Shared by both:** `settings/contact`, the email, phone, location and social
+links. There is one of Sunika, so there is one set of those, and editing them in
+either admin changes both sites. Everything else has exactly one owner, so neither
+site can overwrite the other's content.
+
+The prefix is the convention: a `portfolio` or `gallery` prefix means one site owns
+it, no prefix means it is shared. Names are declared in one place,
+`frontend/src/firebase/config.js`.
 
 The two sites' images are not shared even though the bucket is: no code in either
 repo reads the other's folder. The Storage paths deliberately did not change when
@@ -69,13 +73,13 @@ is in the rules.
 Cloud Functions are **opt-in**, not on every push: they need broader IAM than
 hosting and access to the `SMTP_PASSWORD` secret, so wiring them into every push
 would turn `main` red on a permissions problem unrelated to the site. To ship a
-functions change: Actions → Deploy to Firebase Hosting → Run workflow → tick
+functions change: Actions -> Deploy to Firebase Hosting -> Run workflow -> tick
 **deploy_functions**. See `functions/README.md`.
 
 ## Requirements on the Firebase project
 
 - The Blaze plan, for the contact-form email function.
-- **Anonymous sign-in must be enabled** (Authentication → Sign-in method →
+- **Anonymous sign-in must be enabled** (Authentication -> Sign-in method ->
   Anonymous). This site does not use it, but the gallery's ratings and likes do,
   and the setting is project-wide.
 
@@ -97,6 +101,6 @@ each string with a `default`, and only admin edits that differ from the default
 are stored in Firestore. A test fails the build if a copy field exists that no
 page renders.
 
-The link across to the gallery site is one of those copy fields (Site Copy →
-Brand & Footer → *Gallery site: URL*) rather than a constant, so moving that site
+The link across to the gallery site is one of those copy fields (Site Copy ->
+Brand & Footer -> *Gallery site: URL*) rather than a constant, so moving that site
 does not need a code change here. Left blank, the link does not render.

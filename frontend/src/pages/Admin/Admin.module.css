@@ -540,7 +540,7 @@
   cursor: pointer;
 }
 
-/* Edit → brand accent. Destroy → red. Both outlined at rest, solid on hover
+/* Edit -> brand accent. Destroy -> red. Both outlined at rest, solid on hover
    so a long list is not a wall of colour. */
 .edit {
   color: var(--accent-1);

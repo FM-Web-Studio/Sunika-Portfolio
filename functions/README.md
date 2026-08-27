@@ -20,7 +20,7 @@ repo. The gallery repo deploys only its hosting target.
 
 The two functions above replaced a single `onContactMessage` that watched a shared
 `messages` collection. **Firebase does not delete a function just because it left
-the source** — a deploy only creates and updates what the code declares, so the
+the source**, a deploy only creates and updates what the code declares, so the
 old trigger keeps running in the project until it is removed by hand:
 
 ```bash

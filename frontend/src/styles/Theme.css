@@ -100,13 +100,13 @@
 
     /* ─── COLOR PALETTE, PASTEL FLORAL ─────────────────────────────────────── */
 
-    /* Text: Light Mode (deep plum-cocoa → soft mauve gray) */
+    /* Text: Light Mode (deep plum-cocoa -> soft mauve gray) */
     --primary-text-color-light: #3A2A31;         /* Deep plum-cocoa near-black */
     --secondary-text-color-light: #6B535E;       /* Soft mauve */
     --tertiary-text-color-light: #9C8791;        /* Muted mauve gray */
     --disabled-color-light: #C3B2B9;             /* Pale mauve */
 
-    /* Text: Dark Mode (warm blush-white → muted mauve) */
+    /* Text: Dark Mode (warm blush-white -> muted mauve) */
     --primary-text-color-dark: #F3E7EC;          /* Warm blush-white */
     --secondary-text-color-dark: #D2BEC7;        /* Soft blush gray */
     --tertiary-text-color-dark: #9E8892;         /* Muted mauve */
@@ -120,9 +120,9 @@
 
     /* ── Action colours ──────────────────────────────────────────────────
        One convention across the whole site:
-         confirm  (save, submit, add)          → green
-         danger   (delete, remove, cancel)     → red
-         edit / neutral navigation             → the brand accent
+         confirm  (save, submit, add)          -> green
+         danger   (delete, remove, cancel)     -> red
+         edit / neutral navigation             -> the brand accent
        Separate from the --success/--error status colours above, which paint
        toasts and validation text: these are tuned for BUTTON contrast, and
        the *-contrast value is the text colour that sits on a solid fill. */

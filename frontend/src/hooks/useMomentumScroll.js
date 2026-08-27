@@ -9,9 +9,7 @@ const prefersReduced = () =>
   typeof window.matchMedia === 'function' &&
   window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-// The in-app Motion toggle (Settings cog) sets this on <html>. Momentum scrolling
-// is the largest piece of motion on the site, so a visitor who turns animation off
-// and still gets an inertial scroller has been ignored.
+// The in-app Motion toggle (Settings cog) sets this on <html>.
 const motionDisabled = () =>
   document.documentElement.getAttribute('data-no-animations') === 'true';
 
@@ -45,14 +43,10 @@ export default function useMomentumScroll() {
       const raf = (time) => { lenis.raf(time); rafId = requestAnimationFrame(raf); };
       rafId = requestAnimationFrame(raf);
 
-      /*
-       * Lenis caches the scrollable height. Every page here loads its content after
-       * first paint, projects and the accomplishment photo, so the
-       * document grows several times while someone is already scrolling. Against a
-       * stale height Lenis clamps to the wrong maximum, which feels like the scroll
-       * hitting an invisible wall and springing back. Watching the body for size
-       * changes and re-measuring is what keeps it honest.
-       */
+      /* Lenis caches the scrollable height, and these pages load content after first
+         paint, so the document grows while someone is already scrolling. Against a
+         stale height Lenis clamps to the wrong maximum, which feels like hitting an
+         invisible wall and springing back. Re-measure on resize. */
       if (typeof ResizeObserver !== 'undefined') {
         resizeObserver = new ResizeObserver(() => lenis?.resize());
         resizeObserver.observe(document.body);

@@ -8,15 +8,15 @@ rules_version = '2';
 // it is deployed from the Sunika-Portfolio repo ONLY. Deploying it from both repos
 // would mean the last push silently reverting the other site's rules.
 //
+//   shared      settings/contact, one email, one phone, one set of social links
 //   portfolio   projects, education, experience, profile, accomplishments,
-//               portfolioMessages, settings/portfolioContent,
-//               settings/portfolioContact
+//               portfolioMessages, settings/portfolioContent
 //   gallery     artworks (+ raters/likers), galleryMessages,
-//               settings/galleryContent, settings/galleryContact
+//               settings/galleryContent
 //
-// Every name has exactly one owner, so neither site can overwrite the other's
-// content. A new collection on either side needs a rule here, or the default-deny
-// at the bottom of the file rejects it.
+// The prefix marks ownership, and everything without one is shared on purpose. A new
+// collection on either side needs a rule here, or the default-deny at the bottom of
+// the file rejects it.
 //
 // Everything public-facing is world-readable; writes are admin-only, with two
 // deliberate exceptions: anonymous visitors may submit a contact message, and
@@ -179,14 +179,13 @@ service cloud.firestore {
     }
 
     // ── Settings ──────────────────────────────────────────────────────────
+    // settings/contact          : email / phone / location + socials, BOTH sites
     // settings/portfolioContent : the portfolio's editable site copy
-    // settings/portfolioContact : the portfolio's email / phone / location + socials
     // settings/galleryContent   : the gallery's editable site copy
-    // settings/galleryContact   : the gallery's email / phone / location + socials
     //
     // Public read is deliberate: every one of these documents is rendered on a
-    // public page. The prefixes are what keep the two sites apart, so the rule
-    // itself does not need to know which document belongs to which site.
+    // public page. Which document belongs to which site is a naming convention,
+    // not something this rule needs to know.
     match /settings/{doc} {
       allow read: if true;
       allow write: if isAdmin();

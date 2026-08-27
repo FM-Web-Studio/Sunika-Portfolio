@@ -8,11 +8,9 @@ import styles from './App.module.css';
 
 /*
  * Home is reached via the standalone logo (top-left), so it is not repeated here.
- *
- * The gallery is no longer a route on this site, it is a separate deploy at its own
- * domain. It is linked from the home page and the footer using the URL an admin sets
- * under Site Copy, not from here, because an external link is not a tab in this
- * site's navigation and should not look like one.
+ * The gallery is a separate deploy, linked from the home page and the footer using
+ * the URL an admin sets under Site Copy, because an external link is not a tab in
+ * this site's navigation and should not look like one.
  */
 const NAVIGATION_PAGES = [
   { label: 'Projects', to: '/projects' },
@@ -39,15 +37,10 @@ const AppLayout = () => {
   useMomentumScroll();
 
   /*
-   * The top bar is transparent over the hero and picks up a frosted background once
-   * the page has scrolled.
-   *
-   * The threshold is read inside a rAF-throttled handler rather than straight from
-   * the scroll event. Lenis emits scroll continuously while it interpolates, so the
-   * raw handler fires many times per frame; reading `window.scrollY` in each one is
-   * a forced layout read in the middle of Lenis's own frame work. Coalescing to one
-   * read per frame removes that. setScrolled with an unchanged boolean is a no-op in
-   * React, so this only ever re-renders on the two real transitions.
+   * Read inside a rAF-throttled handler, not straight from the scroll event: Lenis
+   * emits scroll many times per frame, and reading `window.scrollY` in each one is
+   * a forced layout read in the middle of Lenis's own frame work. setScrolled with
+   * an unchanged boolean is a no-op, so this re-renders only on real transitions.
    */
   const [scrolled, setScrolled] = useState(() => window.scrollY > 8);
 
@@ -99,9 +92,8 @@ const AppLayout = () => {
 const AppContent = () => (
   <>
     <ScrollToTop />
-    {/* Admin sits outside AppLayout, so it needs its own boundary, the layout's
-        Suspense only covers the public Outlet. Every route is lazy now (see
-        pages/index.js), and a lazy element without a boundary above it throws. */}
+    {/* Admin sits outside AppLayout, whose Suspense only covers the public Outlet.
+        Every route is lazy, and a lazy element with no boundary above it throws. */}
     <Suspense fallback={<Loading />}>
       <Routes>
         <Route path="/admin" element={<Admin />} />

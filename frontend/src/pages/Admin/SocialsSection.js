@@ -6,7 +6,7 @@ import form from './AdminForms.module.css';
 
 const KEY_OPTIONS = SOCIAL_KEYS.map((k) => ({ value: k, label: k.charAt(0).toUpperCase() + k.slice(1) }));
 
-// Social links live in settings/portfolioContact, read by the footer and Contact page.
+// Social links live in settings/contact, shared with the gallery site.
 // Item shape: { key, label, url }.
 const SocialsSection = () => {
   const { showToast } = useToast();

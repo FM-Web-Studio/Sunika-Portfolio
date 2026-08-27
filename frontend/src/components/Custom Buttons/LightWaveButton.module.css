@@ -1,7 +1,7 @@
 /* ==================== GhostButton ==================== */
 
 /**
- * Layer stack (back → front):
+ * Layer stack (back -> front):
  * z:0 ::before, sliding glass fill + leading accent stripe
  * z:1 ::after, static diagonal glass sheen (always visible)
  * z:2 .content, text / children
@@ -70,7 +70,7 @@
 
 /* ── Sliding glass fill + leading accent stripe ─────────────────────────
  *
- * The fill slides in from the left (translateX -100% → 0).
+ * The fill slides in from the left (translateX -100% -> 0).
  * The gradient puts a bright accent stripe on the LEFT side of the panel.
  * As the panel moves right, this stripe sweeps across the button like
  * a bar of light passing through glass, the "sliding border highlight".

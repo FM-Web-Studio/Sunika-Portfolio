@@ -1,35 +1,15 @@
-/* =============================================================================
- * ADMIN COMPAT TOKENS + SCROLLBAR
- * =============================================================================
- * The ported Modal + SearchableDropdown reference a Francois-style token
- * vocabulary (--accent-1, --accent-1-rgb, --background-*, --border-color,
- * --spacing-*, --font-size-*, --radius-*, --z-modal, transitions, shadows).
- *
- * This site's Theme.css already defines every one of those names natively and
- * flips them in dark mode, so no bridging is needed, they inherit straight
- * through. The real work of this file is the border-color promotion and the
- * .admin-scope scoped scrollbar.
- *
- * Inherited from Theme.css (do not re-declare, see the note in .admin-scope):
- *   --accent-1      : Raspberry Rose  #B83B63 (light) / Warm Blossom #F08AAC (dark)
- *   --accent-1-rgb  : 184, 59, 99     (light) / 240, 138, 172 (dark)
- * ========================================================================== */
+/* Admin-only token remapping and scrollbar. Everything else inherits from
+   Theme.css, which already defines the whole token vocabulary the admin uses. */
 
 .admin-scope {
-  /* Do NOT re-declare a token as `--x: var(--x)` here. A custom property that
-     references itself is invalid at computed-value time, so the name resolves
-     to nothing for this element and every descendant. That silently killed
-     --background-0/1/2 and the accents across the whole admin (transparent
-     topbar, transparent mobile nav drawer, text showing through). The accent,
-     background and z-index tokens already inherit from Theme.css, leave them
-     alone. Only genuine remappings belong in this block.
+  /* Never re-declare a token as `--x: var(--x)` here. A self-referencing custom
+     property is invalid at computed-value time, so the name resolves to nothing
+     for this element and every descendant, which once left the admin topbar and
+     nav drawer transparent. Only genuine remappings belong in this block.
 
-     The public site's hairline is a blush #F2DFE4, which all but disappears
-     against the white --background-1 card surface. That is fine for an airy
-     portfolio, but it left the admin looking like one undivided blob. Inside
-     .admin-scope the stronger token is promoted to the default so every card,
-     divider and table line is actually visible. Still theme-aware: the token
-     flips to #513B48 in dark mode. */
+     The public site's hairline all but disappears against the white card surface,
+     which left the admin looking like one undivided blob. The stronger token is
+     promoted so cards and dividers are visible. Still flips in dark mode. */
   --border-color: var(--border-color-hover);
 
   color: var(--primary-text-color);

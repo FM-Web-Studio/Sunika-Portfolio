@@ -3,14 +3,11 @@ import { db } from './app';
 import { SETTINGS_DOCS } from './config';
 
 /*
- * Editable site copy lives in ONE document:
+ * Editable site copy, one document:
  *
  *   settings/portfolioContent -> { brand:{...}, home:{...}, projects:{...}, ... }
  *
- * The gallery keeps its own copy in settings/galleryContent. Same shape,
- * different groups, and neither site reads the other's document.
- *
- * firestore.rules allows public read and admin-only write on settings/{docId}.
+ * The gallery has its own settings/galleryContent. Same shape, different groups.
  */
 const contentRef = () => doc(db, 'settings', SETTINGS_DOCS.content);
 
@@ -27,10 +24,8 @@ export async function getContent() {
 
 /**
  * Replace the overrides for a single group, e.g. saveContentGroup('home', {...}).
- * updateDoc sets the whole `group` field to the given object (replacing it), so a
- * cleared field is actually removed and falls back to its code default, while
- * sibling groups in the document are left untouched. Falls back to creating the
- * document if it does not exist yet.
+ * updateDoc replaces the whole `group` field, so a cleared field is removed and
+ * falls back to its code default while sibling groups are left untouched.
  */
 export async function saveContentGroup(group, overrides) {
   const ref = contentRef();

@@ -8,18 +8,11 @@ import { COLLECTIONS, STORAGE_FOLDERS } from './config';
 import { sortByOrder } from '../utils/ordering';
 
 /*
- * Accomplishments: wins, features and press moments shown in the About section
- * on the home page, a competition win with the photo the sponsor took, a piece
- * published somewhere, an award.
+ * Accomplishments: wins, features and press moments shown in the About section.
  *
- * A separate collection rather than another `profile` singleton because these
- * arrive one at a time, each with its own image, and each needs to be reorderable
- * and removable on its own. Squeezing them into an array field would mean
- * rewriting the whole list (and re-resolving every image) to add one.
- *
- * Sorted by `order` ascending in JS, not by the query. An orderBy would silently
- * drop any document missing the field, the doc would simply vanish from the site
- * with no error, which is the trap the artwork and project lists used to fall into.
+ * A collection rather than another `profile` singleton because each arrives with
+ * its own image and needs to be reorderable and removable on its own. An array
+ * field would mean rewriting the whole list to add one.
  */
 
 const COL = COLLECTIONS.accomplishments;

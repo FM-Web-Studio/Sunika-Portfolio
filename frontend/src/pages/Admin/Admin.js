@@ -52,10 +52,8 @@ const EXPERIENCE_FIELDS = [
 
 const GROUPS = ['Portfolio', 'About', 'Contact', 'Site'];
 
-// `icon` is a react-icons component, not an emoji. The sidebar icons do real work
-// helping someone find a section at a glance, so they are drawn as SVG rather than
-// simply dropped. Emoji also render differently on every OS and cannot be coloured
-// to match the theme.
+// `icon` is a react-icons component, not an emoji: emoji render differently on every
+// OS and cannot be coloured to match the theme.
 const SECTIONS = [
   { id: 'projects',        group: 'Portfolio', title: 'Projects',        icon: FiGrid,      description: 'The pieces shown on the Work grid and the Home page.' },
   { id: 'profile',         group: 'About',     title: 'Profile',         icon: FiUser,      description: 'Your photo, name, title and bio.' },
@@ -70,14 +68,9 @@ const SECTIONS = [
 ];
 
 /*
- * Artworks are NOT managed here.
- *
- * The gallery is a separate site with its own admin at <gallery URL>/admin, backed
- * by its own Firestore documents. Its section used to sit in this sidebar, so
- * anyone who remembers it being here needs to be told where it went rather than
- * left to conclude the admin lost a feature. The URL comes from the same copy
- * field the public pages link with (Site Copy, Brand & Footer), so there is one
- * place to change it.
+ * Artworks are NOT managed here. The gallery is a separate site with its own admin
+ * at <gallery URL>/admin. Its section used to sit in this sidebar, so the link below
+ * says where it went rather than leaving someone to think a feature was lost.
  */
 
 const Admin = () => {
@@ -217,7 +210,6 @@ const Admin = () => {
             </div>
           ))}
 
-          {/* See the note above SECTIONS: where the artworks section went. */}
           {copy('brand').galleryUrl && (
             <div className={styles.navGroup}>
               <p className={styles.navGroupLabel}>Elsewhere</p>

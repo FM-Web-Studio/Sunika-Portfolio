@@ -16,7 +16,7 @@ const ToastNotification = memo(({ id, type = "info", title, message, errorCode, 
   const closingRef = useRef(false);
 
   // ─── CLOSE ANIMATION ────────────────────────────────────────────────────────
-  // 1. Add .closing → card fades + slides right.
+  // 1. Add .closing -> card fades + slides right.
   // 2. Lock current height so the collapse has an explicit start value.
   // 3. Double-rAF: browser paints locked height before collapsing to 0.
   // 4. Remove from React state after both transitions complete.

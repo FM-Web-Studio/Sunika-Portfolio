@@ -9,14 +9,11 @@
   flex-direction: column;
 }
 
-/* ── Fixed top bar ────────────────────────────────────────────────────────
-   Logo on the left, nav links on the right. Transparent while the page is at
-   the top so the hero reads full-bleed, then a frosted background and hairline
-   border fade in once scrolled.
+/* Fixed top bar. Transparent at the top of the page so the hero reads full-bleed,
+   then a frosted background fades in once scrolled.
 
-   The Settings cog and the mobile burger are portalled to <body> and fixed to
-   the top-right corner, so the bar reserves room for them on its right edge
-   instead of laying them out. */
+   The Settings cog and the mobile burger are portalled to <body> and fixed to the
+   top-right, so the bar reserves room for them rather than laying them out. */
 .topBar {
   position: fixed;
   top: 0;
@@ -36,23 +33,13 @@
   background: transparent;
   border-bottom: 1px solid transparent;
 
-  /*
-   * backdrop-filter is deliberately NOT in this transition.
-   *
-   * A fixed, full-width blurred bar already makes the browser re-sample the strip
-   * of page moving underneath it every frame. Animating the blur RADIUS on top of
-   * that forces a differently-sized blur to be recomputed on each frame of the
-   * transition, and that quarter-second lands exactly on the first scroll of every
-   * page, which is what the stutter at the top of the page was. The blur now
-   * switches on in one step while only colour and border fade.
-   *
-   * It stays out of the base rule on purpose: while the page is at the top the bar
-   * must be genuinely transparent, so the hero reads crisp and full-bleed rather
-   * than through a permanent frosted strip.
-   *
-   * `transform: translateZ(0)` keeps the bar on its own compositor layer, so the
-   * page scrolling beneath it never repaints the bar itself.
-   */
+  /* backdrop-filter is deliberately NOT transitioned. Animating the blur radius on
+     a fixed full-width bar recomputes a differently-sized blur every frame, and
+     that quarter-second lands on the first scroll of every page, which was the
+     stutter at the top of the page. It switches on in one step instead.
+
+     translateZ(0) keeps the bar on its own compositor layer, so the page scrolling
+     beneath it never repaints the bar. */
   transform: translateZ(0);
   transition:
     background-color 0.25s ease,

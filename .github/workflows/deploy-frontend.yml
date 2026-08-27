@@ -40,7 +40,7 @@ on:
   # in the source, and it cannot prompt in CI. Delete it explicitly first:
   # `firebase functions:delete <name> --region europe-west1 --force`.
   #
-  # To ship a functions change: Actions → this workflow → Run workflow → tick
+  # To ship a functions change: Actions -> this workflow -> Run workflow -> tick
   # "deploy_functions".
   workflow_dispatch:
     inputs:

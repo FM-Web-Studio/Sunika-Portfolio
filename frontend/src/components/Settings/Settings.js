@@ -9,7 +9,7 @@ import styles from "./Settings.module.css";
 
 // ─── BUBBLE CONFIGURATION ──────────────────────────────────────────────────────────
 // tx / ty: translation from trigger center (px) when open.
-// Designed for a top-right fixed anchor → bubbles fan down-left.
+// Designed for a top-right fixed anchor -> bubbles fan down-left.
 const BUBBLES = [
   { id: 'theme',      label: 'Theme',  tx: -88, ty: 62,  delay: '0s'     },
   { id: 'animations', label: 'Motion', tx: -22, ty: 90,  delay: '0.06s'  },

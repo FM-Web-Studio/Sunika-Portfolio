@@ -2,14 +2,12 @@ import { doc, setDoc, onSnapshot, serverTimestamp } from 'firebase/firestore';
 import { db } from './app';
 import { DEFAULT_CONTACT, SETTINGS_DOCS } from './config';
 
-// Contact details + social links, read by the footer and the Contact page and
-// edited from the admin. One document:
+// Contact details + social links, read by the footer and the Contact page:
 //
-//   settings/portfolioContact -> { contact: { email, phone, location }, socials: [ { key, label, url } ] }
+//   settings/contact -> { contact: { email, phone, location }, socials: [ { key, label, url } ] }
 //
-// The gallery has its own settings/galleryContact. The two started life as one
-// shared document and were split so each site can advertise a different address,
-// or a different set of social links, without touching the other.
+// SHARED with the gallery site on purpose. There is one of Sunika, so one email,
+// one phone, one set of links. A copy per site is only a way for them to drift.
 //
 // The contact fields are NESTED under `contact`; only socials sit at the root.
 const contactRef = () => doc(db, 'settings', SETTINGS_DOCS.contact);
@@ -29,9 +27,8 @@ const CONTACT_KEYS = ['email', 'phone', 'location'];
 export const subscribeContact = (cb, onError) =>
   onSnapshot(contactRef(), (snap) => cb(asContact(snap.exists() ? snap.data() : null)), onError);
 
-// Partial merge: pass only the fields you are changing (e.g. { socials } or
-// { email, phone, location }). merge:true deep-merges maps, so any untouched
-// contact field survives.
+// Partial merge: pass only the fields you are changing. merge:true deep-merges
+// maps, so untouched contact fields survive.
 export const updateContact = (patch) => {
   const payload = { updatedAt: serverTimestamp() };
   const contact = {};

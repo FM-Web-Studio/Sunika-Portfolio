@@ -34,23 +34,12 @@ const formatRange = (start, end, period) => {
 const FEATURED_COUNT = 4;
 
 /*
- * The browse destinations, for the pill row under the hero.
+ * The pill row under the hero. Every destination on this page has exactly ONE owner,
+ * so Contact is not here (it owns the closing section) and neither is Home (the logo
+ * owns it). Repeating a link only makes the page louder.
  *
- * Every destination on this page has exactly ONE owner, which is why Contact is not
- * in this list and why the old per-section "See everything" links are gone. Before,
- * /contact had three separate buttons on one page (a hero ghost button, a pill, and
- * the closing call to action) and /projects had two. Repeating a link does not make
- * it easier to find, it just makes the page louder and leaves the reader wondering
- * whether the two go to the same place.
- *
- *   Projects -> this pill
- *   Gallery  -> the pill beside it, which is now an EXTERNAL link to the separate
- *               gallery site. Its URL is a copy field (Site Copy, Brand & Footer)
- *               rather than a constant, so moving that site does not need a code
- *               change here. Blank means it is not live yet and nothing renders.
- *   Contact  -> the closing section, which is the page's conversion point and
- *               already a full section with its own heading
- *   Home     -> the logo in the top bar
+ * The Gallery pill is an EXTERNAL link to the separate gallery site, its URL a copy
+ * field rather than a constant. Blank means nothing renders.
  */
 const PAGE_LINKS = [
   { to: '/projects', label: 'Projects', Icon: FiGrid },
@@ -109,12 +98,8 @@ const Home = () => {
   const hasWins      = accomplishments.length > 0;
   const hasAbout     = hasInterests || hasSkills || hasWins || !!personal.bio;
 
-  /*
-   * About comes BEFORE work. It carries the accomplishments, a competition win,
-   * a feature, the photo that came with it, and those are the strongest thing on
-   * the page. Leading with a project grid buries them below a scroll that plenty
-   * of visitors never finish.
-   */
+  // About comes BEFORE work: the accomplishments are the strongest thing on the
+  // page, and a project grid first buries them below a scroll many never finish.
   const sections = [
     { id: 'hero',    label: 'Hello'  },
     ...(hasAbout   ? [{ id: 'about',   label: 'Me'   }] : []),
@@ -152,7 +137,6 @@ const Home = () => {
   return (
     <div className={styles.page}>
 
-      {/* ── Side progress dots ── */}
       <nav className={styles.dots} aria-label="Sections">
         {sections.map((s) => (
           <button
@@ -168,9 +152,7 @@ const Home = () => {
         ))}
       </nav>
 
-      {/* ════════ HERO ════════
-          The wordmark is the page title, so there is no giant text name
-          competing with it. Botanicals frame the four corners. */}
+      {/* The wordmark is the page title, so no giant text name competes with it. */}
       <section ref={setRef('hero')} data-section="hero" className={styles.hero}>
         <span className={styles.blob} data-b="1" aria-hidden="true" />
         <span className={styles.blob} data-b="2" aria-hidden="true" />
@@ -182,7 +164,6 @@ const Home = () => {
         <span className={`${styles.bot} ${styles.botHeroBR}`} aria-hidden="true"><Botanical variant="sprig" /></span>
 
         <div className={styles.heroInner}>
-          {/* Any emoji lives inside the copy field, not beside it, see siteCopy.js. */}
           <p className={styles.heroEyebrow}>{t.heroEyebrow}</p>
 
           <h1 className={styles.heroTitle}>
@@ -417,7 +398,6 @@ const Home = () => {
         )}
       </section>
 
-      {/* ════════ JOURNEY ════════ */}
       {hasJourney && (
         <section ref={setRef('journey')} data-section="journey" className={styles.journey}>
           <div className={styles.sectionHead}>
@@ -472,7 +452,6 @@ const Home = () => {
         </section>
       )}
 
-      {/* ════════ CONTACT ════════ */}
       <section ref={setRef('contact')} data-section="contact" className={styles.contact}>
         <span className={styles.blob} data-b="2" aria-hidden="true" />
         <span className={styles.blob} data-b="3" aria-hidden="true" />
