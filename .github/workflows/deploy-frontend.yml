@@ -9,9 +9,36 @@ on:
   # by hand, silent drift between the repo and what is actually running.
   #
   # It is opt-in rather than automatic because deploying functions needs broader IAM
-  # than hosting (Cloud Functions Developer + Service Account User on SERVICE_ACCOUNT)
-  # and access to the SMTP_PASSWORD secret. Wiring it into every push would turn main
-  # red on a permissions problem that has nothing to do with the site itself.
+  # than hosting and access to the SMTP_PASSWORD secret. Wiring it into every push
+  # would turn main red on a permissions problem unrelated to the site itself.
+  #
+  # AS OF 2026-08-27 THE FUNCTIONS STEP DOES NOT WORK, and it fails with an IAM error
+  # rather than anything about the code:
+  #
+  #   Missing permissions required for functions deploy. You must have permission
+  #   iam.serviceAccounts.ActAs on service account <project>@appspot.gserviceaccount.com
+  #
+  # SERVICE_ACCOUNT holds the Firebase Admin SDK key, which has enough for hosting and
+  # rules but cannot act as the functions runtime service account. To fix it, grant
+  # that service account, on top of what it already has:
+  #
+  #   Service Account User      on <project>@appspot.gserviceaccount.com (scope it to
+  #                             that one account, not the whole project)
+  #   Cloud Functions Admin     project level
+  #   Artifact Registry Writer  project level, for the build image
+  #   Secret Manager Admin      project level, so the deploy can bind SMTP_PASSWORD
+  #                             to the new function
+  #
+  # That is a lot of authority to park in a CI credential for something that changes
+  # a few times a year, so the cheaper option is to keep deploying functions from a
+  # machine logged in as a project Owner:
+  #
+  #   cd functions && npm install && cd ..
+  #   firebase deploy --only functions --project sunika-project
+  #
+  # Either way, note that a deploy ABORTS if a function exists in the project but not
+  # in the source, and it cannot prompt in CI. Delete it explicitly first:
+  # `firebase functions:delete <name> --region europe-west1 --force`.
   #
   # To ship a functions change: Actions → this workflow → Run workflow → tick
   # "deploy_functions".
