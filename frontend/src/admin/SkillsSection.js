@@ -1,11 +1,14 @@
 import { useState } from 'react';
-import { FiArrowDown, FiArrowUp, FiPlus, FiTrash2, FiX } from 'react-icons/fi';
+import { FiPlus, FiTrash2, FiX } from 'react-icons/fi';
 import { useSite } from '../context/SiteContext';
 import { saveSkills, saveInterests } from '../firebase/profile';
-import { move } from '../lib/order';
 import { useDraft } from './useDraft';
 import SaveBar from './SaveBar';
+import Kebab from './Kebab';
+import { SortableList, DragHandle } from './Sortable';
 import ui from './Admin.module.css';
+
+let seq = 0;
 
 const ChipInput = ({ items, onChange, placeholder }) => {
   const [text, setText] = useState('');
@@ -15,59 +18,75 @@ const ChipInput = ({ items, onChange, placeholder }) => {
     setText('');
   };
   return (
-    <div className={ui.chipInput}>
-      {items.map((item) => (
-        <span key={item} className="chip chip-teal">
-          {item}
+    <SortableList
+      items={items}
+      getId={(item) => item}
+      onReorder={onChange}
+      layout="grid"
+      as="div"
+      itemAs="span"
+      className={ui.chipInput}
+      itemClassName={ui.chipItem}
+      after={(
+        <input
+          value={text}
+          placeholder={placeholder}
+          onChange={(e) => setText(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') { e.preventDefault(); add(); }
+            if (e.key === 'Backspace' && !text && items.length) onChange(items.slice(0, -1));
+          }}
+          onBlur={add}
+        />
+      )}
+    >
+      {(item, i, handle) => (
+        <span className="chip chip-teal">
+          <span className={ui.chipGrab} {...handle} aria-label={`Drag ${item}`}>{item}</span>
           <button type="button" onClick={() => onChange(items.filter((x) => x !== item))} aria-label={`Remove ${item}`}><FiX aria-hidden="true" /></button>
         </span>
-      ))}
-      <input
-        value={text}
-        placeholder={placeholder}
-        onChange={(e) => setText(e.target.value)}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter') { e.preventDefault(); add(); }
-          if (e.key === 'Backspace' && !text && items.length) onChange(items.slice(0, -1));
-        }}
-        onBlur={add}
-      />
-    </div>
+      )}
+    </SortableList>
   );
 };
 
 const SkillsSection = () => {
   const { skills, interests } = useSite();
-  const source = { categories: skills.categories, interests: interests.items };
+  const source = {
+    categories: skills.categories.map((c, i) => ({ ...c, _id: `g${i}` })),
+    interests: interests.items,
+  };
   const draft = useDraft(source, async (v) => {
     await Promise.all([saveSkills(v.categories), saveInterests(v.interests)]);
   });
   const { value, update } = draft;
   const setCategories = (fn) => update((v) => ({ ...v, categories: fn(v.categories) }));
-  const setCategory = (i, patch) => setCategories((list) => list.map((c, idx) => (idx === i ? { ...c, ...patch } : c)));
+  const setCategory = (id, patch) => setCategories((list) => list.map((c) => (c._id === id ? { ...c, ...patch } : c)));
 
   return (
     <div className={ui.stack}>
       <section className={ui.card}>
         <header className={ui.cardHead}>
           <h2>Skills</h2>
-          <span>Grouped skills, shown on the home page, in the scrolling banner and on the CV.</span>
+          <span>Drag groups and skills to change their order. Shown on the home page and the CV.</span>
         </header>
         <div className={ui.cardBody}>
-          <div className={ui.groups}>
-            {value.categories.map((c, i) => (
-              <div key={i} className={ui.group}>
+          <SortableList items={value.categories} getId={(c) => c._id} onReorder={(next) => setCategories(() => next)} className={ui.groups} itemClassName={ui.group}>
+            {(c, i, handle) => (
+              <>
                 <div className={ui.groupHead}>
-                  <input className="input" value={c.name} placeholder="Group name, e.g. Design" onChange={(e) => setCategory(i, { name: e.target.value })} aria-label="Group name" />
-                  <button type="button" className="icon-btn" onClick={() => setCategories((l) => move(l, i, -1))} disabled={i === 0} aria-label="Move up"><FiArrowUp aria-hidden="true" /></button>
-                  <button type="button" className="icon-btn" onClick={() => setCategories((l) => move(l, i, 1))} disabled={i === value.categories.length - 1} aria-label="Move down"><FiArrowDown aria-hidden="true" /></button>
-                  <button type="button" className="btn btn-sm btn-danger" onClick={() => setCategories((l) => l.filter((_, idx) => idx !== i))} aria-label="Remove group"><FiTrash2 aria-hidden="true" /></button>
+                  <DragHandle {...handle} label="Drag to reorder groups" />
+                  <input className="input" value={c.name} placeholder="Group name, e.g. Design" onChange={(e) => setCategory(c._id, { name: e.target.value })} aria-label="Group name" />
+                  <Kebab
+                    label={`Options for ${c.name || 'this group'}`}
+                    items={[{ label: 'Delete group', icon: FiTrash2, danger: true, onSelect: () => setCategories((l) => l.filter((x) => x._id !== c._id)) }]}
+                  />
                 </div>
-                <ChipInput items={c.items} onChange={(items) => setCategory(i, { items })} placeholder="Type a skill and press Enter" />
-              </div>
-            ))}
-          </div>
-          <button type="button" className="btn btn-edit" onClick={() => setCategories((l) => [...l, { name: '', items: [] }])}>
+                <ChipInput items={c.items} onChange={(items) => setCategory(c._id, { items })} placeholder="Type a skill and press Enter" />
+              </>
+            )}
+          </SortableList>
+          <button type="button" className="btn btn-edit" onClick={() => setCategories((l) => [...l, { name: '', items: [], _id: `n${(seq += 1)}` }])}>
             <FiPlus aria-hidden="true" /> Add a group
           </button>
         </div>
@@ -76,7 +95,7 @@ const SkillsSection = () => {
       <section className={ui.card}>
         <header className={ui.cardHead}>
           <h2>Interests</h2>
-          <span>Things you love. Shown as colourful tags on the home page and on the CV.</span>
+          <span>Drag to reorder. Shown as tags on the home page and the CV.</span>
         </header>
         <div className={ui.cardBody}>
           <ChipInput items={value.interests} onChange={(items) => update({ interests: items })} placeholder="Type an interest and press Enter" />

@@ -1,0 +1,35 @@
+.handle {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 28px;
+  height: 36px;
+  border-radius: var(--r-sm);
+  color: var(--ink-3);
+  cursor: grab;
+  touch-action: none;
+  transition: color var(--t-fast) var(--ease), background-color var(--t-fast) var(--ease);
+}
+
+.handle:hover {
+  background: var(--tint);
+  color: var(--ink);
+}
+
+.handle:active {
+  cursor: grabbing;
+}
+
+.handle svg {
+  width: 10px;
+  height: 16px;
+  fill: currentColor;
+}
+
+.dragging {
+  position: relative;
+  z-index: 3;
+  background: var(--card);
+  box-shadow: var(--shadow-lg);
+  opacity: 0.95;
+}

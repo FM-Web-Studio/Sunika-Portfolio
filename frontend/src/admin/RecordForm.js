@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
-import { FiArrowLeft, FiArrowRight, FiImage, FiStar, FiTrash2, FiUploadCloud } from 'react-icons/fi';
-import { move } from '../lib/order';
+import { FiImage, FiStar, FiTrash2, FiUploadCloud } from 'react-icons/fi';
+import { SortableList, DragHandle } from './Sortable';
 import { initialValues, nextTempId, toPayload, validate } from './schemas';
 import styles from './RecordForm.module.css';
 
@@ -40,20 +40,20 @@ const Gallery = ({ value, onChange }) => {
   return (
     <div className={styles.gallery}>
       {value.length > 0 && (
-        <ul className={styles.tiles}>
-          {value.map((item, i) => (
-            <li key={item.id} className={i === 0 ? styles.cover : ''}>
-              <img src={item.url} alt="" />
-              {i === 0 && <span className={styles.coverTag}><FiStar aria-hidden="true" /> Cover</span>}
-              <div className={styles.tileTools}>
-                <button type="button" onClick={() => onChange(move(value, i, -1))} disabled={i === 0} aria-label="Move earlier"><FiArrowLeft aria-hidden="true" /></button>
-                <button type="button" onClick={() => onChange(move(value, i, 1))} disabled={i === value.length - 1} aria-label="Move later"><FiArrowRight aria-hidden="true" /></button>
-                <button type="button" className={styles.remove} onClick={() => onChange(value.filter((x) => x.id !== item.id))} aria-label="Remove image"><FiTrash2 aria-hidden="true" /></button>
-              </div>
-            </li>
-          ))}
-        </ul>
+        <SortableList items={value} getId={(item) => item.id} onReorder={onChange} layout="grid" className={styles.tiles}>
+          {(item, i, handle) => (
+            <div className={`${styles.tile} ${i === 0 ? styles.cover : ''}`}>
+              <img src={item.url} alt="" draggable={false} />
+              <DragHandle {...handle} className={styles.tileDrag} label="Drag to reorder images" />
+              {i === 0
+                ? <span className={styles.coverTag}><FiStar aria-hidden="true" /> Cover</span>
+                : <button type="button" className={styles.makeCover} onClick={() => onChange([item, ...value.filter((x) => x.id !== item.id)])}>Make cover</button>}
+              <button type="button" className={styles.remove} onClick={() => onChange(value.filter((x) => x.id !== item.id))} aria-label="Remove image"><FiTrash2 aria-hidden="true" /></button>
+            </div>
+          )}
+        </SortableList>
       )}
+      {value.length > 1 && <small className={styles.hint}>Drag the dots on an image to reorder. The first image is the cover.</small>}
       <DropZone multiple onFiles={add}>Choose images</DropZone>
     </div>
   );

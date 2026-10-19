@@ -1,0 +1,71 @@
+.trigger {
+  display: grid;
+  flex: none;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  color: var(--ink-3);
+  transition: color var(--t-fast) var(--ease), background-color var(--t-fast) var(--ease);
+}
+
+.trigger:hover,
+.trigger[aria-expanded='true'] {
+  background: var(--tint);
+  color: var(--ink);
+}
+
+.trigger svg {
+  width: 18px;
+  height: 18px;
+}
+
+.menu {
+  position: fixed;
+  z-index: calc(var(--z-modal) + 10);
+  width: 200px;
+  padding: 6px;
+  border-radius: var(--r-md);
+  border: 1px solid var(--line-strong);
+  background: var(--card);
+  box-shadow: var(--shadow-lg);
+  animation: menu-in 160ms var(--ease) both;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 9px 10px;
+  border-radius: var(--r-sm);
+  font-weight: 700;
+  font-size: var(--step--1);
+  text-align: left;
+}
+
+.item svg {
+  flex: none;
+  font-size: 16px;
+  color: var(--ink-3);
+}
+
+.item:hover,
+.item:focus-visible {
+  background: var(--tint);
+  outline: none;
+}
+
+.danger,
+.danger svg {
+  color: var(--btn-danger);
+}
+
+.danger:hover,
+.danger:focus-visible {
+  background: color-mix(in srgb, var(--btn-danger) 12%, transparent);
+}
+
+@keyframes menu-in {
+  from { opacity: 0; transform: translateY(-4px); }
+}

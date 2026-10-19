@@ -30,7 +30,6 @@ export const buildCvModel = (site) => {
     name: personal.name || copy.brand.brandName,
     title: personal.title || '',
     bio: personal.bio || '',
-    photo: personal.photoUrl || '',
     motto: copy.brand.motto,
     labels: copy.cv,
     reach,

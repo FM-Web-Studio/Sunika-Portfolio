@@ -1,4 +1,4 @@
-import { doc, setDoc, onSnapshot, serverTimestamp } from 'firebase/firestore';
+import { doc, getDoc, setDoc, onSnapshot, serverTimestamp } from 'firebase/firestore';
 import { db } from './app';
 import { COLLECTIONS, PROFILE_DOCS, STORAGE_FOLDERS } from './config';
 import { uploadImage, removeImage } from './files';
@@ -26,7 +26,13 @@ export const subscribeProfile = (key, cb, onError = () => {}) =>
 
 const write = (key, data) => setDoc(profileRef(PROFILE_DOCS[key]), { ...data, updatedAt: serverTimestamp() }, { merge: true });
 
-export const savePersonal = async (data, photoFile, previous = {}) => {
+export const getCvPhoto = async () => {
+  const snap = await getDoc(profileRef(PROFILE_DOCS.cvPhoto));
+  const data = snap.exists() ? snap.data().data : '';
+  return typeof data === 'string' && data.startsWith('data:image/') ? data : '';
+};
+
+export const savePersonal = async (data, photoFile, previous = {}, cvPhoto = '') => {
   const patch = {
     name: data.name.trim(),
     title: data.title.trim(),
@@ -38,6 +44,7 @@ export const savePersonal = async (data, photoFile, previous = {}) => {
     patch.photoUrl = up.url;
     patch.photoPath = up.path;
   }
+  if (cvPhoto) await write('cvPhoto', { data: cvPhoto });
   await write('personal', patch);
 };
 

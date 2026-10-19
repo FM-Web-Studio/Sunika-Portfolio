@@ -64,7 +64,11 @@
   gap: 10px;
 }
 
-.tiles li {
+.tiles > li {
+  border-radius: var(--r-sm);
+}
+
+.tile {
   position: relative;
   aspect-ratio: 1;
   overflow: hidden;
@@ -73,14 +77,75 @@
   background: var(--tint);
 }
 
-.tiles li.cover {
+.tile.cover {
   border-color: var(--coral);
 }
 
-.tiles img {
+.tile img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  pointer-events: none;
+  user-select: none;
+}
+
+.tileDrag {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  background: rgba(255, 255, 255, 0.94);
+  color: #2A2326;
+  box-shadow: var(--shadow-sm);
+}
+
+.tileDrag:hover {
+  background: #fff;
+  color: #2A2326;
+}
+
+.makeCover {
+  position: absolute;
+  left: 6px;
+  bottom: 6px;
+  padding: 4px 10px;
+  border-radius: var(--r-pill);
+  background: rgba(255, 255, 255, 0.94);
+  color: #2A2326;
+  font-size: 0.72rem;
+  font-weight: 800;
+  box-shadow: var(--shadow-sm);
+  opacity: 0;
+  transition: opacity var(--t-fast) var(--ease);
+}
+
+.tile:hover .makeCover,
+.makeCover:focus-visible {
+  opacity: 1;
+}
+
+.remove {
+  position: absolute;
+  right: 6px;
+  bottom: 6px;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.94);
+  color: var(--btn-danger);
+  box-shadow: var(--shadow-sm);
+}
+
+.hint {
+  color: var(--ink-3);
+  font-size: 0.75rem;
+}
+
+@media (hover: none) {
+  .makeCover {
+    opacity: 1;
+  }
 }
 
 .coverTag {
@@ -96,34 +161,6 @@
   color: var(--on-coral);
   font-size: 0.7rem;
   font-weight: 800;
-}
-
-.tileTools {
-  position: absolute;
-  inset: auto 6px 6px;
-  display: flex;
-  justify-content: space-between;
-  gap: 4px;
-}
-
-.tileTools button {
-  display: grid;
-  place-items: center;
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.94);
-  color: #2A2326;
-  box-shadow: var(--shadow-sm);
-}
-
-.tileTools button:disabled {
-  opacity: 0.35;
-}
-
-.tileTools .remove {
-  margin-left: auto;
-  color: var(--btn-danger);
 }
 
 .single {

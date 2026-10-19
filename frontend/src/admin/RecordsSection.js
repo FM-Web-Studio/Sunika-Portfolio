@@ -1,18 +1,20 @@
-import { useMemo, useState } from 'react';
-import { FiArrowDown, FiArrowUp, FiEdit2, FiPlus, FiStar, FiTrash2 } from 'react-icons/fi';
+import { useEffect, useMemo, useState } from 'react';
+import { FiArrowUp, FiEdit2, FiPlus, FiStar, FiTrash2 } from 'react-icons/fi';
 import { useSite } from '../context/SiteContext';
 import { useToast } from '../components/Toast';
 import Modal from '../components/Modal';
 import { createRecord, updateRecord, deleteRecord, patchRecord, saveOrder } from '../firebase/records';
-import { move } from '../lib/order';
 import { RECORDS } from './schemas';
 import RecordForm from './RecordForm';
+import Kebab from './Kebab';
+import { SortableList, DragHandle } from './Sortable';
 import ui from './Admin.module.css';
 
 const RecordsSection = ({ kind }) => {
   const schema = RECORDS[kind];
   const site = useSite();
-  const records = site[kind];
+  const [pending, setPending] = useState(null);
+  const records = pending || site[kind];
   const { notify } = useToast();
   const [editing, setEditing] = useState(null);
   const [saving, setSaving] = useState(false);
@@ -54,12 +56,14 @@ const RecordsSection = ({ kind }) => {
     }
   };
 
-  const reorder = async (index, step) => {
-    const next = move(records, index, step);
-    if (next === records) return;
+  useEffect(() => setPending(null), [site[kind]]);
+
+  const reorder = async (next) => {
+    setPending(next);
     try {
       await saveOrder(kind, next.map((r) => r.id));
     } catch {
+      setPending(null);
       notify('error', 'The new order did not save. Please try again.');
     }
   };
@@ -90,9 +94,10 @@ const RecordsSection = ({ kind }) => {
           Nothing here yet. Add your first {schema.noun}.
         </button>
       ) : (
-        <ol className={ui.card}>
-          {records.map((r, i) => (
-            <li key={r.id} className={ui.row}>
+        <SortableList items={records} getId={(r) => r.id} onReorder={reorder} as="ol" className={ui.card} itemClassName={ui.row}>
+          {(r, i, handle) => (
+            <>
+              <DragHandle {...handle} />
               <span className={ui.position}>{i + 1}</span>
               {schema.thumb && (
                 <span className={ui.thumb}>{schema.thumb(r) ? <img src={schema.thumb(r)} alt="" loading="lazy" /> : null}</span>
@@ -101,20 +106,18 @@ const RecordsSection = ({ kind }) => {
                 <strong>{schema.title(r)}{schema.badge?.(r) && <span className="chip chip-sun">{schema.badge(r)}</span>}</strong>
                 {schema.meta(r) && <small>{schema.meta(r)}</small>}
               </button>
-              <div className={ui.rowTools}>
-                <button type="button" className="icon-btn" onClick={() => reorder(i, -1)} disabled={i === 0} aria-label="Move up" title="Move up"><FiArrowUp aria-hidden="true" /></button>
-                <button type="button" className="icon-btn" onClick={() => reorder(i, 1)} disabled={i === records.length - 1} aria-label="Move down" title="Move down"><FiArrowDown aria-hidden="true" /></button>
-                {kind === 'accomplishments' && (
-                  <button type="button" className={`icon-btn ${r.featured ? ui.starred : ''}`} onClick={() => toggleFeatured(r)} aria-pressed={!!r.featured} aria-label="Feature" title={r.featured ? 'Featured' : 'Feature this one'}>
-                    <FiStar aria-hidden="true" />
-                  </button>
-                )}
-                <button type="button" className="btn btn-sm btn-edit" onClick={() => setEditing({ record: r })}><FiEdit2 aria-hidden="true" /> Edit</button>
-                <button type="button" className="btn btn-sm btn-danger" onClick={() => remove(r)} aria-label={`Delete ${schema.title(r)}`}><FiTrash2 aria-hidden="true" /></button>
-              </div>
-            </li>
-          ))}
-        </ol>
+              <Kebab
+                label={`Options for ${schema.title(r)}`}
+                items={[
+                  { label: 'Edit', icon: FiEdit2, onSelect: () => setEditing({ record: r }) },
+                  kind === 'accomplishments' && { label: r.featured ? 'Stop featuring' : 'Feature on home page', icon: FiStar, onSelect: () => toggleFeatured(r) },
+                  i > 0 && { label: 'Move to top', icon: FiArrowUp, onSelect: () => reorder([r, ...records.filter((x) => x.id !== r.id)]) },
+                  { label: 'Delete', icon: FiTrash2, danger: true, onSelect: () => remove(r) },
+                ]}
+              />
+            </>
+          )}
+        </SortableList>
       )}
 
       <Modal open={!!editing} onClose={close} title={editing?.record ? `Edit ${schema.noun}` : `Add a ${schema.noun}`} size="lg">

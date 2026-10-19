@@ -229,6 +229,16 @@
   font-size: var(--step--1);
 }
 
+.cardWarn {
+  margin: 0 20px 20px;
+  padding: 10px 14px;
+  border-radius: var(--r-sm);
+  background: var(--sun-soft);
+  color: var(--sun-ink);
+  font-weight: 700;
+  font-size: var(--step--1);
+}
+
 .card {
   overflow: hidden;
   border-radius: var(--r-lg);
@@ -342,21 +352,6 @@
 
 .rowText:hover strong {
   color: var(--coral-ink);
-}
-
-.rowTools {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  flex: none;
-}
-
-.starred {
-  color: var(--sun);
-}
-
-.starred svg {
-  fill: var(--sun);
 }
 
 .empty {
@@ -497,6 +492,20 @@
   box-shadow: 0 0 0 4px color-mix(in srgb, var(--teal) 22%, transparent);
 }
 
+.chipItem {
+  display: inline-flex;
+  border-radius: var(--r-pill);
+}
+
+.chipGrab {
+  cursor: grab;
+  touch-action: none;
+}
+
+.chipGrab:active {
+  cursor: grabbing;
+}
+
 .chipInput button {
   display: grid;
   place-items: center;
@@ -526,9 +535,11 @@
 
 .socialRow {
   display: grid;
-  grid-template-columns: 40px 140px 1fr 1.6fr auto;
+  grid-template-columns: 28px 40px 140px minmax(0, 1fr) minmax(0, 1.6fr) 36px;
   align-items: center;
   gap: 8px;
+  padding: 4px;
+  border-radius: var(--r-md);
 }
 
 .socialIcon {
@@ -541,11 +552,6 @@
   color: var(--coral-ink);
 }
 
-.socialTools {
-  display: flex;
-  align-items: center;
-  gap: 2px;
-}
 
 .tabs {
   display: flex;
@@ -611,6 +617,16 @@
 
 .message:last-child {
   border-bottom: 0;
+}
+
+.messageRow {
+  display: flex;
+  align-items: center;
+  padding-right: 10px;
+}
+
+.messageRow:hover {
+  background: var(--paper);
 }
 
 .messageHead {
@@ -826,11 +842,25 @@
   }
 
   .socialRow {
-    grid-template-columns: 40px 1fr;
+    grid-template-columns: 28px 40px minmax(0, 1fr) 36px;
+    padding: 10px 4px;
+    border-bottom: 1px solid var(--line);
   }
 
-  .socialRow > :nth-child(n + 3) {
-    grid-column: 2;
+  .socialRow > :nth-child(1),
+  .socialRow > :nth-child(2),
+  .socialRow > :nth-child(6) {
+    grid-row: 1;
+  }
+
+  .socialRow > :nth-child(3),
+  .socialRow > :nth-child(4),
+  .socialRow > :nth-child(5) {
+    grid-column: 3;
+  }
+
+  .socialRow > :nth-child(6) {
+    grid-column: 4;
   }
 
   .welcome {
@@ -863,16 +893,12 @@
   }
 
   .row {
-    flex-wrap: wrap;
+    gap: 8px;
+    padding: 10px 8px;
   }
 
-  .rowText {
-    flex-basis: calc(100% - 100px);
-  }
-
-  .rowTools {
-    width: 100%;
-    justify-content: flex-end;
+  .position {
+    display: none;
   }
 
   .messageHead {

@@ -10,6 +10,7 @@ import nunito600 from '@fontsource/nunito/files/nunito-latin-600-normal.woff?url
 import nunito700 from '@fontsource/nunito/files/nunito-latin-700-normal.woff?url';
 import nunito800 from '@fontsource/nunito/files/nunito-latin-800-normal.woff?url';
 import { buildCvModel } from './model';
+import { getCvPhoto } from '../firebase/profile';
 
 globalThis.Buffer ??= Buffer;
 
@@ -372,8 +373,10 @@ const inline = async (url) => {
   }
 };
 
+export const buildPdf = (cv, photo, logo) => pdf(<CvDocument cv={cv} photo={photo} logo={logo} />).toBlob();
+
 export const renderCv = async (site) => {
   const cv = buildCvModel(site);
-  const [photo, logo] = await Promise.all([inline(cv.photo), inline(`${window.location.origin}/logo-wordmark.png`)]);
-  return pdf(<CvDocument cv={cv} photo={photo} logo={logo} />).toBlob();
+  const [stored, logo] = await Promise.all([getCvPhoto().catch(() => ''), inline(`${window.location.origin}/logo-wordmark.png`)]);
+  return buildPdf(cv, stored || null, logo);
 };

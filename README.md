@@ -31,20 +31,15 @@ the bottom that turns yellow when there are unsaved changes.
 
 ## The CV
 
-The Download CV button builds a one-page A4 PDF in the browser from the same data
-the site shows, in the brand colours. The PDF engine only downloads when the
-visitor is idle or presses the button, so it never slows the page down.
+The Download CV button in the menu builds a one-page A4 PDF in the browser from
+the same data the site shows, in the brand colours. The PDF engine only downloads
+when the visitor is idle or presses the button, so it never slows the page down.
 
-**The profile photo needs a one-time bucket setting.** Firebase Storage blocks
-other sites from downloading its files, so until this is done the CV shows
-initials instead of the photo. With the Google Cloud SDK installed and logged in
-as a project owner:
-
-```bash
-gcloud storage buckets update gs://sunika-project.firebasestorage.app --cors-file=cors.json
-```
-
-Use JPG or PNG photos. The PDF format cannot embed WebP.
+The CV photo is not read from Storage, because Storage blocks the browser from
+downloading its files for a PDF. Instead, saving a new photo under Admin, Profile
+also saves a small square JPEG copy to `profile/cvPhoto`, which is only read when
+someone downloads the CV. Any image format works, since the copy is always JPEG.
+If the admin says the photo is not on the CV yet, choose the photo again and save.
 
 ## One Firebase project, two sites
 

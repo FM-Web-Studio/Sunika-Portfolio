@@ -1,10 +1,17 @@
+import { useEffect, useState } from 'react';
 import { FiArrowRight, FiExternalLink } from 'react-icons/fi';
 import { useSite } from '../context/SiteContext';
+import { getCvPhoto } from '../firebase/profile';
 import ui from './Admin.module.css';
 
 const OverviewSection = ({ sections, messages, go }) => {
   const site = useSite();
   const unread = messages.filter((m) => !m.read).length;
+  const [cvPhoto, setCvPhoto] = useState(true);
+
+  useEffect(() => {
+    getCvPhoto().then((data) => setCvPhoto(!!data)).catch(() => setCvPhoto(true));
+  }, []);
   const counts = {
     inbox: unread ? `${unread} new` : `${messages.length}`,
     projects: site.projects.length,
@@ -17,6 +24,7 @@ const OverviewSection = ({ sections, messages, go }) => {
 
   const todo = [
     !site.personal.photoUrl && ['profile', 'Add a profile photo'],
+    site.personal.photoUrl && !cvPhoto && ['profile', 'Put your photo on the CV: choose your photo again under Profile and save'],
     !site.personal.bio && ['profile', 'Write a short bio'],
     site.projects.length === 0 && ['projects', 'Add your first project'],
     site.skills.categories.length === 0 && ['skills', 'List your skills'],
@@ -38,7 +46,7 @@ const OverviewSection = ({ sections, messages, go }) => {
 
       {todo.length > 0 && (
         <section className={ui.card}>
-          <header className={ui.cardHead}><h2>Getting started</h2><span>These are still empty.</span></header>
+          <header className={ui.cardHead}><h2>Getting started</h2><span>Still to do.</span></header>
           <ul className={ui.todo}>
             {todo.map(([id, text]) => (
               <li key={text}>

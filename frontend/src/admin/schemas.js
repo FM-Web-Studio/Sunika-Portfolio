@@ -6,7 +6,7 @@ export const RECORDS = {
     title: (r) => r.title || 'Untitled',
     meta: (r) => [r.category, r.year, `${r.files?.length || 0} image${r.files?.length === 1 ? '' : 's'}`].filter(Boolean).join(', '),
     thumb: (r) => r.coverUrl,
-    note: 'The first five projects appear on the home page. Use the arrows to change the order.',
+    note: 'The first five appear on the home page. Drag the handle to change the order.',
     fields: [
       { key: 'images', type: 'gallery', label: 'Images', hint: 'The first image is the cover.', required: true },
       { key: 'title', label: 'Title', required: true, placeholder: 'e.g. Wildflower packaging' },

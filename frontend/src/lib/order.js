@@ -9,11 +9,3 @@ export const orderForNew = (list = []) => {
   const ranks = list.map(rank).filter(Number.isFinite);
   return ranks.length ? Math.min(...ranks) - 1 : 0;
 };
-
-export const move = (list, index, step) => {
-  const target = index + step;
-  if (target < 0 || target >= list.length) return list;
-  const next = [...list];
-  [next[index], next[target]] = [next[target], next[index]];
-  return next;
-};

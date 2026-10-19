@@ -17,6 +17,7 @@ export const PROFILE_DOCS = {
   personal: 'personal',
   interests: 'interests',
   skills: 'skills',
+  cvPhoto: 'cvPhoto',
 };
 
 export const STORAGE_FOLDERS = {

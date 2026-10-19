@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { FiUser, FiUploadCloud } from 'react-icons/fi';
 import { useSite } from '../context/SiteContext';
-import { savePersonal } from '../firebase/profile';
+import { getCvPhoto, savePersonal } from '../firebase/profile';
+import { makeCvPhoto } from './cvPhoto';
 import { useDraft } from './useDraft';
 import SaveBar from './SaveBar';
 import ui from './Admin.module.css';
@@ -10,12 +11,19 @@ const ProfileSection = () => {
   const { personal } = useSite();
   const [photo, setPhoto] = useState(null);
   const [preview, setPreview] = useState('');
+  const [onCv, setOnCv] = useState(true);
 
   useEffect(() => () => { if (preview) URL.revokeObjectURL(preview); }, [preview]);
 
+  useEffect(() => {
+    getCvPhoto().then((data) => setOnCv(!!data)).catch(() => setOnCv(true));
+  }, []);
+
   const source = { name: personal.name, title: personal.title, bio: personal.bio, photo: '' };
   const draft = useDraft(source, async (v) => {
-    await savePersonal(v, photo, personal);
+    const cvPhoto = photo ? await makeCvPhoto(photo) : '';
+    await savePersonal(v, photo, personal, cvPhoto);
+    if (cvPhoto) setOnCv(true);
     setPhoto(null);
     setPreview('');
   });
@@ -33,7 +41,7 @@ const ProfileSection = () => {
   return (
     <div className={ui.stack}>
       <section className={ui.card}>
-        <header className={ui.cardHead}><h2>Photo</h2><span>Square photos crop best. Use JPG or PNG so it shows on the CV too.</span></header>
+        <header className={ui.cardHead}><h2>Photo</h2><span>Used on the home page and on the CV. Faces near the top crop best.</span></header>
         <div className={`${ui.cardBody} ${ui.photoRow}`}>
           <div className={ui.avatar}>
             {preview || personal.photoUrl ? <img src={preview || personal.photoUrl} alt="" /> : <FiUser aria-hidden="true" />}
@@ -43,6 +51,9 @@ const ProfileSection = () => {
             <input type="file" accept="image/*" className="sr-only" onChange={(e) => { pick(e.target.files?.[0]); e.target.value = ''; }} />
           </label>
         </div>
+        {personal.photoUrl && !onCv && !photo && (
+          <p className={ui.cardWarn}>The CV shows your initials instead of this photo. Press Replace photo, choose the photo from your computer, then press Save profile.</p>
+        )}
       </section>
 
       <section className={ui.card}>
