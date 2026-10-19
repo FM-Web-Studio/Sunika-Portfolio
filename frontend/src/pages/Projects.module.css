@@ -1,0 +1,84 @@
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 22px;
+}
+
+.filter {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 8px 7px 16px;
+  border-radius: var(--r-pill);
+  border: 1.5px solid var(--line-strong);
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: var(--step--1);
+  color: var(--ink-2);
+  transition: background-color var(--t) var(--ease), color var(--t) var(--ease), border-color var(--t) var(--ease), transform var(--t-fast) var(--ease-pop);
+}
+
+.filter:hover {
+  border-color: var(--coral);
+  color: var(--ink);
+  transform: translateY(-2px);
+}
+
+.count {
+  min-width: 24px;
+  padding: 1px 7px;
+  border-radius: var(--r-pill);
+  background: var(--tint);
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-align: center;
+}
+
+.on {
+  background: var(--coral-strong);
+  border-color: var(--coral-strong);
+  color: var(--on-coral);
+}
+
+.on .count {
+  background: rgba(255, 255, 255, 0.25);
+  color: inherit;
+}
+
+.on:hover {
+  color: var(--on-coral);
+}
+
+.note {
+  padding: 40px;
+  border: 2px dashed var(--line-strong);
+  border-radius: var(--r-lg);
+  color: var(--ink-3);
+  text-align: center;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  grid-auto-rows: 250px;
+  grid-auto-flow: dense;
+  gap: 14px;
+}
+
+.grid > :nth-child(7n + 1),
+.grid > :nth-child(7n + 5) {
+  grid-row: span 2;
+}
+
+.skeleton {
+  height: 100%;
+}
+
+@media (max-width: 560px) {
+  .grid {
+    grid-template-columns: 1fr 1fr;
+    grid-auto-rows: 190px;
+    gap: 10px;
+  }
+}

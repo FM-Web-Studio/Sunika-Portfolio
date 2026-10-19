@@ -1,15 +1,11 @@
 {
-  "short_name": "Sunika Studio",
-  "name": "Sunika Studio",
+  "short_name": "Suni Designs",
+  "name": "Suni Designs, Sunika Lombard",
   "icons": [
-    {
-      "src": "favicon.ico",
-      "sizes": "96x96 64x64 32x32 24x24 16x16",
-      "type": "image/x-icon"
-    }
+    { "src": "logo-mark.png", "sizes": "512x444", "type": "image/png" }
   ],
   "start_url": ".",
   "display": "standalone",
-  "theme_color": "#000000",
-  "background_color": "#ffffff"
+  "theme_color": "#DC3F55",
+  "background_color": "#FBF6F1"
 }

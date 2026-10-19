@@ -1,96 +1,26 @@
-/* App layout, structural positioning only.
- * Colors, backgrounds, and visual effects live in styles/Components.css. */
-
 .app {
-  position: relative;
-  min-height: 100vh;
-  width: 100%;
   display: flex;
   flex-direction: column;
+  min-height: 100vh;
 }
 
-/* Fixed top bar. Transparent at the top of the page so the hero reads full-bleed,
-   then a frosted background fades in once scrolled.
-
-   The Settings cog and the mobile burger are portalled to <body> and fixed to the
-   top-right, so the bar reserves room for them rather than laying them out. */
-.topBar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: var(--z-fixed);
-
-  height: 72px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--spacing-lg);
-  padding-left: clamp(1rem, 4vw, 2.5rem);
-  /* Clear the fixed cog (52px wide at right: 20px) */
-  padding-right: 88px;
-
-  background: transparent;
-  border-bottom: 1px solid transparent;
-
-  /* backdrop-filter is deliberately NOT transitioned. Animating the blur radius on
-     a fixed full-width bar recomputes a differently-sized blur every frame, and
-     that quarter-second lands on the first scroll of every page, which was the
-     stutter at the top of the page. It switches on in one step instead.
-
-     translateZ(0) keeps the bar on its own compositor layer, so the page scrolling
-     beneath it never repaints the bar. */
-  transform: translateZ(0);
-  transition:
-    background-color 0.25s ease,
-    border-color     0.25s ease;
-}
-
-.topBarScrolled {
-  background: var(--frosted-background);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-bottom-color: var(--border-color);
-}
-
-.brandLogo {
-  display: inline-flex;
-  flex-shrink: 0;
-  text-decoration: none;
-  transition: opacity var(--transition-fast);
-}
-.brandLogo:hover,
-.brandLogo:focus { opacity: 0.7; text-decoration: none; }
-.brandLogoImg {
-  height: 46px;
-  width: auto;
-  display: block;
-}
-
-.themeSwitch {
-  /* Settings portals itself to <body>; this wrapper is a no-op placeholder. */
-  display: contents;
-}
-
-/* Below the mobile breakpoint the burger also sits top-right, next to the cog. */
-@media (max-width: 767px) {
-  .topBar { padding-right: 140px; }
-}
-
-@media (max-width: 480px) {
-  .topBar { height: 62px; padding-left: 0.75rem; }
-  .brandLogoImg { height: 38px; }
-}
-
-.pageContent {
+.main {
   flex: 1;
-  width: 100%;
-  position: relative;
-  z-index: 2;
-  animation: pageEnter 0.22s ease-out both;
 }
 
-@keyframes pageEnter {
-  from { opacity: 0; }
-  to   { opacity: 1; }
+.skip {
+  position: fixed;
+  left: 12px;
+  top: -60px;
+  z-index: calc(var(--z-nav) + 1);
+  padding: 10px 16px;
+  border-radius: var(--r-pill);
+  background: var(--coral-strong);
+  color: var(--on-coral);
+  font-weight: 700;
+  transition: top var(--t) var(--ease);
+}
+
+.skip:focus {
+  top: 12px;
 }

@@ -1,124 +1,58 @@
-import React, { Suspense, useCallback, useMemo, useState, useTransition, useEffect } from 'react';
-import { Routes, Route, useNavigate, Outlet, useLocation, Link } from 'react-router-dom';
-import { NotFound, Loading, Home, Projects, Contact, Admin } from './pages';
-import { NavigationBar, Settings, ToastProvider, Footer } from './components';
-import { ContentProvider } from './context/ContentContext';
-import { useTheme, useAnimations, useMomentumScroll, getLenis } from './hooks';
+import { lazy, Suspense, useEffect } from 'react';
+import { Outlet, Route, Routes, useLocation } from 'react-router-dom';
+import { usePrefs } from './hooks/usePrefs';
+import { useMomentumScroll, scrollToTarget } from './hooks/useMomentumScroll';
+import ErrorBoundary from './components/ErrorBoundary';
+import Footer from './components/Footer';
+import Loading from './components/Loading';
+import Nav from './components/Nav';
 import styles from './App.module.css';
 
-/*
- * Home is reached via the standalone logo (top-left), so it is not repeated here.
- * The gallery is a separate deploy, linked from the home page and the footer using
- * the URL an admin sets under Site Copy, because an external link is not a tab in
- * this site's navigation and should not look like one.
- */
-const NAVIGATION_PAGES = [
-  { label: 'Projects', to: '/projects' },
-  { label: 'Contact',  to: '/contact'  },
-];
+const Home = lazy(() => import('./pages/Home'));
+const Projects = lazy(() => import('./pages/Projects'));
+const Contact = lazy(() => import('./pages/Contact'));
+const NotFound = lazy(() => import('./pages/NotFound'));
+const Admin = lazy(() => import('./admin/Admin'));
 
-const ScrollToTop = () => {
+const PublicLayout = () => {
   const { pathname } = useLocation();
+  const { reduceMotion } = usePrefs();
+  useMomentumScroll(!reduceMotion);
+
   useEffect(() => {
-    const lenis = getLenis();
-    if (lenis) lenis.scrollTo(0, { immediate: true });
-    window.scrollTo(0, 0);
+    scrollToTarget(0, { immediate: true });
   }, [pathname]);
-  return null;
-};
-
-const AppLayout = () => {
-  const navigate  = useNavigate();
-  const location  = useLocation();
-  const { theme, toggleTheme } = useTheme();
-  const [, startTransition] = useTransition();
-
-  // Momentum scrolling on the public site only (never the admin route).
-  useMomentumScroll();
-
-  /*
-   * Read inside a rAF-throttled handler, not straight from the scroll event: Lenis
-   * emits scroll many times per frame, and reading `window.scrollY` in each one is
-   * a forced layout read in the middle of Lenis's own frame work. setScrolled with
-   * an unchanged boolean is a no-op, so this re-renders only on real transitions.
-   */
-  const [scrolled, setScrolled] = useState(() => window.scrollY > 8);
-
-  useEffect(() => {
-    let queued = false;
-    const measure = () => { queued = false; setScrolled(window.scrollY > 8); };
-    const onScroll = () => {
-      if (queued) return;
-      queued = true;
-      requestAnimationFrame(measure);
-    };
-
-    measure();
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
-
-  const handleNavigate = useCallback((to) => {
-    if (to) startTransition(() => navigate(to));
-  }, [navigate, startTransition]);
-
-  const navigationLinks = useMemo(() => NAVIGATION_PAGES.map(p => ({ ...p })), []);
 
   return (
     <div className={styles.app}>
-      <header className={`${styles.topBar} ${scrolled ? styles.topBarScrolled : ''}`}>
-        <Link to="/" className={styles.brandLogo} aria-label="Home">
-          <img src="/logo-mark.png" alt="Suni Designs" className={styles.brandLogoImg} />
-        </Link>
-
-        <NavigationBar links={navigationLinks} onNavigate={handleNavigate} />
-      </header>
-
-      <div className={styles.themeSwitch}>
-        <Settings theme={theme} toggleTheme={toggleTheme} />
-      </div>
-
-      <div key={location.pathname} className={styles.pageContent}>
-        <Suspense fallback={<Loading />}>
-          <Outlet />
-        </Suspense>
-      </div>
-
+      <a href="#main" className={styles.skip}>Skip to content</a>
+      <Nav />
+      <main id="main" className={styles.main}>
+        <ErrorBoundary resetKey={pathname}>
+          <Suspense fallback={<Loading verse={false} />}>
+            <div key={pathname} className="page-enter">
+              <Outlet />
+            </div>
+          </Suspense>
+        </ErrorBoundary>
+      </main>
       <Footer />
     </div>
   );
 };
 
-const AppContent = () => (
-  <>
-    <ScrollToTop />
-    {/* Admin sits outside AppLayout, whose Suspense only covers the public Outlet.
-        Every route is lazy, and a lazy element with no boundary above it throws. */}
-    <Suspense fallback={<Loading />}>
-      <Routes>
-        <Route path="/admin" element={<Admin />} />
-        <Route path="/" element={<AppLayout />}>
-          <Route index             element={<Home />} />
-          <Route path="projects"   element={<Projects />} />
-          <Route path="contact"    element={<Contact />} />
-          <Route path="loading"    element={<Loading />} />
-          <Route path="*"          element={<NotFound />} />
-        </Route>
-      </Routes>
-    </Suspense>
-  </>
+const App = () => (
+  <Suspense fallback={<Loading full />}>
+    <Routes>
+      <Route path="/admin" element={<ErrorBoundary><Admin /></ErrorBoundary>} />
+      <Route element={<PublicLayout />}>
+        <Route index element={<Home />} />
+        <Route path="projects" element={<Projects />} />
+        <Route path="contact" element={<Contact />} />
+        <Route path="*" element={<NotFound />} />
+      </Route>
+    </Routes>
+  </Suspense>
 );
-
-const App = () => {
-  useTheme();
-  useAnimations();
-  return (
-    <ToastProvider>
-      <ContentProvider>
-        <AppContent />
-      </ContentProvider>
-    </ToastProvider>
-  );
-};
 
 export default App;

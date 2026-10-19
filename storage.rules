@@ -1,31 +1,8 @@
 rules_version = '2';
 
-// One folder per collection that owns files. Public read (the images are the
-// point of the site), admin-only write.
-//
-// TWO SITES, ONE BUCKET. The portfolio and the gallery are separate deploys
-// sharing this bucket, and each folder has exactly one owner:
-//
-//   artworks/         the gallery site
-//   projects/         the portfolio site
-//   profile/          the portfolio site
-//   accomplishments/  the portfolio site
-//
-// So the two sites' images are not shared even though the bucket is: no code in
-// either repo reads the other's folder. The paths deliberately did NOT change when
-// the sites were split, because a Firebase download URL embeds both the object path
-// and an access token held in the object's metadata, so renaming a folder
-// invalidates every URL already stored in Firestore. There was nothing to gain from
-// paying that price for folders that already had a single owner.
-//
-// Like firestore.rules, this file is project-wide and is deployed from the
-// Sunika-Portfolio repo ONLY. A new folder on the gallery side still needs its rule
-// added here.
-
 service firebase.storage {
   match /b/{bucket}/o {
 
-    // Keep this list in sync with ADMIN_EMAILS in frontend/.env and firestore.rules.
     function isAdmin() {
       return request.auth != null
              && request.auth.token.email_verified == true
@@ -41,35 +18,30 @@ service firebase.storage {
              && request.resource.contentType.matches('image/.*');
     }
 
-    // artworks/{artworkId}/{file}, one image per artwork
     match /artworks/{allPaths=**} {
       allow read: if true;
       allow write: if isAdminImageWrite();
       allow delete: if isAdmin();
     }
 
-    // projects/{projectId}/{file}, many images per project
     match /projects/{allPaths=**} {
       allow read: if true;
       allow write: if isAdminImageWrite();
       allow delete: if isAdmin();
     }
 
-    // accomplishments/{id}/{file}, the photo that goes with a win or feature
     match /accomplishments/{allPaths=**} {
       allow read: if true;
       allow write: if isAdminImageWrite();
       allow delete: if isAdmin();
     }
 
-    // profile/{file}, the profile photo
     match /profile/{allPaths=**} {
       allow read: if true;
       allow write: if isAdminImageWrite();
       allow delete: if isAdmin();
     }
 
-    // Default deny
     match /{allPaths=**} { allow read, write: if false; }
   }
 }

@@ -2,22 +2,25 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <link rel="icon" href="/logo-mark.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#FEF6F4" />
-    <meta
-      name="description"
-      content="Sunika Lombard, Communication Design &amp; Illustration portfolio."
-    />
+    <meta name="theme-color" content="#FBF6F1" />
+    <meta name="description" content="Sunika Lombard, communication design and illustration. Suni Designs: create, inspire, mark leaving." />
+    <link rel="icon" href="/logo-mark.png" />
     <link rel="manifest" href="/manifest.json" />
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <title>Sunika Studio</title>
+    <title>Suni Designs</title>
+    <script>
+      try {
+        var p = JSON.parse(localStorage.getItem('suni.prefs') || '{}');
+        var dark = p.theme ? p.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+        var still = typeof p.reduceMotion === 'boolean' ? p.reduceMotion : matchMedia('(prefers-reduced-motion: reduce)').matches;
+        document.documentElement.dataset.theme = dark ? 'dark' : 'light';
+        document.documentElement.dataset.motion = still ? 'reduced' : 'full';
+      } catch (e) {}
+    </script>
   </head>
   <body>
-    <noscript>You need to enable JavaScript to run this app.</noscript>
+    <noscript>You need to enable JavaScript to view this site.</noscript>
     <div id="root"></div>
-    <script type="module" src="/src/index.js"></script>
+    <script type="module" src="/src/main.js"></script>
   </body>
 </html>

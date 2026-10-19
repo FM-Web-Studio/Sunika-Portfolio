@@ -1,0 +1,61 @@
+.wrap {
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  gap: 12px;
+  min-height: 60vh;
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.full {
+  min-height: 100vh;
+}
+
+.mark {
+  width: 76px;
+  height: auto;
+  animation: bob 1.4s var(--ease) infinite;
+}
+
+.message {
+  font-family: var(--font-display);
+  font-weight: 500;
+  color: var(--ink-2);
+}
+
+.message::after {
+  content: '...';
+  display: inline-block;
+  width: 1.2em;
+  text-align: left;
+  animation: dots 1.4s steps(4) infinite;
+  overflow: hidden;
+  vertical-align: bottom;
+}
+
+.verse {
+  max-width: 420px;
+  margin: 8px 0 0;
+  color: var(--ink-3);
+  font-size: var(--step--1);
+  font-style: italic;
+}
+
+.verse cite {
+  display: block;
+  margin-top: 4px;
+  font-style: normal;
+  font-weight: 700;
+  color: var(--teal-ink);
+}
+
+@keyframes bob {
+  0%, 100% { transform: translateY(0) rotate(-4deg); }
+  50% { transform: translateY(-10px) rotate(4deg); }
+}
+
+@keyframes dots {
+  from { width: 0; }
+  to { width: 1.2em; }
+}

@@ -1,16 +1,28 @@
 {
-  "name": "Sunika Studio",
+  "name": "Suni Designs",
   "client": "Sunika",
   "tagline": "Portfolio for a design and illustration studio",
-  "description": "Design and illustration, made with heart. A projects showcase with an about and journey timeline and a contact form wired to a Cloud Function, all managed from an admin area rather than in code. Shares one Firebase project with the separate Sunika Gallery site.",
-
+  "description": "Design and illustration, made with heart. A compact, animated portfolio with a project lightbox, a journey timeline, a contact form wired to a Cloud Function and a one-click branded PDF CV, all managed from an admin area. Shares one Firebase project with the separate Sunika Gallery site.",
   "featured": true,
   "order": 20,
-
   "sites": [
-    { "label": "Live site", "url": "https://sunika-studio.web.app" }
+    {
+      "label": "Live site",
+      "url": "https://sunika-studio.web.app"
+    }
   ],
-
-  "stack": ["React", "Vite", "Firebase", "Firestore", "Cloud Functions", "Vitest"],
-  "tags": ["Portfolio", "Illustration", "Gallery"]
+  "stack": [
+    "React",
+    "Vite",
+    "Firebase",
+    "Firestore",
+    "Cloud Functions",
+    "React PDF",
+    "Vitest"
+  ],
+  "tags": [
+    "Portfolio",
+    "Illustration",
+    "Gallery"
+  ]
 }

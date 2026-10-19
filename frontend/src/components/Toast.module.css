@@ -1,0 +1,62 @@
+.stack {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: var(--z-toast);
+  display: grid;
+  gap: 10px;
+  width: min(380px, calc(100vw - 32px));
+  pointer-events: none;
+}
+
+.toast {
+  --tone: var(--teal);
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: start;
+  gap: 10px;
+  padding: 12px 12px 12px 14px;
+  border-radius: var(--r-md);
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--tone);
+  box-shadow: var(--shadow-lg);
+  font-size: var(--step--1);
+  font-weight: 600;
+  line-height: 1.45;
+  pointer-events: auto;
+  animation: toast-in 380ms var(--ease-pop) both;
+}
+
+.success {
+  --tone: var(--btn-confirm);
+}
+
+.error {
+  --tone: var(--btn-danger);
+}
+
+.icon {
+  margin-top: 1px;
+  font-size: 18px;
+  color: var(--tone);
+}
+
+.close {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  color: var(--ink-3);
+}
+
+.close:hover {
+  background: var(--tint);
+  color: var(--ink);
+}
+
+@keyframes toast-in {
+  from { opacity: 0; transform: translateY(14px) scale(0.96); }
+  to { opacity: 1; transform: none; }
+}

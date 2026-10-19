@@ -1,0 +1,46 @@
+.wrap {
+  display: grid;
+  justify-items: center;
+  gap: 16px;
+  padding-top: clamp(32px, 8vw, 80px);
+  text-align: center;
+}
+
+.art {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.digit {
+  font-family: var(--font-display);
+  font-size: clamp(6rem, 20vw, 11rem);
+  font-weight: 700;
+  line-height: 1;
+  color: var(--coral);
+}
+
+.digit:last-of-type {
+  color: var(--teal);
+}
+
+.fox {
+  width: clamp(90px, 18vw, 160px);
+  height: auto;
+  animation: float 4s var(--ease) infinite;
+}
+
+.sprig {
+  position: absolute;
+  right: -40px;
+  bottom: -10px;
+  width: 70px;
+  color: var(--teal);
+  transform-origin: bottom center;
+  animation: sway 5s var(--ease) infinite;
+}
+
+.title {
+  font-size: var(--step-4);
+}

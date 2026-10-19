@@ -3,45 +3,6 @@ name: Deploy to Firebase Hosting
 on:
   push:
     branches: [main]
-  # Cloud Functions are NOT deployed on every push. The contact-form trigger in
-  # functions/ previously had no automated path at all, so a change to it sat
-  # unreleased until someone remembered to run `firebase deploy --only functions`
-  # by hand, silent drift between the repo and what is actually running.
-  #
-  # It is opt-in rather than automatic because deploying functions needs broader IAM
-  # than hosting and access to the SMTP_PASSWORD secret. Wiring it into every push
-  # would turn main red on a permissions problem unrelated to the site itself.
-  #
-  # AS OF 2026-08-27 THE FUNCTIONS STEP DOES NOT WORK, and it fails with an IAM error
-  # rather than anything about the code:
-  #
-  #   Missing permissions required for functions deploy. You must have permission
-  #   iam.serviceAccounts.ActAs on service account <project>@appspot.gserviceaccount.com
-  #
-  # SERVICE_ACCOUNT holds the Firebase Admin SDK key, which has enough for hosting and
-  # rules but cannot act as the functions runtime service account. To fix it, grant
-  # that service account, on top of what it already has:
-  #
-  #   Service Account User      on <project>@appspot.gserviceaccount.com (scope it to
-  #                             that one account, not the whole project)
-  #   Cloud Functions Admin     project level
-  #   Artifact Registry Writer  project level, for the build image
-  #   Secret Manager Admin      project level, so the deploy can bind SMTP_PASSWORD
-  #                             to the new function
-  #
-  # That is a lot of authority to park in a CI credential for something that changes
-  # a few times a year, so the cheaper option is to keep deploying functions from a
-  # machine logged in as a project Owner:
-  #
-  #   cd functions && npm install && cd ..
-  #   firebase deploy --only functions --project sunika-project
-  #
-  # Either way, note that a deploy ABORTS if a function exists in the project but not
-  # in the source, and it cannot prompt in CI. Delete it explicitly first:
-  # `firebase functions:delete <name> --region europe-west1 --force`.
-  #
-  # To ship a functions change: Actions -> this workflow -> Run workflow -> tick
-  # "deploy_functions".
   workflow_dispatch:
     inputs:
       deploy_functions:
@@ -57,22 +18,21 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup Node.js
-        # 22 matches functions/package.json. Node 18 is past end of life and recent
-        # firebase-tools releases require 20+, so the old pin was a deploy waiting
-        # to break on someone else's release schedule.
         uses: actions/setup-node@v4
         with:
           node-version: '22'
 
       - name: Install dependencies
-        run: |
-          cd frontend
-          npm install
+        working-directory: frontend
+        run: npm ci
+
+      - name: Test
+        working-directory: frontend
+        run: npx vitest run
 
       - name: Build
-        run: |
-          cd frontend
-          npm run build
+        working-directory: frontend
+        run: npm run build
         env:
           FIREBASE_API_KEY:             ${{ secrets.FIREBASE_API_KEY }}
           FIREBASE_AUTH_DOMAIN:         ${{ secrets.FIREBASE_AUTH_DOMAIN }}
@@ -91,7 +51,7 @@ jobs:
           echo '${{ secrets.SERVICE_ACCOUNT }}' > "$RUNNER_TEMP/firebase-sa.json"
           echo "GOOGLE_APPLICATION_CREDENTIALS=$RUNNER_TEMP/firebase-sa.json" >> "$GITHUB_ENV"
 
-      - name: Deploy to Firebase Hosting, Firestore & Storage Rules
+      - name: Deploy hosting, Firestore and Storage rules
         run: firebase deploy --only hosting:portfolio,firestore:rules,storage --project sunika-project
 
       - name: Deploy Cloud Functions

@@ -1,0 +1,84 @@
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-modal);
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  background: rgba(30, 18, 24, 0.55);
+  backdrop-filter: blur(4px);
+  animation: fade 220ms var(--ease) both;
+}
+
+.stage {
+  background: rgba(18, 12, 16, 0.86);
+}
+
+.panel {
+  position: relative;
+  width: 100%;
+  max-height: calc(100dvh - 32px);
+  overflow: auto;
+  border-radius: var(--r-lg);
+  background: var(--card);
+  box-shadow: var(--shadow-lg);
+  outline: none;
+  animation: rise 340ms var(--ease-pop) both;
+}
+
+.sm { max-width: 440px; }
+.md { max-width: 620px; }
+.lg { max-width: 860px; }
+.xl { max-width: 1120px; }
+
+.stage .panel {
+  overflow: hidden;
+  background: var(--card);
+}
+
+.head {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 16px 12px 24px;
+  background: var(--card);
+  border-bottom: 1px solid var(--line);
+}
+
+.head h2 {
+  font-size: var(--step-2);
+}
+
+.floatingClose {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 5;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--card);
+  color: var(--ink);
+  box-shadow: var(--shadow-md);
+  transition: transform var(--t) var(--ease-pop), background-color var(--t) var(--ease);
+}
+
+.floatingClose:hover {
+  transform: rotate(90deg);
+  background: var(--coral-strong);
+  color: var(--on-coral);
+}
+
+@keyframes fade {
+  from { opacity: 0; }
+}
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(24px) scale(0.97); }
+}

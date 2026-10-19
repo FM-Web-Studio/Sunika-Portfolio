@@ -1,0 +1,12 @@
+.cv:hover:not(:disabled) .icon {
+  animation: nudge 700ms var(--ease) infinite;
+}
+
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes nudge {
+  0%, 100% { transform: translateY(-1px); }
+  50% { transform: translateY(3px); }
+}

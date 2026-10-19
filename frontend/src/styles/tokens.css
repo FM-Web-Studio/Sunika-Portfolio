@@ -1,0 +1,110 @@
+:root {
+  --font-display: 'Fredoka', 'Nunito', system-ui, sans-serif;
+  --font-text: 'Nunito', system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  --step--1: 0.8125rem;
+  --step-0: 0.9375rem;
+  --step-1: 1.0625rem;
+  --step-2: clamp(1.2rem, 1.1rem + 0.5vw, 1.45rem);
+  --step-3: clamp(1.5rem, 1.25rem + 1.1vw, 2.1rem);
+  --step-4: clamp(1.9rem, 1.45rem + 2vw, 2.9rem);
+  --step-5: clamp(2.4rem, 1.6rem + 3.4vw, 4rem);
+
+  --gutter: clamp(16px, 4vw, 40px);
+  --section: clamp(52px, 7vw, 92px);
+  --max: 1180px;
+  --nav-h: 64px;
+
+  --r-sm: 10px;
+  --r-md: 16px;
+  --r-lg: 24px;
+  --r-xl: 32px;
+  --r-pill: 999px;
+
+  --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --ease-pop: cubic-bezier(0.34, 1.4, 0.64, 1);
+  --t-fast: 160ms;
+  --t: 260ms;
+  --t-slow: 600ms;
+
+  --z-nav: 50;
+  --z-sheet: 80;
+  --z-modal: 100;
+  --z-toast: 120;
+
+  --brand-coral: #DC3F55;
+  --brand-teal: #3FB8A0;
+}
+
+:root,
+[data-theme='light'] {
+  color-scheme: light;
+  --paper: #FBF6F1;
+  --card: #FFFFFF;
+  --tint: #F5EDE6;
+  --ink: #2A2326;
+  --ink-2: #5E5459;
+  --ink-3: #85797F;
+  --line: #EADFD7;
+  --line-strong: #D9CAC0;
+
+  --coral: #DC3F55;
+  --coral-ink: #B8293F;
+  --coral-strong: #C6334A;
+  --coral-soft: #FCE4E7;
+  --on-coral: #FFFFFF;
+
+  --teal: #3FB8A0;
+  --teal-ink: #16786A;
+  --teal-soft: #DDF3EE;
+
+  --sun: #F5BF4F;
+  --sun-soft: #FDF0D3;
+  --sun-ink: #7A5408;
+
+  --shadow-sm: 0 1px 2px rgba(74, 38, 48, 0.06), 0 2px 8px rgba(74, 38, 48, 0.05);
+  --shadow-md: 0 6px 24px rgba(74, 38, 48, 0.1);
+  --shadow-lg: 0 18px 50px rgba(74, 38, 48, 0.16);
+  --nav-bg: rgba(251, 246, 241, 0.82);
+
+  --btn-confirm: #2F8A5B;
+  --btn-confirm-contrast: #FFFFFF;
+  --btn-danger: #C62F45;
+  --btn-danger-contrast: #FFFFFF;
+}
+
+[data-theme='dark'] {
+  color-scheme: dark;
+  --paper: #17131A;
+  --card: #211B25;
+  --tint: #2A2330;
+  --ink: #F6EFEA;
+  --ink-2: #CBC0C6;
+  --ink-3: #9A8F96;
+  --line: #352D3B;
+  --line-strong: #4A4051;
+
+  --coral: #F0627A;
+  --coral-ink: #FF8FA0;
+  --coral-strong: #F0627A;
+  --coral-soft: #3A2129;
+  --on-coral: #1B1216;
+
+  --teal: #4FCDB4;
+  --teal-ink: #74DEC8;
+  --teal-soft: #1B3531;
+
+  --sun: #F7CD6E;
+  --sun-soft: #3A3020;
+  --sun-ink: #F7CD6E;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 8px 26px rgba(0, 0, 0, 0.35);
+  --shadow-lg: 0 20px 60px rgba(0, 0, 0, 0.5);
+  --nav-bg: rgba(23, 19, 26, 0.8);
+
+  --btn-confirm: #4CC488;
+  --btn-confirm-contrast: #0F1F16;
+  --btn-danger: #F0627A;
+  --btn-danger-contrast: #1B1216;
+}

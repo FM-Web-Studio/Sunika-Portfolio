@@ -1,0 +1,45 @@
+.form {
+  display: grid;
+  gap: 14px;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
+.send {
+  justify-self: start;
+}
+
+.sent {
+  display: grid;
+  justify-items: center;
+  gap: 14px;
+  padding: 32px 12px;
+  text-align: center;
+  font-weight: 600;
+}
+
+.tick {
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--teal-soft);
+  color: var(--teal-ink);
+  font-size: 30px;
+  animation: pop 520ms var(--ease-pop) both;
+}
+
+@keyframes pop {
+  from { transform: scale(0.3) rotate(-30deg); opacity: 0; }
+}
+
+@media (max-width: 560px) {
+  .row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

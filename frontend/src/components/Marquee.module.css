@@ -1,0 +1,60 @@
+.marquee {
+  overflow: hidden;
+  padding: 14px 0;
+  background: var(--teal);
+  color: #10302A;
+  transform: rotate(-1.2deg);
+  margin: 8px -12px;
+  box-shadow: var(--shadow-sm);
+}
+
+[data-theme='dark'] .marquee {
+  color: #0E2622;
+}
+
+.rail {
+  display: flex;
+  width: max-content;
+  animation: scroll 38s linear infinite;
+}
+
+.marquee:hover .rail {
+  animation-play-state: paused;
+}
+
+.track {
+  display: flex;
+  flex: none;
+}
+
+.track li {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  padding-right: 22px;
+  font-family: var(--font-display);
+  font-size: var(--step-2);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.sep {
+  width: 26px;
+  height: 26px;
+  color: #fff;
+}
+
+@keyframes scroll {
+  to { transform: translateX(-50%); }
+}
+
+html[data-motion='reduced'] .rail {
+  animation: none;
+  flex-wrap: wrap;
+  width: auto;
+  justify-content: center;
+}
+
+html[data-motion='reduced'] .track:last-child {
+  display: none;
+}

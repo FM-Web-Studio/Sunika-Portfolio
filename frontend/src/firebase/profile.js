@@ -1,75 +1,52 @@
-import { doc, getDoc, setDoc, onSnapshot, serverTimestamp } from 'firebase/firestore';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { db, storage } from './app';
-import {
-  COLLECTIONS, PROFILE_DOCS, STORAGE_FOLDERS,
-  DEFAULT_PERSONAL,
-} from './config';
+import { doc, setDoc, onSnapshot, serverTimestamp } from 'firebase/firestore';
+import { db } from './app';
+import { COLLECTIONS, PROFILE_DOCS, STORAGE_FOLDERS } from './config';
+import { uploadImage, removeImage } from './files';
 
-const docRef = (id) => doc(db, COLLECTIONS.profile, id);
+const profileRef = (id) => doc(db, COLLECTIONS.profile, id);
 
-// ── Normalisers ───────────────────────────────────────────────────────────────
-const asPersonal = (d) => ({ ...DEFAULT_PERSONAL, ...(d || {}) });
-const asInterests = (d) => ({ items: Array.isArray(d?.items) ? d.items : [] });
-const asSkills = (d) => ({
-  categories: Array.isArray(d?.categories)
-    ? d.categories.map((c) => ({ name: c?.name ?? '', items: Array.isArray(c?.items) ? c.items : [] }))
-    : [],
-});
+export const EMPTY_PERSONAL = { name: '', title: '', bio: '', photoUrl: '', photoPath: '' };
 
-const NORMALISERS = {
-  [PROFILE_DOCS.personal]:  asPersonal,
-  [PROFILE_DOCS.interests]: asInterests,
-  [PROFILE_DOCS.skills]:    asSkills,
+const SHAPES = {
+  personal: (d) => ({ ...EMPTY_PERSONAL, ...(d || {}) }),
+  interests: (d) => ({ items: Array.isArray(d?.items) ? d.items : [] }),
+  skills: (d) => ({
+    categories: Array.isArray(d?.categories)
+      ? d.categories.map((c) => ({ name: c?.name ?? '', items: Array.isArray(c?.items) ? c.items : [] }))
+      : [],
+  }),
 };
 
-// ── Generic read / write ──────────────────────────────────────────────────────
-const readDoc = async (id) => {
-  const snap = await getDoc(docRef(id));
-  const norm = NORMALISERS[id] || ((d) => d || {});
-  return norm(snap.exists() ? snap.data() : null);
-};
-
-const subscribeDoc = (id, cb, onError) => {
-  const norm = NORMALISERS[id] || ((d) => d || {});
-  return onSnapshot(
-    docRef(id),
-    (snap) => cb(norm(snap.exists() ? snap.data() : null)),
+export const subscribeProfile = (key, cb, onError = () => {}) =>
+  onSnapshot(
+    profileRef(PROFILE_DOCS[key]),
+    (snap) => cb(SHAPES[key](snap.exists() ? snap.data() : null)),
     onError,
   );
+
+const write = (key, data) => setDoc(profileRef(PROFILE_DOCS[key]), { ...data, updatedAt: serverTimestamp() }, { merge: true });
+
+export const savePersonal = async (data, photoFile, previous = {}) => {
+  const patch = {
+    name: data.name.trim(),
+    title: data.title.trim(),
+    bio: data.bio.trim(),
+  };
+  if (photoFile) {
+    const up = await uploadImage(STORAGE_FOLDERS.profile, photoFile);
+    await removeImage(previous.photoPath);
+    patch.photoUrl = up.url;
+    patch.photoPath = up.path;
+  }
+  await write('personal', patch);
 };
 
-const writeDoc = (id, data) =>
-  setDoc(docRef(id), { ...data, updatedAt: serverTimestamp() }, { merge: true });
+export const saveInterests = (items) =>
+  write('interests', { items: items.map((s) => s.trim()).filter(Boolean) });
 
-// ── Typed helpers ───────────────────────────────────────────────────────────────
-export const subscribePersonal = (cb, onError) => subscribeDoc(PROFILE_DOCS.personal, cb, onError);
-export const updatePersonal    = (data) => writeDoc(PROFILE_DOCS.personal, {
-  name:     data.name     ?? '',
-  title:    data.title    ?? '',
-  bio:      data.bio      ?? '',
-  photoUrl: data.photoUrl ?? '',
-  email:    data.email    ?? '',
-  location: data.location ?? '',
-  phone:    data.phone    ?? '',
-});
-
-export const subscribeInterests = (cb, onError) => subscribeDoc(PROFILE_DOCS.interests, cb, onError);
-export const updateInterests    = (items) =>
-  writeDoc(PROFILE_DOCS.interests, { items: (items ?? []).map((s) => s.trim()).filter(Boolean) });
-
-export const subscribeSkills = (cb, onError) => subscribeDoc(PROFILE_DOCS.skills, cb, onError);
-export const updateSkills    = (categories) =>
-  writeDoc(PROFILE_DOCS.skills, {
-    categories: (categories ?? [])
-      .map((c) => ({ name: (c.name ?? '').trim(), items: (c.items ?? []).map((s) => s.trim()).filter(Boolean) }))
+export const saveSkills = (categories) =>
+  write('skills', {
+    categories: categories
+      .map((c) => ({ name: c.name.trim(), items: c.items.map((s) => s.trim()).filter(Boolean) }))
       .filter((c) => c.name || c.items.length),
   });
-
-// ── Profile photo upload ──────────────────────────────────────────────────────
-export const uploadProfilePhoto = async (file) => {
-  const path = `${STORAGE_FOLDERS.profile}/${Date.now()}_${file.name}`;
-  const storageRef = ref(storage, path);
-  await uploadBytes(storageRef, file);
-  return getDownloadURL(storageRef);
-};

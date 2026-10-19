@@ -1,33 +1,8 @@
 rules_version = '2';
 
-// Sunika.
-//
-// TWO SITES, ONE PROJECT. The portfolio (sunika-studio) and the gallery
-// (sunika-studio-gallery) are separate deploys from separate repos sharing this
-// database. It is project-wide, so it is the single place both sites' rules live, and
-// it is deployed from the Sunika-Portfolio repo ONLY. Deploying it from both repos
-// would mean the last push silently reverting the other site's rules.
-//
-//   shared      settings/contact, one email, one phone, one set of social links
-//   portfolio   projects, education, experience, profile, accomplishments,
-//               portfolioMessages, settings/portfolioContent
-//   gallery     artworks (+ raters/likers), galleryMessages,
-//               settings/galleryContent
-//
-// The prefix marks ownership, and everything without one is shared on purpose. A new
-// collection on either side needs a rule here, or the default-deny at the bottom of
-// the file rejects it.
-//
-// Everything public-facing is world-readable; writes are admin-only, with two
-// deliberate exceptions: anonymous visitors may submit a contact message, and
-// may nudge the rating / like counters on an artwork within tightly bounded
-// deltas.
-
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // ── Admin allowlist ───────────────────────────────────────────────────
-    // Keep in sync with ADMIN_EMAILS in frontend/.env and with storage.rules.
     function isAdmin() {
       return request.auth != null
              && request.auth.token.email_verified == true
@@ -37,8 +12,6 @@ service cloud.firestore {
              ];
     }
 
-    // A visitor-submitted contact message: the four expected fields, nothing
-    // enormous, and no way to write anything else into the collection.
     function isContactMessage() {
       return request.resource.data.keys().hasOnly(['name', 'email', 'message', 'createdAt'])
              && request.resource.data.keys().hasAll(['name', 'email', 'message', 'createdAt'])
@@ -50,47 +23,23 @@ service cloud.firestore {
              && request.resource.data.message.size() <= 5000;
     }
 
-    // ── Visitor identity ──────────────────────────────────────────────────
-    // Every anonymous vote is tied to an account the server issued, which is the
-    // only reason "one per visitor" is enforceable at all. A localStorage flag
-    // cannot be checked here; a uid can.
     function isVisitor() {
       return request.auth != null;
     }
 
-    // A vote record the visitor owns: created for themselves, never for someone
-    // else, and never edited after the fact.
     function ownVote(uid) {
       return isVisitor() && request.auth.uid == uid;
     }
 
-    // A counter's value before the write, treating a missing field as 0.
-    //
-    // This matters more than it looks. Artworks created before likeCount,
-    // ratingSum and ratingCount existed simply have no such field, and
-    // `resource.data.likeCount + 1` on a missing field raises an error, which makes
-    // the whole rule deny the write. increment() meanwhile happily starts from 0,
-    // so the client sent a perfectly valid like and the rule rejected it, but only
-    // on those older documents. That is exactly why liking SOME artworks failed
-    // while others worked.
     function oldCount(res, field) {
       return res.data.get(field, 0);
     }
 
-    // ── Artworks (the gallery site) ───────────────────────────────────────
-    // Ratings and likes keep a denormalised aggregate on the artwork so the
-    // gallery can sort without reading every vote. The aggregate is only allowed
-    // to move in lockstep with a per-visitor vote document appearing or
-    // disappearing in the SAME commit, which getAfter() can see. Without that
-    // pairing, `likeCount` was a free-floating counter anyone could drive to
-    // zero, and `ratingSum` could be inflated by clearing browser storage.
     match /artworks/{artworkId} {
       allow read: if true;
 
       allow create, delete: if isAdmin();
       allow update: if isAdmin()
-        // Rating: sum/count move together, and this visitor's rater doc must
-        // appear in the same commit carrying exactly the value being added.
         || (
           request.resource.data.diff(resource.data).affectedKeys()
             .hasOnly(['ratingSum', 'ratingCount'])
@@ -102,8 +51,6 @@ service cloud.firestore {
           && getAfter(/databases/$(database)/documents/artworks/$(artworkId)/raters/$(request.auth.uid)).data.value
              == request.resource.data.ratingSum - oldCount(resource, 'ratingSum')
         )
-        // Like: +1 only as this visitor's liker doc appears, -1 only as their own
-        // liker doc disappears. You can never un-like on someone else's behalf.
         || (
           request.resource.data.diff(resource.data).affectedKeys().hasOnly(['likeCount'])
           && isVisitor()
@@ -119,9 +66,6 @@ service cloud.firestore {
           )
         );
 
-      // A rating is written once and never revised, allowing an update would
-      // reopen vote-stuffing through the back door, since the aggregate above
-      // only checks the value on create.
       match /raters/{uid} {
         allow read:   if ownVote(uid) || isAdmin();
         allow create: if ownVote(uid)
@@ -144,30 +88,20 @@ service cloud.firestore {
       }
     }
 
-    // ── Accomplishments (wins / features on the About section) ─────────────
     match /accomplishments/{id} {
       allow read: if true;
       allow write: if isAdmin();
     }
 
-    // ── Projects (the portfolio site) ─────────────────────────────────────
     match /projects/{id} {
       allow read: if true;
       allow write: if isAdmin();
     }
 
-    // ── Timelines + profile singletons ────────────────────────────────────
     match /education/{id}  { allow read: if true; allow write: if isAdmin(); }
     match /experience/{id} { allow read: if true; allow write: if isAdmin(); }
     match /profile/{doc}   { allow read: if true; allow write: if isAdmin(); }
 
-    // ── Contact-form messages, one inbox per site ─────────────────────────
-    // Visitors may submit; only an admin may read or manage them.
-    //
-    // Two collections rather than one shared `messages`, because each site's
-    // Cloud Function trigger watches its own and labels the notification email
-    // with the site the enquiry came from. A single collection could not tell a
-    // gallery enquiry about a painting from a portfolio enquiry about a project.
     match /portfolioMessages/{doc} {
       allow create: if isContactMessage();
       allow read, update, delete: if isAdmin();
@@ -178,20 +112,11 @@ service cloud.firestore {
       allow read, update, delete: if isAdmin();
     }
 
-    // ── Settings ──────────────────────────────────────────────────────────
-    // settings/contact          : email / phone / location + socials, BOTH sites
-    // settings/portfolioContent : the portfolio's editable site copy
-    // settings/galleryContent   : the gallery's editable site copy
-    //
-    // Public read is deliberate: every one of these documents is rendered on a
-    // public page. Which document belongs to which site is a naming convention,
-    // not something this rule needs to know.
     match /settings/{doc} {
       allow read: if true;
       allow write: if isAdmin();
     }
 
-    // Default deny
     match /{document=**} { allow read, write: if false; }
   }
 }

@@ -1,36 +1,28 @@
-/**
- * Cloud Functions, contact-form email notifications.
- *
- * A new document in `messages` emails a formatted summary to the site
- * owner over a Gmail account's SMTP (nodemailer). Replying to the email goes
- * straight back to the visitor (their address is set as Reply-To).
- *
- * Setup (see functions/README.md):
- *   1. Project on the Blaze plan (required for outbound network / email).
- *   2. On the Gmail account, enable 2-Step Verification, then create an
- *      "App password" (Google Account, Security, App passwords). This is a
- *      setting on the existing Gmail, NOT a new account or signup.
- *   3. firebase functions:secrets:set SMTP_PASSWORD   (paste the 16-char app password)
- *   4. functions/.env holds SMTP_USER (and optionally NOTIFY_TO).
- *   5. firebase deploy --only functions
- */
 const { onDocumentCreated } = require('firebase-functions/v2/firestore');
 const { defineString, defineSecret } = require('firebase-functions/params');
 const logger = require('firebase-functions/logger');
 const nodemailer = require('nodemailer');
 
-// IMPORTANT: This region MUST match the Firestore database location for
-// sunika-project. europe-west1 matches the reference projects. If the Sunika
-// Firestore database lives elsewhere, change this value (check the console at
-// Firestore, top of the Data page, or run
-// `firebase firestore:databases:get`) or the triggers will fail to deploy.
 const REGION = 'europe-west1';
 
 const SMTP_HOST = defineString('SMTP_HOST', { default: 'smtp.gmail.com' });
 const SMTP_PORT = defineString('SMTP_PORT', { default: '465' });
-const SMTP_USER = defineString('SMTP_USER'); // the Gmail address that sends
-const NOTIFY_TO = defineString('NOTIFY_TO', { default: 'lombardsunika@gmail.com' }); // where notifications land
-const SMTP_PASSWORD = defineSecret('SMTP_PASSWORD'); // Gmail app password (secret)
+const SMTP_USER = defineString('SMTP_USER');
+const NOTIFY_TO = defineString('NOTIFY_TO', { default: 'lombardsunika@gmail.com' });
+const SMTP_PASSWORD = defineSecret('SMTP_PASSWORD');
+
+const SITES = {
+  portfolioMessages: {
+    label: 'Suni Designs',
+    accent: '#DC3F55',
+    intro: 'Someone reached out through your portfolio site.',
+  },
+  galleryMessages: {
+    label: 'Sunika Gallery',
+    accent: '#B8860B',
+    intro: 'Someone reached out through your gallery site.',
+  },
+};
 
 const esc = (s = '') =>
   String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -44,7 +36,6 @@ const formatWhen = (createdAt) => {
   }
 };
 
-// Build a compact, email-client-friendly HTML message (table plus inline styles).
 const buildHtml = ({ site, name, email, message, when }) => {
   const rows = [
     ['From', esc(name)],
@@ -87,33 +78,6 @@ const buildText = ({ site, name, email, message, when }) =>
   `Received: ${when}\n\n` +
   `Message:\n${message}\n`;
 
-/*
- * One entry per contact-form inbox, keyed by the collection it watches.
- *
- * The portfolio and the gallery are two separate sites sharing this Firebase
- * project, and each has its own form writing to its own collection. They are
- * deliberately not one shared inbox: the notification has to say which site the
- * enquiry came from, because "I would like to buy this painting" and "I would
- * like to commission a project" want different replies, and a single collection
- * could not tell them apart.
- *
- * The accent colour is only used to tint the email header, which is what makes
- * the two immediately distinguishable in a crowded inbox.
- */
-const SITES = {
-  portfolioMessages: {
-    label: 'Sunika Portfolio',
-    accent: '#B83B63', // the portfolio's raspberry rose accent
-    intro: 'Someone reached out through your portfolio site.',
-  },
-  galleryMessages: {
-    label: 'Sunika Gallery',
-    accent: '#B8860B', // warm gold, so gallery mail reads apart at a glance
-    intro: 'Someone reached out through your gallery site.',
-  },
-};
-
-// Factory: one shared handler, configured per watched collection.
 const makeHandler = (site) => async (event) => {
   const data = event.data && event.data.data();
   if (!data) {
@@ -121,12 +85,13 @@ const makeHandler = (site) => async (event) => {
     return;
   }
 
-  const name = (data.name || '').trim() || 'Anonymous';
-  const email = (data.email || '').trim();
-  const message = (data.message || '').trim() || '(empty message)';
-  const when = formatWhen(data.createdAt);
-
-  const payload = { site, name, email, message, when };
+  const payload = {
+    site,
+    name: (data.name || '').trim() || 'Anonymous',
+    email: (data.email || '').trim(),
+    message: (data.message || '').trim() || '(empty message)',
+    when: formatWhen(data.createdAt),
+  };
 
   const port = Number(SMTP_PORT.value()) || 465;
   const transporter = nodemailer.createTransport({
@@ -140,26 +105,18 @@ const makeHandler = (site) => async (event) => {
     await transporter.sendMail({
       from: `"Sunika" <${SMTP_USER.value()}>`,
       to: NOTIFY_TO.value() || SMTP_USER.value(),
-      replyTo: email || undefined,
-      subject: `New ${site.label} message from ${name}`,
+      replyTo: payload.email || undefined,
+      subject: `New ${site.label} message from ${payload.name}`,
       text: buildText(payload),
       html: buildHtml(payload),
     });
-    logger.info('Notification sent', { label: site.label, id: event.params.id, from: email });
+    logger.info('Notification sent', { label: site.label, id: event.params.id, from: payload.email });
   } catch (err) {
-    // Do not rethrow. A retry storm will not fix bad credentials, and the
-    // message is safely stored in Firestore regardless. Surface it in logs.
     logger.error('Failed to send notification', { label: site.label, id: event.params.id, error: err && err.message });
   }
 };
 
 const opts = (document) => ({ document, region: REGION, secrets: [SMTP_PASSWORD], maxInstances: 5 });
 
-/*
- * NOTE: `onContactMessage`, which watched the old shared `messages` collection, is
- * gone. Removing an exported function does not delete the deployed one, Firebase
- * only ever adds and updates what the source declares, so the old trigger stays
- * live in the project until it is deleted explicitly. See README.md.
- */
 exports.onPortfolioMessage = onDocumentCreated(opts('portfolioMessages/{id}'), makeHandler(SITES.portfolioMessages));
 exports.onGalleryMessage = onDocumentCreated(opts('galleryMessages/{id}'), makeHandler(SITES.galleryMessages));

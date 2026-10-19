@@ -1,33 +1,16 @@
-# Environment files — never commit secrets
 .env
 .env.*
 !.env.example
-
-# Firebase service account key (used by the seed script)
 serviceAccount.json
 
-# Firebase local state
 .firebase/
-firebase-debug.log
-firestore-debug.log
-ui-debug.log
+*-debug.log
 
-# Node
 node_modules/
 npm-debug.log*
-
-# Build outputs
 frontend/build/
 
-# OS artifacts
 .DS_Store
 Thumbs.db
-
-# Editor
 .vscode/
 .idea/
-*.suo
-*.user
-
-# One-off migration backups (contain exported Firestore data)
-frontend/scripts/backup-*/

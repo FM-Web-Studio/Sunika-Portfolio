@@ -1,89 +1,39 @@
 import { useEffect } from 'react';
 import Lenis from 'lenis';
 
-// Single shared instance so navigation code can drive the same smooth scroller.
-let lenisInstance = null;
-export const getLenis = () => lenisInstance;
+let instance = null;
 
-const prefersReduced = () =>
-  typeof window.matchMedia === 'function' &&
-  window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+export const scrollToTarget = (target, options = {}) => {
+  if (instance) {
+    instance.scrollTo(target, { offset: -80, ...options });
+    return;
+  }
+  if (typeof target === 'number') {
+    window.scrollTo({ top: target, behavior: options.immediate ? 'auto' : 'smooth' });
+    return;
+  }
+  const el = typeof target === 'string' ? document.querySelector(target) : target;
+  if (!el) return;
+  const top = el.getBoundingClientRect().top + window.scrollY - 80;
+  window.scrollTo({ top, behavior: options.immediate ? 'auto' : 'smooth' });
+};
 
-// The in-app Motion toggle (Settings cog) sets this on <html>.
-const motionDisabled = () =>
-  document.documentElement.getAttribute('data-no-animations') === 'true';
-
-/**
- * Momentum scrolling via Lenis, the site's single piece of ambient motion.
- * Desktop: smooths the wheel for weighty, inertial scrolling.
- * Touch: left on native scroll so mobile keeps its own momentum.
- * Disabled entirely under reduced motion or the in-app Motion toggle.
- *
- * lerp 0.09 with a neutral wheel multiplier reads as weight rather than drift;
- * an earlier 1.25x multiplier overshot the cursor and felt slippery.
- */
-export default function useMomentumScroll() {
+export const useMomentumScroll = (enabled) => {
   useEffect(() => {
-    if (typeof window === 'undefined') return undefined;
-
-    let lenis = null;
-    let rafId = 0;
-    let resizeObserver = null;
-
-    const start = () => {
-      if (lenis) return;
-      lenis = new Lenis({
-        lerp: 0.09,
-        smoothWheel: true,
-        wheelMultiplier: 1,
-        touchMultiplier: 1.4,
-      });
-      lenisInstance = lenis;
-
-      const raf = (time) => { lenis.raf(time); rafId = requestAnimationFrame(raf); };
-      rafId = requestAnimationFrame(raf);
-
-      /* Lenis caches the scrollable height, and these pages load content after first
-         paint, so the document grows while someone is already scrolling. Against a
-         stale height Lenis clamps to the wrong maximum, which feels like hitting an
-         invisible wall and springing back. Re-measure on resize. */
-      if (typeof ResizeObserver !== 'undefined') {
-        resizeObserver = new ResizeObserver(() => lenis?.resize());
-        resizeObserver.observe(document.body);
-      }
-    };
-
-    const stop = () => {
-      if (!lenis) return;
-      cancelAnimationFrame(rafId);
-      resizeObserver?.disconnect();
-      resizeObserver = null;
-      lenis.destroy();
-      if (lenisInstance === lenis) lenisInstance = null;
-      lenis = null;
-    };
-
-    const sync = () => {
-      if (prefersReduced() || motionDisabled()) stop();
-      else start();
-    };
-
-    sync();
-
-    // React to the Motion toggle without needing a reload.
-    const attrObserver = new MutationObserver(sync);
-    attrObserver.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ['data-no-animations'],
+    if (!enabled) return undefined;
+    const lenis = new Lenis({ lerp: 0.1, smoothWheel: true, wheelMultiplier: 1 });
+    instance = lenis;
+    let frame = requestAnimationFrame(function loop(time) {
+      lenis.raf(time);
+      frame = requestAnimationFrame(loop);
     });
-
-    const mq = window.matchMedia?.('(prefers-reduced-motion: reduce)');
-    mq?.addEventListener('change', sync);
-
+    const resize = new ResizeObserver(() => lenis.resize());
+    resize.observe(document.body);
     return () => {
-      attrObserver.disconnect();
-      mq?.removeEventListener('change', sync);
-      stop();
+      cancelAnimationFrame(frame);
+      resize.disconnect();
+      lenis.destroy();
+      if (instance === lenis) instance = null;
     };
-  }, []);
-}
+  }, [enabled]);
+};
