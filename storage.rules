@@ -42,6 +42,12 @@ service firebase.storage {
       allow delete: if isAdmin();
     }
 
+    match /portfolioBranding/{allPaths=**} {
+      allow read: if true;
+      allow write: if isAdminImageWrite();
+      allow delete: if isAdmin();
+    }
+
     match /{allPaths=**} { allow read, write: if false; }
   }
 }

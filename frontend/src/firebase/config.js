@@ -11,6 +11,8 @@ export const COLLECTIONS = {
 export const SETTINGS_DOCS = {
   content: 'portfolioContent',
   contact: 'contact',
+  branding: 'portfolioBranding',
+  cvLogo: 'portfolioCvLogo',
 };
 
 export const PROFILE_DOCS = {
@@ -24,6 +26,7 @@ export const STORAGE_FOLDERS = {
   projects: 'projects',
   accomplishments: 'accomplishments',
   profile: 'profile',
+  branding: 'portfolioBranding',
 };
 
 export const ADMIN_EMAILS = (import.meta.env.ADMIN_EMAILS || '')

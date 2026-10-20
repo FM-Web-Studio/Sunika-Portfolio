@@ -34,7 +34,7 @@ const OverviewSection = ({ sections, messages, go }) => {
   return (
     <div className={ui.stack}>
       <section className={ui.welcome}>
-        <img src="/logo-mark.png" alt="" width="512" height="444" />
+        <img src={site.logos.mark} alt="" />
         <div>
           <h2>Hi{site.personal.name ? ` ${site.personal.name.split(' ')[0]}` : ''}</h2>
           <p>Pick a section on the left, make your changes, then press the green Save button. The CV download in the site menu always uses what is saved here.</p>

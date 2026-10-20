@@ -11,6 +11,7 @@ import nunito700 from '@fontsource/nunito/files/nunito-latin-700-normal.woff?url
 import nunito800 from '@fontsource/nunito/files/nunito-latin-800-normal.woff?url';
 import { buildCvModel } from './model';
 import { getCvPhoto } from '../firebase/profile';
+import { getCvLogo, DEFAULT_LOGOS } from '../firebase/branding';
 
 globalThis.Buffer ??= Buffer;
 
@@ -377,6 +378,7 @@ export const buildPdf = (cv, photo, logo) => pdf(<CvDocument cv={cv} photo={phot
 
 export const renderCv = async (site) => {
   const cv = buildCvModel(site);
-  const [stored, logo] = await Promise.all([getCvPhoto().catch(() => ''), inline(`${window.location.origin}/logo-wordmark.png`)]);
+  const [stored, uploadedLogo] = await Promise.all([getCvPhoto().catch(() => ''), getCvLogo().catch(() => '')]);
+  const logo = uploadedLogo || await inline(`${window.location.origin}${DEFAULT_LOGOS.wordmark}`);
   return buildPdf(cv, stored || null, logo);
 };

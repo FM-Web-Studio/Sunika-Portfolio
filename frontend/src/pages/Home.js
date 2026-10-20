@@ -16,7 +16,7 @@ const CHIP_TONES = ['chip-coral', 'chip-teal', 'chip-sun'];
 
 const initials = (name = '') => name.split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0].toUpperCase()).join('') || 'S';
 
-const Portrait = ({ personal }) => {
+const Portrait = ({ personal, mark }) => {
   const [broken, setBroken] = useState(false);
   return (
     <div className={styles.portrait} data-reveal="right">
@@ -29,7 +29,7 @@ const Portrait = ({ personal }) => {
           ? <img src={personal.photoUrl} alt={personal.name} onError={() => setBroken(true)} />
           : <span className={styles.initials}>{initials(personal.name)}</span>}
       </div>
-      <img src="/logo-mark.png" alt="" className={styles.sticker} width="512" height="444" />
+      <img src={mark} alt="" className={styles.sticker} />
     </div>
   );
 };
@@ -51,7 +51,7 @@ const Timeline = ({ label, items, tone }) => (
 );
 
 const Home = () => {
-  const { copy, personal, contact, projects, accomplishments, skills, interests, experience, education, ready } = useSite();
+  const { copy, personal, contact, projects, accomplishments, skills, interests, experience, education, ready, logos } = useSite();
   const t = copy.home;
   const [open, setOpen] = useState(null);
 
@@ -69,7 +69,7 @@ const Home = () => {
       <section className={`container ${styles.hero}`}>
         <div className={styles.heroText}>
           <h1 className={styles.logoTitle} data-reveal>
-            <img src="/logo-wordmark.png" alt={personal.name ? `${personal.name}, ${copy.brand.brandName}` : copy.brand.brandName} width="1100" height="585" />
+            <img src={logos.wordmark} alt={personal.name ? `${personal.name}, ${copy.brand.brandName}` : copy.brand.brandName} />
           </h1>
           {!ready.personal ? (
             <div className={styles.heroSkeleton} aria-hidden="true">
@@ -93,7 +93,7 @@ const Home = () => {
             <SocialLinks socials={contact.socials} />
           </div>
         </div>
-        <Portrait personal={personal} />
+        <Portrait personal={personal} mark={logos.mark} />
       </section>
 
       <Marquee items={marquee} />

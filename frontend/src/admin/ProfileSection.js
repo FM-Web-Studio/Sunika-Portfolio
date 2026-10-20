@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { FiUser, FiUploadCloud } from 'react-icons/fi';
 import { useSite } from '../context/SiteContext';
 import { getCvPhoto, savePersonal } from '../firebase/profile';
-import { makeCvPhoto } from './cvPhoto';
+import { makeCvPhoto } from './pdfImages';
 import { useDraft } from './useDraft';
 import SaveBar from './SaveBar';
 import ui from './Admin.module.css';

@@ -28,7 +28,7 @@ const Toggles = () => {
 };
 
 const Nav = () => {
-  const { copy } = useSite();
+  const { copy, logos } = useSite();
   const { pathname } = useLocation();
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -55,7 +55,7 @@ const Nav = () => {
     <header className={`${styles.bar} ${scrolled ? styles.scrolled : ''}`}>
       <div className={`container ${styles.inner}`}>
         <Link to="/" className={styles.brand} aria-label={`${copy.brand.brandName}, home`}>
-          <img src="/logo-mark.png" alt="" width="512" height="444" />
+          <img src={logos.mark} alt="" />
           <span>{copy.brand.brandName}</span>
         </Link>
 
@@ -80,7 +80,7 @@ const Nav = () => {
         <div className={styles.sheetBackdrop} onClick={() => setOpen(false)}>
           <div className={styles.sheet} onClick={(e) => e.stopPropagation()} role="dialog" aria-modal="true" aria-label="Menu">
             <div className={styles.sheetHead}>
-              <img src="/logo-wordmark.png" alt={copy.brand.brandName} className={styles.sheetLogo} />
+              <img src={logos.wordmark} alt={copy.brand.brandName} className={styles.sheetLogo} />
               <button type="button" className="icon-btn" onClick={() => setOpen(false)} aria-label="Close menu">
                 <FiX aria-hidden="true" />
               </button>

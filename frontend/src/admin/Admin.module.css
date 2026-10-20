@@ -229,6 +229,63 @@
   font-size: var(--step--1);
 }
 
+.logoPreviews {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.logoPreviews figure {
+  display: grid;
+  place-items: center;
+  gap: 8px;
+  margin: 0;
+  padding: 20px;
+  border-radius: var(--r-md);
+  border: 1px solid var(--line);
+}
+
+.logoPreviews img {
+  width: 100%;
+  max-width: 320px;
+  height: 120px;
+  object-fit: contain;
+}
+
+.logoSquare img {
+  max-width: 120px;
+  height: 100px;
+}
+
+.logoPreviews figcaption {
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  opacity: 0.6;
+}
+
+.logoLight {
+  background: #FBF6F1;
+  color: #2A2326;
+}
+
+.logoDark {
+  background: #17131A;
+  color: #F6EFEA;
+}
+
+.logoTools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.disabled {
+  opacity: 0.55;
+  pointer-events: none;
+}
+
 .cardWarn {
   margin: 0 20px 20px;
   padding: 10px 14px;
@@ -450,15 +507,17 @@
   object-fit: cover;
 }
 
-.groups {
+.groupGrid {
   display: grid;
-  gap: 12px;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr));
+  gap: 14px;
+  align-items: start;
 }
 
 .group {
   display: grid;
   gap: 10px;
-  padding: 14px;
+  padding: 12px;
   border-radius: var(--r-md);
   border: 1px solid var(--line);
   background: var(--paper);
@@ -467,65 +526,139 @@
 .groupHead {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 4px;
 }
 
-.groupHead .input {
+.groupName {
   flex: 1;
-  font-weight: 700;
+  min-width: 0;
+  font-weight: 800;
 }
 
-.chipInput {
+.groupCount {
+  min-width: 26px;
+  padding: 2px 8px;
+  border-radius: var(--r-pill);
+  background: var(--teal-soft);
+  color: var(--teal-ink);
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-align: center;
+}
+
+.itemList {
+  display: grid;
+  gap: 8px;
+}
+
+.itemEmpty {
+  padding: 10px;
+  color: var(--ink-3);
+  font-size: var(--step--1);
+  text-align: center;
+}
+
+.itemRows {
+  display: grid;
+  gap: 4px;
+}
+
+.itemRow {
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
-  gap: 6px;
-  min-height: 48px;
-  padding: 7px;
+  gap: 2px;
+  padding: 2px 2px 2px 0;
   border-radius: var(--r-sm);
-  border: 1.5px solid var(--line-strong);
+  background: var(--card);
+  border: 1px solid var(--line);
+}
+
+.itemInput {
+  flex: 1;
+  min-width: 0;
+  padding: 7px 8px;
+  border: 1.5px solid transparent;
+  border-radius: var(--r-sm);
+  background: transparent;
+  font-weight: 600;
+  font-size: var(--step--1);
+  transition: border-color var(--t-fast) var(--ease), background-color var(--t-fast) var(--ease);
+}
+
+.itemInput:hover {
+  background: var(--tint);
+}
+
+.itemInput:focus {
+  outline: none;
+  border-color: var(--teal);
   background: var(--card);
 }
 
-.chipInput:focus-within {
-  border-color: var(--teal);
-  box-shadow: 0 0 0 4px color-mix(in srgb, var(--teal) 22%, transparent);
+.addBox {
+  display: flex;
+  gap: 6px;
 }
 
-.chipItem {
-  display: inline-flex;
-  border-radius: var(--r-pill);
-}
-
-.chipGrab {
-  cursor: grab;
-  touch-action: none;
-}
-
-.chipGrab:active {
-  cursor: grabbing;
-}
-
-.chipInput button {
-  display: grid;
-  place-items: center;
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-}
-
-.chipInput button:hover {
-  background: var(--btn-danger);
-  color: #fff;
-}
-
-.chipInput input {
+.addBox .input {
   flex: 1;
-  min-width: 160px;
-  padding: 6px;
-  border: 0;
-  background: transparent;
-  outline: none;
+  min-width: 0;
+  min-height: 40px;
+  padding: 8px 12px;
+  font-size: var(--step--1);
+}
+
+.addBox .btn {
+  min-height: 40px;
+}
+
+.addSkipped {
+  color: var(--sun-ink);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.splitNotice {
+  display: grid;
+  gap: 12px;
+  padding: 16px 18px;
+  border-radius: var(--r-lg);
+  border: 1.5px solid var(--sun);
+  background: var(--sun-soft);
+  color: var(--ink);
+}
+
+.splitNotice strong {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.splitNotice p {
+  margin-top: 2px;
+  color: var(--ink-2);
+  font-size: var(--step--1);
+}
+
+.splitNotice ul {
+  display: grid;
+  gap: 6px;
+}
+
+.splitNotice li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 6px 6px 6px 12px;
+  border-radius: var(--r-sm);
+  background: var(--card);
+  font-weight: 700;
+  font-size: var(--step--1);
+}
+
+.splitNotice > .btn {
+  justify-self: start;
 }
 
 .socialList {

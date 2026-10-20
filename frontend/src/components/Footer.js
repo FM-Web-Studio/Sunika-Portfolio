@@ -7,7 +7,7 @@ import { PAGES } from './Nav';
 import styles from './Footer.module.css';
 
 const Footer = () => {
-  const { copy, contact } = useSite();
+  const { copy, contact, logos } = useSite();
   const { brand } = copy;
 
   return (
@@ -15,7 +15,7 @@ const Footer = () => {
       <div className={`container ${styles.inner}`}>
         <div className={styles.brand}>
           <button type="button" className={styles.logo} onClick={() => scrollToTarget(0)} aria-label="Back to top">
-            <img src="/logo-wordmark.png" alt={brand.brandName} width="1100" height="585" />
+            <img src={logos.wordmark} alt={brand.brandName} />
           </button>
           <p>{brand.footerTagline}</p>
         </div>

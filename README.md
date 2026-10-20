@@ -23,6 +23,7 @@ Go to `/admin` and sign in with Google. Only the emails in the rules files and
 | Profile | Photo, name, title and bio |
 | Skills and interests | Skill groups and interest tags. Type one and press Enter |
 | Experience, Education | The timeline on the home page and the CV |
+| Logos | Upload the small logo and the full logo, or go back to the originals |
 | Contact details | Email, phone, location and social links, shared with the gallery site |
 | Wording | Every heading, button and label on the site, with a reset per field |
 
@@ -40,6 +41,8 @@ downloading its files for a PDF. Instead, saving a new photo under Admin, Profil
 also saves a small square JPEG copy to `profile/cvPhoto`, which is only read when
 someone downloads the CV. Any image format works, since the copy is always JPEG.
 If the admin says the photo is not on the CV yet, choose the photo again and save.
+The full logo works the same way: uploading it also saves a PNG copy to
+`settings/portfolioCvLogo` for the CV, and the bundled logo is used until one exists.
 
 ## One Firebase project, two sites
 
@@ -49,7 +52,8 @@ If the admin says the photo is not on the CV yet, choose the photo again and sav
 | Firestore | `projects`, `accomplishments`, `experience`, `education`, `profile` | `artworks` (+ `raters`/`likers`) |
 | Contact inbox | `portfolioMessages` | `galleryMessages` |
 | Editable copy | `settings/portfolioContent` | `settings/galleryContent` |
-| Storage | `projects/`, `profile/`, `accomplishments/` | `artworks/` |
+| Logos | `settings/portfolioBranding`, `settings/portfolioCvLogo` | |
+| Storage | `projects/`, `profile/`, `accomplishments/`, `portfolioBranding/` | `artworks/` |
 
 **Shared by both:** `settings/contact` (email, phone, location, social links).
 

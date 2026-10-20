@@ -16,6 +16,8 @@ const write = (key, value) => {
 };
 
 export const readPrefs = () => read('suni.prefs', {});
+export const readLogoCache = () => read('suni.logos', null);
+export const writeLogoCache = (logos) => write('suni.logos', logos);
 export const writePrefs = (patch) => write('suni.prefs', { ...readPrefs(), ...patch });
 
 export const cooldownLeft = (key, ms) => Math.max(0, (Number(read(`suni.sent.${key}`, 0)) || 0) + ms - Date.now());

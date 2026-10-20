@@ -30,8 +30,10 @@
 }
 
 .brand img {
-  width: 40px;
-  height: auto;
+  width: auto;
+  height: 38px;
+  max-width: 110px;
+  object-fit: contain;
   transition: transform var(--t-slow) var(--ease-pop);
 }
 
