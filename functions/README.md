@@ -16,21 +16,6 @@ in Firestore regardless.
 Both sites share this Firebase project, so both functions are deployed from this
 repo. The gallery repo deploys only its hosting target.
 
-## Deleting the retired trigger
-
-The two functions above replaced a single `onContactMessage` that watched a shared
-`messages` collection. **Firebase does not delete a function just because it left
-the source**, a deploy only creates and updates what the code declares, so the
-old trigger keeps running in the project until it is removed by hand:
-
-```bash
-firebase functions:delete onContactMessage --region europe-west1 --project sunika-project
-```
-
-Do this *after* the new functions are deployed and the `messages` collection has
-been migrated. Leaving it in place is not dangerous, `messages` will be empty and
-it will simply never fire, but it will sit in the console looking live.
-
 ## One-time setup
 
 Cloud Functions require the **Blaze** (pay-as-you-go) plan for outbound email.

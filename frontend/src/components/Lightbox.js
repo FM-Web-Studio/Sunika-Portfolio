@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
-import { FiChevronLeft, FiChevronRight } from 'react-icons/fi';
+import { FiChevronLeft, FiChevronRight, FiMaximize2 } from 'react-icons/fi';
 import Modal from './Modal';
+import { webSrc } from '../lib/webImage';
 import styles from './Lightbox.module.css';
 
 const imagesOf = (project) => {
   if (project?.files?.length) return project.files;
-  return project?.coverUrl ? [{ url: project.coverUrl, path: 'cover' }] : [];
+  return project?.coverUrl ? [{ url: project.coverUrl, webUrl: project.coverWebUrl, path: 'cover' }] : [];
 };
 
 const Lightbox = ({ project, onClose }) => {
@@ -49,16 +50,16 @@ const Lightbox = ({ project, onClose }) => {
           }}
         >
           {!loaded[current] && <div className={`skeleton ${styles.wait}`} aria-hidden="true" />}
-          {images.map((img, i) => (
+          {images.map((img, i) => (Math.abs(i - current) > 1 && !loaded[i] ? null : (
             <img
               key={img.path || i}
-              src={img.url}
+              src={webSrc(img)}
               alt={i === current ? `${project.title || 'Project'}, image ${i + 1} of ${total}` : ''}
               aria-hidden={i !== current}
               className={`${styles.image} ${i === current ? styles.shown : ''}`}
               onLoad={() => setLoaded((l) => ({ ...l, [i]: true }))}
             />
-          ))}
+          )))}
           {total > 1 && (
             <>
               <button type="button" className={`${styles.arrow} ${styles.prev}`} onClick={() => step(-1)} aria-label="Previous image">
@@ -81,6 +82,11 @@ const Lightbox = ({ project, onClose }) => {
               {project.tags.map((t) => <span key={t} className="chip">{t}</span>)}
             </div>
           )}
+          {images[current]?.url && (
+            <a className={styles.full} href={images[current].url} target="_blank" rel="noopener noreferrer">
+              <FiMaximize2 aria-hidden="true" /> Full size
+            </a>
+          )}
           {total > 1 && (
             <div className={styles.thumbs}>
               {images.map((img, i) => (
@@ -91,7 +97,7 @@ const Lightbox = ({ project, onClose }) => {
                   onClick={() => setIndex(i)}
                   aria-label={`Show image ${i + 1}`}
                 >
-                  <img src={img.url} alt="" loading="lazy" />
+                  <img src={webSrc(img)} alt="" loading="lazy" decoding="async" />
                 </button>
               ))}
             </div>

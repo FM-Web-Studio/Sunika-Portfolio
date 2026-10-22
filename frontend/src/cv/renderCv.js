@@ -2,16 +2,16 @@ import { Buffer } from 'buffer/';
 import {
   Document, Page, View, Text, Image, Link, Svg, Path, Circle, Rect, G, Font, StyleSheet, pdf,
 } from '@react-pdf/renderer';
+import QRCode from 'qrcode';
 import fredoka500 from '@fontsource/fredoka/files/fredoka-latin-500-normal.woff?url';
 import fredoka600 from '@fontsource/fredoka/files/fredoka-latin-600-normal.woff?url';
 import nunito400 from '@fontsource/nunito/files/nunito-latin-400-normal.woff?url';
-import nunito400i from '@fontsource/nunito/files/nunito-latin-400-italic.woff?url';
 import nunito600 from '@fontsource/nunito/files/nunito-latin-600-normal.woff?url';
 import nunito700 from '@fontsource/nunito/files/nunito-latin-700-normal.woff?url';
 import nunito800 from '@fontsource/nunito/files/nunito-latin-800-normal.woff?url';
 import { buildCvModel } from './model';
 import { getCvPhoto } from '../firebase/profile';
-import { getCvLogo, DEFAULT_LOGOS } from '../firebase/branding';
+import { LOGOS } from '../lib/logos';
 
 globalThis.Buffer ??= Buffer;
 
@@ -23,7 +23,6 @@ Font.register({
   family: 'Nunito',
   fonts: [
     { src: nunito400, fontWeight: 400 },
-    { src: nunito400i, fontWeight: 400, fontStyle: 'italic' },
     { src: nunito600, fontWeight: 600 },
     { src: nunito700, fontWeight: 700 },
     { src: nunito800, fontWeight: 800 },
@@ -35,122 +34,111 @@ const C = {
   coral: '#DC3F55',
   coralInk: '#B8293F',
   coralTint: '#FCE4E7',
+  coralWash: '#FEF1F2',
   teal: '#3FB8A0',
   tealInk: '#16786A',
   tealTint: '#E7F5F1',
   sun: '#F5BF4F',
   ink: '#2A2326',
   ink2: '#5E5459',
-  ink3: '#85797F',
+  ink3: '#8C8186',
   line: '#EADFD7',
+  paper: '#FBF6F1',
   white: '#FFFFFF',
 };
 
-const SIDE = '64mm';
+const GUTTER = '14mm';
+const SIDE = '58mm';
 
 const s = StyleSheet.create({
-  page: { paddingTop: '14mm', paddingBottom: '16mm', fontFamily: 'Nunito', fontSize: 8.8, lineHeight: 1.45, color: C.ink, backgroundColor: C.white },
-  sideBg: { position: 'absolute', top: 0, bottom: 0, left: 0, width: SIDE, backgroundColor: C.tealTint },
-  sideStripe: { position: 'absolute', top: 0, bottom: 0, left: SIDE, width: 3, backgroundColor: C.coral },
-  body: { flexDirection: 'row' },
-  side: { width: SIDE, paddingHorizontal: '7mm' },
-  main: { flex: 1, paddingLeft: '9mm', paddingRight: '12mm' },
+  page: { paddingBottom: '17mm', fontFamily: 'Nunito', fontSize: 8.7, lineHeight: 1.45, color: C.ink, backgroundColor: C.white },
 
-  photoWrap: { alignItems: 'center', marginBottom: '4mm' },
-  photoRing: { width: '34mm', height: '34mm', borderRadius: '17mm', borderWidth: 3, borderColor: C.coral, padding: 3, backgroundColor: C.white },
-  photo: { width: '100%', height: '100%', borderRadius: '17mm', objectFit: 'cover' },
-  monogram: { width: '100%', height: '100%', borderRadius: '17mm', backgroundColor: C.coralTint, alignItems: 'center', justifyContent: 'center' },
-  monogramText: { fontFamily: 'Fredoka', fontWeight: 600, fontSize: 30, color: C.coral },
+  band: { position: 'relative', flexDirection: 'row', alignItems: 'center', paddingTop: '11mm', paddingBottom: '9mm', paddingHorizontal: GUTTER, backgroundColor: C.coralWash, overflow: 'hidden' },
+  bandRule: { height: 3, backgroundColor: C.coral },
+  bandCircle: { position: 'absolute', right: '-16mm', bottom: '-30mm', width: '70mm', height: '70mm', borderRadius: '35mm', backgroundColor: C.coralTint },
+  bandFern: { position: 'absolute', right: '30mm', bottom: '-6mm', width: '34mm', height: '34mm' },
+  photoRing: { width: '31mm', height: '31mm', borderRadius: '15.5mm', padding: 2.5, backgroundColor: C.white, borderWidth: 1.5, borderColor: C.coral },
+  photo: { width: '100%', height: '100%', borderRadius: '15mm', objectFit: 'cover' },
+  monogram: { width: '100%', height: '100%', borderRadius: '15mm', backgroundColor: C.coralTint, alignItems: 'center', justifyContent: 'center' },
+  monogramText: { fontFamily: 'Fredoka', fontWeight: 600, fontSize: 26, color: C.coral },
+  who: { flex: 1, marginLeft: '7mm', paddingRight: '30mm' },
+  name: { fontFamily: 'Fredoka', fontWeight: 600, fontSize: 27, lineHeight: 1.05, color: C.ink },
+  title: { fontFamily: 'Fredoka', fontWeight: 500, fontSize: 12.5, lineHeight: 1.2, color: C.coralInk, marginTop: '1.6mm' },
+  reach: { flexDirection: 'row', flexWrap: 'wrap', marginTop: '3.4mm' },
+  reachItem: { flexDirection: 'row', alignItems: 'center', marginRight: '5mm', marginTop: '1mm' },
+  reachText: { fontSize: 8.3, color: C.ink2, textDecoration: 'none' },
+  logo: { position: 'absolute', top: '8mm', right: GUTTER, width: '27mm', maxHeight: '22mm', objectFit: 'contain' },
 
-  sideSection: { marginTop: '4.4mm' },
-  sideHeading: { fontFamily: 'Fredoka', fontWeight: 600, fontSize: 9.5, letterSpacing: 1.2, textTransform: 'uppercase', color: C.tealInk },
-  sideBar: { width: '8mm', height: 2.2, borderRadius: 2, backgroundColor: C.teal, marginTop: '1mm', marginBottom: '2.4mm' },
-  reachRow: { flexDirection: 'row', alignItems: 'center', marginTop: '1.6mm' },
-  reachIcon: { width: '5.4mm', height: '5.4mm', borderRadius: '2.7mm', backgroundColor: C.white, alignItems: 'center', justifyContent: 'center', marginRight: '2.2mm' },
-  reachText: { flex: 1, fontSize: 8.2, color: C.ink, textDecoration: 'none' },
-  linkRow: { marginTop: '1.4mm' },
-  linkName: { fontWeight: 700, fontSize: 8.2, color: C.ink },
-  linkHandle: { fontSize: 7.8, color: C.ink2, textDecoration: 'none' },
-  skillGroup: { marginTop: '2mm' },
-  skillName: { fontWeight: 800, fontSize: 8.2, color: C.ink, marginBottom: '1mm' },
-  pills: { flexDirection: 'row', flexWrap: 'wrap' },
-  pill: { paddingVertical: 1.6, paddingHorizontal: 5.5, borderRadius: 8, backgroundColor: C.white, marginRight: 3, marginTop: 3 },
-  pillCoral: { backgroundColor: C.coralTint },
-  pillText: { fontSize: 7.6, fontWeight: 600, color: C.ink2 },
-  pillTextCoral: { color: C.coralInk },
+  body: { flexDirection: 'row', paddingHorizontal: GUTTER, paddingTop: '7mm' },
+  main: { flex: 1, marginRight: '8mm' },
+  side: { width: SIDE },
 
-  head: { paddingBottom: '4mm', marginBottom: '1mm', borderBottomWidth: 1, borderBottomColor: C.line },
-  headTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },
-  name: { fontFamily: 'Fredoka', fontWeight: 600, fontSize: 25, lineHeight: 1.05, color: C.ink, maxWidth: '78mm' },
-  title: { fontFamily: 'Fredoka', fontWeight: 500, fontSize: 12, color: C.coralInk, marginTop: '1.6mm' },
-  motto: { fontSize: 7.2, fontWeight: 700, letterSpacing: 1.6, textTransform: 'uppercase', color: C.tealInk, marginTop: '1.6mm' },
-  logo: { width: '30mm', marginTop: '-2mm' },
-  bio: { marginTop: '3mm', fontSize: 9.2, color: C.ink2 },
+  section: { marginBottom: '5.5mm' },
+  heading: { fontFamily: 'Fredoka', fontWeight: 600, fontSize: 10.5, letterSpacing: 1, textTransform: 'uppercase', color: C.ink },
+  bar: { width: '9mm', height: 2.4, borderRadius: 2, marginTop: '1.2mm', marginBottom: '3mm' },
 
-  section: { marginTop: '4.6mm' },
-  headingRow: { flexDirection: 'row', alignItems: 'center', marginBottom: '2.4mm' },
-  headingDot: { width: '3.2mm', height: '3.2mm', borderRadius: '1.6mm', marginRight: '2mm' },
-  heading: { fontFamily: 'Fredoka', fontWeight: 600, fontSize: 11, letterSpacing: 0.6, textTransform: 'uppercase', color: C.ink },
-  headingLine: { flex: 1, height: 1, backgroundColor: C.line, marginLeft: '3mm' },
+  bio: { color: C.ink2, fontSize: 9 },
 
   entry: { flexDirection: 'row' },
-  rail: { width: '5mm', alignItems: 'center' },
-  dot: { width: '2.8mm', height: '2.8mm', borderRadius: '1.4mm', borderWidth: 1.6, backgroundColor: C.white, marginTop: 2.5 },
-  stem: { flex: 1, width: 1.2, backgroundColor: C.line, marginTop: 2 },
-  entryBody: { flex: 1, paddingBottom: '3mm', paddingLeft: '1.5mm' },
+  rail: { width: '4.5mm', alignItems: 'center' },
+  dot: { width: 7, height: 7, borderRadius: 3.5, borderWidth: 1.5, backgroundColor: C.white, marginTop: 3 },
+  stem: { flex: 1, width: 1, backgroundColor: C.line, marginTop: 2 },
+  entryBody: { flex: 1, paddingLeft: '1.8mm', paddingBottom: '3.4mm' },
   entryTop: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },
-  entryTitle: { flex: 1, fontWeight: 800, fontSize: 9.8, color: C.ink, marginRight: '3mm' },
-  when: { fontSize: 7.6, fontWeight: 700, paddingVertical: 1, paddingHorizontal: 5, borderRadius: 6 },
-  org: { fontSize: 8.6, fontWeight: 600, color: C.ink2, marginTop: 0.5 },
+  entryTitle: { flex: 1, fontWeight: 800, fontSize: 9.8, lineHeight: 1.3, marginRight: '3mm' },
+  when: { fontSize: 7.5, fontWeight: 700, paddingVertical: 1.2, paddingHorizontal: 5, borderRadius: 6 },
+  org: { fontSize: 8.5, fontWeight: 600, color: C.ink2 },
   text: { marginTop: '1mm', color: C.ink2 },
-  tags: { marginTop: '0.8mm', fontSize: 7.4, fontStyle: 'italic', color: C.ink3 },
 
-  hlRow: { flexDirection: 'row', marginTop: '1.8mm' },
-  star: { width: '4mm', marginTop: 1.5 },
-  hlBody: { flex: 1 },
-  hlTitle: { fontWeight: 800, fontSize: 9.2 },
-  hlMeta: { fontSize: 7.8, color: C.coralInk, fontWeight: 700 },
+  sideCard: { padding: '3.6mm', borderRadius: 8, backgroundColor: C.tealTint, marginBottom: '5mm' },
+  group: { marginTop: '2.2mm' },
+  groupFirst: { marginTop: 0 },
+  groupName: { fontWeight: 800, fontSize: 8.2, color: C.tealInk, marginBottom: '0.6mm' },
+  skillWrap: { flexDirection: 'row', flexWrap: 'wrap' },
+  skill: { flexDirection: 'row', alignItems: 'center', marginRight: '2.6mm', marginBottom: '0.6mm' },
+  skillDot: { width: 3, height: 3, borderRadius: 1.5, backgroundColor: C.teal, marginRight: 3 },
+  skillText: { fontSize: 7.9, lineHeight: 1.45, color: C.ink2 },
 
-  workGrid: { flexDirection: 'row', flexWrap: 'wrap', marginTop: '-1mm' },
-  workCard: { width: '48.5%', marginTop: '2mm', marginRight: '3%', paddingVertical: '2mm', paddingHorizontal: '2.6mm', borderRadius: 6, borderLeftWidth: 3, backgroundColor: '#FBF6F1' },
-  workTitle: { fontWeight: 800, fontSize: 8.6 },
-  workMeta: { fontSize: 7.4, color: C.ink3 },
+  award: { flexDirection: 'row', marginBottom: '2.6mm' },
+  awardStar: { width: '4.2mm', paddingTop: 1.5 },
+  awardBody: { flex: 1 },
+  awardTitle: { fontWeight: 800, fontSize: 8.4, lineHeight: 1.3 },
+  awardMeta: { fontSize: 7.6, color: C.coralInk, fontWeight: 600, marginTop: 1 },
 
-  footerMotto: { position: 'absolute', bottom: '7mm', left: '73mm', right: '12mm', fontSize: 7, letterSpacing: 1.4, textTransform: 'uppercase', color: C.tealInk, fontWeight: 700 },
-  corner: { position: 'absolute', top: '-22mm', right: '-22mm', width: '62mm', height: '62mm', borderRadius: '31mm', backgroundColor: C.coralTint },
-  cornerDot: { position: 'absolute', top: '5mm', right: '46mm', width: '5mm', height: '5mm', borderRadius: '2.5mm', backgroundColor: C.sun },
-  sprig: { position: 'absolute', bottom: '4mm', left: '4mm', width: '30mm', height: '30mm' },
-  dots: { position: 'absolute', top: '8mm', left: '44mm' },
+  folioCard: { padding: '3.6mm', borderRadius: 8, backgroundColor: C.coralWash, borderWidth: 1, borderColor: C.coralTint, marginBottom: '5mm' },
+  folio: { flexDirection: 'row', alignItems: 'center' },
+  folioLinks: { marginTop: '3mm', paddingTop: '2.6mm', borderTopWidth: 1, borderTopColor: C.coralTint },
+  onlineLabel: { fontFamily: 'Fredoka', fontWeight: 600, fontSize: 8.6, letterSpacing: 0.8, textTransform: 'uppercase', color: C.ink, marginBottom: '1.6mm' },
+  qrBox: { padding: 3, borderRadius: 4, backgroundColor: C.white },
+  qr: { width: '19mm', height: '19mm' },
+  folioText: { flex: 1, marginLeft: '2.6mm' },
+  folioLabel: { fontFamily: 'Fredoka', fontWeight: 600, fontSize: 10, color: C.ink },
+  folioScan: { fontSize: 7.6, color: C.ink2, marginTop: 1 },
+  folioUrl: { fontSize: 7.1, fontWeight: 800, color: C.coralInk, marginTop: '1.6mm', textDecoration: 'none' },
+
+  linkRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: '1mm' },
+  linkName: { fontWeight: 800, fontSize: 7.8, color: C.ink, marginRight: '2mm' },
+  linkHandle: { fontSize: 7.8, color: C.ink2, textDecoration: 'none' },
+
+  footer: { position: 'absolute', bottom: '8mm', left: GUTTER, right: GUTTER, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingTop: '2.4mm', borderTopWidth: 1, borderTopColor: C.line },
+  footerMotto: { fontSize: 7, fontWeight: 700, letterSpacing: 1.4, textTransform: 'uppercase', color: C.tealInk },
+  footerUrl: { fontSize: 7.2, color: C.ink3, textDecoration: 'none' },
 });
 
 const LEAF = 'M0 0 C -7 -10 -7 -22 0 -32 C 7 -22 7 -10 0 0 Z';
 
-const Sprig = ({ color }) => (
-  <Svg viewBox="0 0 100 100" style={s.sprig} fixed>
-    <G stroke={color} strokeWidth={1.8} fill="none" strokeLinecap="round">
-      <Path d="M50 96 C 50 74 44 62 50 44 C 55 30 50 16 50 6" />
-      <G transform="translate(50 74) rotate(38)"><Path d={LEAF} /></G>
-      <G transform="translate(50 74) rotate(-38)"><Path d={LEAF} /></G>
-      <G transform="translate(50 52) rotate(30)"><Path d={LEAF} /></G>
-      <G transform="translate(50 52) rotate(-30)"><Path d={LEAF} /></G>
-      <G transform="translate(50 30) rotate(22)"><Path d={LEAF} /></G>
-      <G transform="translate(50 30) rotate(-22)"><Path d={LEAF} /></G>
-      <Circle cx={50} cy={7} r={3.4} fill={color} />
+const Fern = () => (
+  <Svg viewBox="0 0 100 100" style={s.bandFern}>
+    <G stroke={C.coral} strokeWidth={1.6} fill="none" strokeLinecap="round" opacity={0.45}>
+      <Path d="M50 98 C 50 74 44 62 50 44 C 55 30 50 16 50 6" />
+      <G transform="translate(50 76) rotate(40)"><Path d={LEAF} /></G>
+      <G transform="translate(50 76) rotate(-40)"><Path d={LEAF} /></G>
+      <G transform="translate(50 54) rotate(32)"><Path d={LEAF} /></G>
+      <G transform="translate(50 54) rotate(-32)"><Path d={LEAF} /></G>
+      <G transform="translate(50 32) rotate(22)"><Path d={LEAF} /></G>
+      <G transform="translate(50 32) rotate(-22)"><Path d={LEAF} /></G>
+      <Circle cx={50} cy={7} r={3.4} fill={C.coral} />
     </G>
-  </Svg>
-);
-
-const DotGrid = () => (
-  <Svg width="16mm" height="10mm" viewBox="0 0 64 40" style={s.dots} fixed>
-    {Array.from({ length: 20 }, (_, i) => (
-      <Circle key={i} cx={4 + (i % 5) * 14} cy={4 + Math.floor(i / 5) * 11} r={2} fill={C.teal} opacity={0.55} />
-    ))}
-  </Svg>
-);
-
-const Star = () => (
-  <Svg viewBox="0 0 10 10" style={{ width: 8, height: 8 }}>
-    <Path d="M5 0.6 L6.3 3.5 L9.4 3.8 L7 5.9 L7.7 9 L5 7.4 L2.3 9 L3 5.9 L0.6 3.8 L3.7 3.5 Z" fill={C.sun} />
   </Svg>
 );
 
@@ -173,30 +161,46 @@ const ICONS = {
       <Circle cx={5} cy={4.1} r={1.1} />
     </G>
   ),
+  globe: (
+    <G stroke={C.coral} strokeWidth={0.9} fill="none">
+      <Circle cx={5} cy={5} r={3.9} />
+      <Path d="M1.1 5 L8.9 5 M5 1.1 C 3.2 3.2 3.2 6.8 5 8.9 M5 1.1 C 6.8 3.2 6.8 6.8 5 8.9" />
+    </G>
+  ),
 };
 
 const Icon = ({ kind }) => (
-  <View style={s.reachIcon}>
-    <Svg viewBox="0 0 10 10" style={{ width: 9, height: 9 }}>{ICONS[kind]}</Svg>
-  </View>
+  <Svg viewBox="0 0 10 10" style={{ width: 9, height: 9, marginRight: 4 }}>{ICONS[kind]}</Svg>
 );
 
-const SideHeading = ({ children }) => (
-  <View>
-    <Text style={s.sideHeading}>{children}</Text>
-    <View style={s.sideBar} />
-  </View>
+const Star = () => (
+  <Svg viewBox="0 0 10 10" style={{ width: 8, height: 8 }}>
+    <Path d="M5 0.6 L6.3 3.5 L9.4 3.8 L7 5.9 L7.7 9 L5 7.4 L2.3 9 L3 5.9 L0.6 3.8 L3.7 3.5 Z" fill={C.sun} />
+  </Svg>
 );
 
-const Heading = ({ children, color }) => (
-  <View style={s.headingRow} minPresenceAhead={40}>
-    <View style={[s.headingDot, { backgroundColor: color }]} />
+const QrCode = ({ url }) => {
+  const { modules } = QRCode.create(url, { errorCorrectionLevel: 'M' });
+  const n = modules.size;
+  let d = '';
+  for (let y = 0; y < n; y += 1) {
+    for (let x = 0; x < n; x += 1) if (modules.get(y, x)) d += `M${x} ${y}h1v1h-1z`;
+  }
+  return (
+    <Svg viewBox={`0 0 ${n} ${n}`} style={s.qr}>
+      <Path d={d} fill={C.ink} />
+    </Svg>
+  );
+};
+
+const Heading = ({ children, color = C.coral }) => (
+  <View minPresenceAhead={60}>
     <Text style={s.heading}>{children}</Text>
-    <View style={s.headingLine} />
+    <View style={[s.bar, { backgroundColor: color }]} />
   </View>
 );
 
-const Entry = ({ item, color, last }) => (
+const Entry = ({ item, color, tint, last }) => (
   <View style={s.entry} wrap={false}>
     <View style={s.rail}>
       <View style={[s.dot, { borderColor: color }, item.current ? { backgroundColor: color } : null]} />
@@ -205,87 +209,53 @@ const Entry = ({ item, color, last }) => (
     <View style={s.entryBody}>
       <View style={s.entryTop}>
         <Text style={s.entryTitle}>{item.title}</Text>
-        {item.when ? <Text style={[s.when, { color, backgroundColor: color === C.coral ? C.coralTint : C.tealTint }]}>{item.when}</Text> : null}
+        {item.when ? <Text style={[s.when, { color, backgroundColor: tint }]}>{item.when}</Text> : null}
       </View>
       {item.org ? <Text style={s.org}>{item.org}</Text> : null}
       {item.text ? <Text style={s.text}>{item.text}</Text> : null}
-      {item.tags.length > 0 && <Text style={s.tags}>{item.tags.join('  /  ')}</Text>}
     </View>
   </View>
 );
 
-const initials = (name) => name.split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0].toUpperCase()).join('');
+const initials = (name) => name.split(/ +/).filter(Boolean).slice(0, 2).map((w) => w[0].toUpperCase()).join('');
 
 const CvDocument = ({ cv, photo, logo }) => {
   const { labels } = cv;
   return (
     <Document title={`${cv.name} CV`} author={cv.name} subject="Curriculum vitae" creator={cv.name}>
       <Page size="A4" style={s.page}>
-        <View style={s.sideBg} fixed />
-        <View style={s.sideStripe} fixed />
-        <View style={s.corner} />
-        <View style={s.cornerDot} />
-        <DotGrid />
-        <Sprig color={C.teal} />
+        <View style={s.band}>
+          <View style={s.bandCircle} />
+          <Fern />
+          <View style={s.photoRing}>
+            {photo
+              ? <Image src={photo} style={s.photo} />
+              : <View style={s.monogram}><Text style={s.monogramText}>{initials(cv.name)}</Text></View>}
+          </View>
+          <View style={s.who}>
+            <Text style={s.name}>{cv.name}</Text>
+            {cv.title ? <Text style={s.title}>{cv.title}</Text> : null}
+            <View style={s.reach}>
+              {cv.reach.map((r) => (
+                <View key={r.kind} style={s.reachItem}>
+                  <Icon kind={r.kind} />
+                  {r.href ? <Link src={r.href} style={s.reachText}>{r.text}</Link> : <Text style={s.reachText}>{r.text}</Text>}
+                </View>
+              ))}
+              {cv.portfolio && (
+                <View style={s.reachItem}>
+                  <Icon kind="globe" />
+                  <Link src={cv.portfolio.href} style={s.reachText}>{cv.portfolio.text}</Link>
+                </View>
+              )}
+            </View>
+          </View>
+          {logo && <Image src={logo} style={s.logo} />}
+        </View>
+        <View style={s.bandRule} />
 
         <View style={s.body}>
-          <View style={s.side}>
-            <View style={s.photoWrap}>
-              <View style={s.photoRing}>
-                {photo
-                  ? <Image src={photo} style={s.photo} />
-                  : <View style={s.monogram}><Text style={s.monogramText}>{initials(cv.name)}</Text></View>}
-              </View>
-            </View>
-
-            {cv.reach.length > 0 && (
-              <View style={s.sideSection}>
-                <SideHeading>{labels.contact}</SideHeading>
-                {cv.reach.map((r) => (
-                  <View key={r.kind} style={s.reachRow}>
-                    <Icon kind={r.kind} />
-                    {r.href ? <Link src={r.href} style={s.reachText}>{r.text}</Link> : <Text style={s.reachText}>{r.text}</Text>}
-                  </View>
-                ))}
-                {cv.links.map((l) => (
-                  <View key={l.href} style={s.linkRow}>
-                    <Text style={s.linkName}>{l.name}</Text>
-                    <Link src={l.href} style={s.linkHandle}>{l.handle}</Link>
-                  </View>
-                ))}
-              </View>
-            )}
-
-            {cv.skills.length > 0 && (
-              <View style={s.sideSection}>
-                <SideHeading>{labels.skills}</SideHeading>
-                {cv.skills.map((group) => (
-                  <View key={group.name} style={s.skillGroup} wrap={false}>
-                    {group.name ? <Text style={s.skillName}>{group.name}</Text> : null}
-                    <View style={s.pills}>
-                      {group.items.map((item) => (
-                        <View key={item} style={s.pill}><Text style={s.pillText}>{item}</Text></View>
-                      ))}
-                    </View>
-                  </View>
-                ))}
-              </View>
-            )}
-
-          </View>
-
           <View style={s.main}>
-            <View style={s.head}>
-              <View style={s.headTop}>
-                <View>
-                  <Text style={s.name}>{cv.name}</Text>
-                  {cv.title ? <Text style={s.title}>{cv.title}</Text> : null}
-                  {cv.motto ? <Text style={s.motto}>{cv.motto}</Text> : null}
-                </View>
-                {logo && <Image src={logo} style={s.logo} />}
-              </View>
-            </View>
-
             {cv.bio ? (
               <View style={s.section}>
                 <Heading color={C.sun}>{labels.profile}</Heading>
@@ -296,61 +266,89 @@ const CvDocument = ({ cv, photo, logo }) => {
             {cv.experience.length > 0 && (
               <View style={s.section}>
                 <Heading color={C.coral}>{labels.experience}</Heading>
-                {cv.experience.map((item, i) => <Entry key={item.id} item={item} color={C.coral} last={i === cv.experience.length - 1} />)}
+                {cv.experience.map((item, i) => (
+                  <Entry key={item.id} item={item} color={C.coral} tint={C.coralTint} last={i === cv.experience.length - 1} />
+                ))}
               </View>
             )}
 
             {cv.education.length > 0 && (
               <View style={s.section}>
                 <Heading color={C.teal}>{labels.education}</Heading>
-                {cv.education.map((item, i) => <Entry key={item.id} item={item} color={C.teal} last={i === cv.education.length - 1} />)}
+                {cv.education.map((item, i) => (
+                  <Entry key={item.id} item={item} color={C.teal} tint={C.tealTint} last={i === cv.education.length - 1} />
+                ))}
+              </View>
+            )}
+          </View>
+
+          <View style={s.side}>
+            {(cv.portfolio || cv.links.length > 0) && (
+              <View style={s.folioCard} wrap={false}>
+                {cv.portfolio && (
+                  <View style={s.folio}>
+                    <View style={s.qrBox}><QrCode url={cv.portfolio.href} /></View>
+                    <View style={s.folioText}>
+                      <Text style={s.folioLabel}>{labels.portfolio}</Text>
+                      <Text style={s.folioScan}>{labels.scan}</Text>
+                      <Link src={cv.portfolio.href} style={s.folioUrl}>{cv.portfolio.text}</Link>
+                    </View>
+                  </View>
+                )}
+                {cv.links.length > 0 && (
+                  <View style={cv.portfolio ? s.folioLinks : null}>
+                    <Text style={s.onlineLabel}>{labels.online}</Text>
+                    {cv.links.map((l) => (
+                      <View key={l.href} style={s.linkRow}>
+                        <Text style={s.linkName}>{l.name}</Text>
+                        <Link src={l.href} style={s.linkHandle}>{l.handle}</Link>
+                      </View>
+                    ))}
+                  </View>
+                )}
               </View>
             )}
 
-            {cv.highlights.length > 0 && (
-              <View style={s.section}>
-                <Heading color={C.sun}>{labels.highlights}</Heading>
-                {cv.highlights.map((h) => (
-                  <View key={h.id} style={s.hlRow} wrap={false}>
-                    <View style={s.star}><Star /></View>
-                    <View style={s.hlBody}>
-                      <Text style={s.hlTitle}>{h.title}</Text>
-                      {h.meta ? <Text style={s.hlMeta}>{h.meta}</Text> : null}
-                      {h.text ? <Text style={s.text}>{h.text}</Text> : null}
+            {cv.skills.length > 0 && (
+              <View style={s.sideCard}>
+                <Heading color={C.teal}>{labels.skills}</Heading>
+                {cv.skills.map((group, i) => (
+                  <View key={group.name || i} style={[s.group, i === 0 ? s.groupFirst : null]} wrap={false}>
+                    {group.name ? <Text style={s.groupName}>{group.name}</Text> : null}
+                    <View style={s.skillWrap}>
+                      {group.items.map((item) => (
+                        <View key={item} style={s.skill}>
+                          <View style={s.skillDot} />
+                          <Text style={s.skillText}>{item}</Text>
+                        </View>
+                      ))}
                     </View>
                   </View>
                 ))}
               </View>
             )}
 
-            {cv.work.length > 0 && (
-              <View style={s.section} wrap={false}>
-                <Heading color={C.coral}>{labels.work}</Heading>
-                <View style={s.workGrid}>
-                  {cv.work.map((w, i) => (
-                    <View key={w.id} style={[s.workCard, { borderLeftColor: i % 2 ? C.teal : C.coral }, i % 2 ? { marginRight: 0 } : null]}>
-                      <Text style={s.workTitle}>{w.title}</Text>
-                      {w.meta ? <Text style={s.workMeta}>{w.meta}</Text> : null}
+            {cv.awards.length > 0 && (
+              <View style={s.section}>
+                <Heading color={C.sun}>{labels.highlights}</Heading>
+                {cv.awards.map((a) => (
+                  <View key={a.id} style={s.award} wrap={false}>
+                    <View style={s.awardStar}><Star /></View>
+                    <View style={s.awardBody}>
+                      <Text style={s.awardTitle}>{a.title}</Text>
+                      {a.meta ? <Text style={s.awardMeta}>{a.meta}</Text> : null}
                     </View>
-                  ))}
-                </View>
-              </View>
-            )}
-
-            {cv.interests.length > 0 && (
-              <View style={s.section} wrap={false}>
-                <Heading color={C.teal}>{labels.interests}</Heading>
-                <View style={s.pills}>
-                  {cv.interests.map((item) => (
-                    <View key={item} style={[s.pill, s.pillCoral]}><Text style={[s.pillText, s.pillTextCoral]}>{item}</Text></View>
-                  ))}
-                </View>
+                  </View>
+                ))}
               </View>
             )}
           </View>
         </View>
 
-        <Text style={s.footerMotto} fixed>{cv.motto}</Text>
+        <View style={s.footer} fixed>
+          <Text style={s.footerMotto}>{cv.motto}</Text>
+          {cv.portfolio && <Link src={cv.portfolio.href} style={s.footerUrl}>{cv.portfolio.text}</Link>}
+        </View>
       </Page>
     </Document>
   );
@@ -359,10 +357,10 @@ const CvDocument = ({ cv, photo, logo }) => {
 const inline = async (url) => {
   if (!url) return null;
   try {
-    const res = await fetch(url, { mode: 'cors' });
+    const res = await fetch(url);
     if (!res.ok) return null;
     const blob = await res.blob();
-    if (!/^image\/(png|jpe?g)$/.test(blob.type)) return null;
+    if (!/^image.(png|jpe?g)$/.test(blob.type)) return null;
     return await new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.onload = () => resolve(reader.result);
@@ -378,7 +376,6 @@ export const buildPdf = (cv, photo, logo) => pdf(<CvDocument cv={cv} photo={phot
 
 export const renderCv = async (site) => {
   const cv = buildCvModel(site);
-  const [stored, uploadedLogo] = await Promise.all([getCvPhoto().catch(() => ''), getCvLogo().catch(() => '')]);
-  const logo = uploadedLogo || await inline(`${window.location.origin}${DEFAULT_LOGOS.wordmark}`);
+  const [stored, logo] = await Promise.all([getCvPhoto().catch(() => ''), inline(`${window.location.origin}${LOGOS.wordmark}`)]);
   return buildPdf(cv, stored || null, logo);
 };

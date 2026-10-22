@@ -1,11 +1,9 @@
-import { datesForForm } from '../lib/dates';
-
 export const RECORDS = {
   projects: {
     noun: 'project',
     title: (r) => r.title || 'Untitled',
     meta: (r) => [r.category, r.year, `${r.files?.length || 0} image${r.files?.length === 1 ? '' : 's'}`].filter(Boolean).join(', '),
-    thumb: (r) => r.coverUrl,
+    thumb: (r) => r.coverWebUrl || r.coverUrl,
     note: 'The first five appear on the home page. Drag the handle to change the order.',
     fields: [
       { key: 'images', type: 'gallery', label: 'Images', hint: 'The first image is the cover.', required: true },
@@ -20,7 +18,7 @@ export const RECORDS = {
     noun: 'highlight',
     title: (r) => r.title || 'Untitled',
     meta: (r) => [r.organisation, r.year].filter(Boolean).join(', '),
-    thumb: (r) => r.imageUrl,
+    thumb: (r) => r.imageWebUrl || r.imageUrl,
     badge: (r) => (r.featured ? 'Featured' : ''),
     note: 'Wins, features and press moments. The featured one is shown large on the home page and listed first on the CV.',
     fields: [
@@ -44,7 +42,6 @@ export const RECORDS = {
       { key: 'type', label: 'Type', placeholder: 'e.g. Internship, Freelance' },
       { key: 'dates', type: 'dates', label: 'Dates' },
       { key: 'description', type: 'textarea', label: 'What you did' },
-      { key: 'tags', type: 'tags', label: 'Skills used', hint: 'Separate with commas.' },
     ],
   },
   education: {
@@ -58,7 +55,6 @@ export const RECORDS = {
       { key: 'field', label: 'Field of study', placeholder: 'e.g. Illustration' },
       { key: 'dates', type: 'dates', label: 'Dates' },
       { key: 'description', type: 'textarea', label: 'Description' },
-      { key: 'tags', type: 'tags', label: 'Tags', hint: 'Separate with commas.' },
     ],
   },
 };
@@ -69,11 +65,11 @@ export const nextTempId = () => `new-${tempId++}`;
 export const initialValues = (fields, record) => {
   const out = {};
   for (const f of fields) {
-    if (f.type === 'gallery') out[f.key] = (record?.files || []).map((file) => ({ id: file.path || nextTempId(), url: file.url, existing: file }));
-    else if (f.type === 'image') out[f.key] = { url: record?.imageUrl || '' };
+    if (f.type === 'gallery') out[f.key] = (record?.files || []).map((file) => ({ id: file.path || nextTempId(), url: file.webUrl || file.url, existing: file }));
+    else if (f.type === 'image') out[f.key] = { url: record?.imageWebUrl || record?.imageUrl || '' };
     else if (f.type === 'tags') out[f.key] = (record?.tags || []).join(', ');
     else if (f.type === 'toggle') out[f.key] = !!record?.[f.key];
-    else if (f.type === 'dates') out[f.key] = datesForForm(record);
+    else if (f.type === 'dates') out[f.key] = { start: record?.start || '', end: record?.end || '' };
     else out[f.key] = record?.[f.key] ?? '';
   }
   return out;

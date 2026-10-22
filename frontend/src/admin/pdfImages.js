@@ -1,6 +1,4 @@
 const PHOTO_SIZE = 420;
-const LOGO_WIDTHS = [800, 600, 420];
-const FIRESTORE_SAFE = 900 * 1024;
 
 const loadImage = (file) => new Promise((resolve, reject) => {
   const url = URL.createObjectURL(file);
@@ -27,20 +25,4 @@ export const makeCvPhoto = async (file) => {
   ctx.fillRect(0, 0, PHOTO_SIZE, PHOTO_SIZE);
   ctx.drawImage(img, (width - side) / 2, (height - side) * 0.2, side, side, 0, 0, PHOTO_SIZE, PHOTO_SIZE);
   return canvas.toDataURL('image/jpeg', 0.85);
-};
-
-export const makeCvLogo = async (file) => {
-  const img = await loadImage(file);
-  const { width, height } = sizeOf(img);
-  for (const target of LOGO_WIDTHS) {
-    const w = Math.min(target, width);
-    const h = Math.round((height / width) * w);
-    const canvas = document.createElement('canvas');
-    canvas.width = w;
-    canvas.height = h;
-    canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-    const data = canvas.toDataURL('image/png');
-    if (data.length < FIRESTORE_SAFE) return data;
-  }
-  return '';
 };

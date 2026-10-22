@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useSite } from '../context/SiteContext';
+import { LOGOS } from '../lib/logos';
 import styles from './Loading.module.css';
 
 const VERSES = [
@@ -12,12 +12,11 @@ const VERSES = [
 ];
 
 const Loading = ({ message = 'Loading', full = false, verse = true }) => {
-  const { logos } = useSite();
   const [[text, ref]] = useState(() => [VERSES[Math.floor(Math.random() * VERSES.length)]]);
 
   return (
     <div className={`${styles.wrap} ${full ? styles.full : ''}`} role="status" aria-live="polite">
-      <img src={logos.mark} alt="" className={styles.mark} />
+      <img src={LOGOS.mark} alt="" className={styles.mark} />
       <p className={styles.message}>{message}</p>
       {verse && (
         <blockquote className={styles.verse}>

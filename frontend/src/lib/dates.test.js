@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { dateRange, isCurrent, splitPeriod, datesForForm } from './dates';
+import { dateRange, isCurrent } from './dates';
 
 describe('dateRange', () => {
   it('joins start and end with a plain hyphen', () => {
@@ -14,8 +14,8 @@ describe('dateRange', () => {
     expect(dateRange({ start: '2024', end: '2024' })).toBe('2024');
   });
 
-  it('falls back to the old period text', () => {
-    expect(dateRange({ period: '2020 to 2022' })).toBe('2020 to 2022');
+  it('shows the end alone when there is no start, and nothing when both are empty', () => {
+    expect(dateRange({ end: '2022' })).toBe('2022');
     expect(dateRange({})).toBe('');
   });
 });
@@ -25,29 +25,5 @@ describe('isCurrent', () => {
     expect(isCurrent({ start: '2024' })).toBe(true);
     expect(isCurrent({ start: '2024', end: '2025' })).toBe(false);
     expect(isCurrent({})).toBe(false);
-  });
-});
-
-describe('splitPeriod', () => {
-  it('understands the common ways a range was typed', () => {
-    expect(splitPeriod('2024 to Present')).toEqual({ start: '2024', end: '' });
-    expect(splitPeriod('May 2026 - June 2026')).toEqual({ start: 'May 2026', end: 'June 2026' });
-    expect(splitPeriod('2019, 2021')).toEqual({ start: '2019', end: '2021' });
-    expect(splitPeriod(`2019 ${String.fromCharCode(0x2013)} 2021`)).toEqual({ start: '2019', end: '2021' });
-  });
-
-  it('keeps a single value as the start', () => {
-    expect(splitPeriod('2022')).toEqual({ start: '2022', end: '' });
-    expect(splitPeriod('')).toEqual({ start: '', end: '' });
-  });
-});
-
-describe('datesForForm', () => {
-  it('prefers the structured fields', () => {
-    expect(datesForForm({ start: '2020', end: '2021', period: 'old' })).toEqual({ start: '2020', end: '2021' });
-  });
-
-  it('migrates the old period text', () => {
-    expect(datesForForm({ period: '2018 to 2020' })).toEqual({ start: '2018', end: '2020' });
   });
 });

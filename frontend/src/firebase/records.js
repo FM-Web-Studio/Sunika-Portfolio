@@ -1,9 +1,9 @@
 import {
-  collection, doc, setDoc, updateDoc, deleteDoc, onSnapshot, writeBatch, serverTimestamp,
+  collection, doc, setDoc, updateDoc, deleteDoc, deleteField, onSnapshot, writeBatch, serverTimestamp,
 } from 'firebase/firestore';
 import { db } from './app';
 import { COLLECTIONS, STORAGE_FOLDERS } from './config';
-import { uploadImage, removeImage } from './files';
+import { uploadWithWebCopy, removeImage } from './files';
 import { sortByOrder, orderForNew } from '../lib/order';
 
 const clean = (v) => (typeof v === 'string' ? v.trim() : v ?? '');
@@ -18,9 +18,16 @@ const pick = (data, keys) => {
 const SHAPES = {
   projects: (d) => ({ ...pick(d, ['title', 'category', 'description', 'year']), tags: cleanList(d.tags) }),
   accomplishments: (d) => ({ ...pick(d, ['title', 'organisation', 'year', 'description', 'link']), featured: !!d.featured }),
-  experience: (d) => ({ ...pick(d, ['company', 'role', 'type', 'start', 'end', 'description']), period: '', tags: cleanList(d.tags) }),
-  education: (d) => ({ ...pick(d, ['institution', 'qualification', 'field', 'start', 'end', 'description']), period: '', tags: cleanList(d.tags) }),
+  experience: (d) => pick(d, ['company', 'role', 'type', 'start', 'end', 'description']),
+  education: (d) => pick(d, ['institution', 'qualification', 'field', 'start', 'end', 'description']),
 };
+
+const IMAGE_KEYS = {
+  projects: ['files', 'coverUrl', 'coverWebUrl'],
+  accomplishments: ['imageUrl', 'imagePath', 'imageWebUrl', 'imageWebPath'],
+};
+
+const pathsOf = (entry) => [entry?.path, entry?.webPath].filter(Boolean);
 
 export const subscribeRecords = (kind, cb, onError = () => {}) =>
   onSnapshot(
@@ -29,64 +36,98 @@ export const subscribeRecords = (kind, cb, onError = () => {}) =>
     onError,
   );
 
-const resolveGallery = async (images = []) => {
+const removeAll = (paths) => Promise.all(paths.map(removeImage));
+
+const uploadGallery = async (images = []) => {
   const files = [];
-  for (const item of images) {
-    if (item.file) files.push(await uploadImage(STORAGE_FOLDERS.projects, item.file));
-    else if (item.existing) files.push(item.existing);
+  const uploaded = [];
+  try {
+    for (const item of images) {
+      if (item.file) {
+        const up = await uploadWithWebCopy(STORAGE_FOLDERS.projects, item.file);
+        uploaded.push(...pathsOf(up));
+        files.push(up);
+      } else if (item.existing) {
+        files.push(item.existing);
+      }
+    }
+  } catch (error) {
+    await removeAll(uploaded);
+    throw error;
   }
-  return files;
+  return { files, uploaded };
 };
 
-const imageFields = async (kind, data, previous = {}) => {
+const prepareImages = async (kind, data, previous = {}) => {
   if (kind === 'projects' && data.images) {
-    const files = await resolveGallery(data.images);
+    const { files, uploaded } = await uploadGallery(data.images);
     const kept = new Set(files.map((f) => f.path));
-    await Promise.all((previous.files || []).filter((f) => f.path && !kept.has(f.path)).map((f) => removeImage(f.path)));
-    const cover = files[0] || { path: '', url: '' };
-    return { files, coverPath: cover.path, coverUrl: cover.url };
+    const cover = files[0] || {};
+    return {
+      fields: { files, coverUrl: cover.url, coverWebUrl: cover.webUrl },
+      uploaded,
+      obsolete: (previous.files || []).filter((f) => !kept.has(f.path)).flatMap(pathsOf),
+    };
   }
-  if (kind === 'accomplishments' && data.image) {
-    if (data.image.file) {
-      await removeImage(previous.imagePath);
-      const up = await uploadImage(STORAGE_FOLDERS.accomplishments, data.image.file);
-      return { imageUrl: up.url, imagePath: up.path };
-    }
-    if (data.image.remove) {
-      await removeImage(previous.imagePath);
-      return { imageUrl: '', imagePath: '' };
-    }
+  if (kind === 'accomplishments' && (data.image?.file || data.image?.remove)) {
+    const obsolete = [previous.imagePath, previous.imageWebPath].filter(Boolean);
+    if (data.image.remove) return { fields: {}, uploaded: [], obsolete, cleared: true };
+    const up = await uploadWithWebCopy(STORAGE_FOLDERS.accomplishments, data.image.file);
+    return {
+      fields: { imageUrl: up.url, imagePath: up.path, imageWebUrl: up.webUrl, imageWebPath: up.webPath },
+      uploaded: pathsOf(up),
+      obsolete,
+    };
   }
-  return {};
+  return { fields: {}, uploaded: [], obsolete: [] };
+};
+
+const imageValues = (kind, images, isUpdate) => {
+  const out = {};
+  for (const key of IMAGE_KEYS[kind] || []) {
+    const value = images.cleared ? undefined : images.fields[key];
+    const touched = images.cleared || key in images.fields;
+    if (value !== undefined && value !== '') out[key] = value;
+    else if (isUpdate && touched) out[key] = deleteField();
+  }
+  return out;
+};
+
+const commit = async (write, images) => {
+  try {
+    await write();
+  } catch (error) {
+    await removeAll(images.uploaded);
+    throw error;
+  }
+  await removeAll(images.obsolete);
 };
 
 export const createRecord = async (kind, data, existing = []) => {
   const target = doc(collection(db, COLLECTIONS[kind]));
-  await setDoc(target, {
+  const images = await prepareImages(kind, data);
+  await commit(() => setDoc(target, {
     ...SHAPES[kind](data),
-    ...(await imageFields(kind, data)),
+    ...imageValues(kind, images, false),
     order: orderForNew(existing),
     createdAt: serverTimestamp(),
-    updatedAt: serverTimestamp(),
-  });
+  }), images);
   return target.id;
 };
 
 export const updateRecord = async (kind, previous, data) => {
-  await updateDoc(doc(db, COLLECTIONS[kind], previous.id), {
+  const images = await prepareImages(kind, data, previous);
+  await commit(() => updateDoc(doc(db, COLLECTIONS[kind], previous.id), {
     ...SHAPES[kind](data),
-    ...(await imageFields(kind, data, previous)),
-    updatedAt: serverTimestamp(),
-  });
+    ...imageValues(kind, images, true),
+  }), images);
 };
 
-export const patchRecord = (kind, id, patch) =>
-  updateDoc(doc(db, COLLECTIONS[kind], id), { ...patch, updatedAt: serverTimestamp() });
+export const patchRecord = (kind, id, patch) => updateDoc(doc(db, COLLECTIONS[kind], id), patch);
 
 export const deleteRecord = async (kind, record) => {
-  const paths = [record.imagePath, ...(record.files || []).map((f) => f.path)];
-  await Promise.all(paths.filter(Boolean).map(removeImage));
   await deleteDoc(doc(db, COLLECTIONS[kind], record.id));
+  await removeAll([record.imagePath, record.imageWebPath, ...(record.files || []).flatMap(pathsOf)].filter(Boolean));
 };
 
 export const saveOrder = async (kind, ids) => {

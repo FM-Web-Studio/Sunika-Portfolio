@@ -3,9 +3,7 @@ import { subscribeRecords } from '../firebase/records';
 import { subscribeProfile, EMPTY_PERSONAL } from '../firebase/profile';
 import { subscribeContact, EMPTY_CONTACT } from '../firebase/contact';
 import { subscribeContent } from '../firebase/content';
-import { subscribeBranding, logosOf, EMPTY_BRANDING } from '../firebase/branding';
 import { resolveAll } from '../content/copy';
-import { readLogoCache, writeLogoCache } from '../lib/storage';
 
 const SiteContext = createContext(null);
 
@@ -19,7 +17,6 @@ const SOURCES = [
   ['interests', (cb, err) => subscribeProfile('interests', cb, err), { items: [] }],
   ['contact', subscribeContact, EMPTY_CONTACT],
   ['content', subscribeContent, {}],
-  ['branding', subscribeBranding, EMPTY_BRANDING],
 ];
 
 const initial = Object.fromEntries(SOURCES.map(([key, , empty]) => [key, empty]));
@@ -46,21 +43,13 @@ export const SiteProvider = ({ children }) => {
     return () => stops.forEach((stop) => stop());
   }, []);
 
-  const [cachedLogos] = useState(readLogoCache);
-  const logos = useMemo(() => (ready.branding ? logosOf(data.branding) : cachedLogos || logosOf()), [ready.branding, data.branding, cachedLogos]);
-
-  useEffect(() => {
-    if (ready.branding) writeLogoCache(logos);
-  }, [ready.branding, logos]);
-
   const value = useMemo(() => ({
     ...data,
     copy: resolveAll(data.content),
-    logos,
     ready,
     failed,
     allReady: SOURCES.every(([key]) => ready[key]),
-  }), [data, logos, ready, failed]);
+  }), [data, ready, failed]);
 
   return <SiteContext.Provider value={value}>{children}</SiteContext.Provider>;
 };

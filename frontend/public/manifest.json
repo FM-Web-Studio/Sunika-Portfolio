@@ -2,7 +2,7 @@
   "short_name": "Suni Designs",
   "name": "Suni Designs, Sunika Lombard",
   "icons": [
-    { "src": "logo-mark.png", "sizes": "512x444", "type": "image/png" }
+    { "src": "brand-mark.png", "sizes": "320x308", "type": "image/png" }
   ],
   "start_url": ".",
   "display": "standalone",

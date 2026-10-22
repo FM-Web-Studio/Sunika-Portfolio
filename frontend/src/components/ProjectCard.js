@@ -15,7 +15,7 @@ const ProjectCard = ({ project, onOpen, index = 0, size = 'normal' }) => {
     >
       <span className={styles.media}>
         {project.coverUrl
-          ? <img src={project.coverUrl} alt="" loading="lazy" decoding="async" />
+          ? <img src={project.coverWebUrl || project.coverUrl} alt="" loading="lazy" decoding="async" />
           : <span className={styles.placeholder}>{(project.title || 'S').charAt(0)}</span>}
       </span>
       <span className={styles.info}>

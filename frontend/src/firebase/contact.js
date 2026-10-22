@@ -1,4 +1,4 @@
-import { doc, setDoc, onSnapshot, serverTimestamp } from 'firebase/firestore';
+import { doc, setDoc, onSnapshot } from 'firebase/firestore';
 import { db } from './app';
 import { COLLECTIONS, SETTINGS_DOCS } from './config';
 
@@ -22,5 +22,4 @@ export const saveContact = ({ email, phone, location, socials }) =>
     socials: socials
       .map((s) => ({ key: (s.key || '').trim().toLowerCase(), label: (s.label || '').trim(), url: (s.url || '').trim() }))
       .filter((s) => s.url),
-    updatedAt: serverTimestamp(),
   }, { merge: true });

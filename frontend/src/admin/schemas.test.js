@@ -2,12 +2,11 @@ import { describe, it, expect } from 'vitest';
 import { RECORDS, initialValues, toPayload, validate } from './schemas';
 
 describe('record forms', () => {
-  it('round trips an experience record, migrating the old period text', () => {
+  it('round trips an experience record and sends only the fields the site uses', () => {
     const fields = RECORDS.experience.fields;
-    const values = initialValues(fields, { company: 'Gallery', role: 'Intern', period: '2024 to Present', tags: ['Print'] });
+    const values = initialValues(fields, { company: 'Gallery', role: 'Intern', start: '2024', end: '' });
     expect(values.dates).toEqual({ start: '2024', end: '' });
-    expect(values.tags).toBe('Print');
-    expect(toPayload(fields, values)).toMatchObject({ company: 'Gallery', role: 'Intern', start: '2024', end: '', tags: ['Print'] });
+    expect(toPayload(fields, values)).toEqual({ company: 'Gallery', role: 'Intern', type: '', start: '2024', end: '', description: '' });
   });
 
   it('turns the gallery into an upload plan that keeps existing files', () => {

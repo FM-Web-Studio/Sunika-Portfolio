@@ -4,10 +4,11 @@ import { useSite } from '../context/SiteContext';
 import { scrollToTarget } from '../hooks/useMomentumScroll';
 import SocialLinks from './SocialLinks';
 import { PAGES } from './Nav';
+import { LOGOS } from '../lib/logos';
 import styles from './Footer.module.css';
 
 const Footer = () => {
-  const { copy, contact, logos } = useSite();
+  const { copy, contact } = useSite();
   const { brand } = copy;
 
   return (
@@ -15,7 +16,7 @@ const Footer = () => {
       <div className={`container ${styles.inner}`}>
         <div className={styles.brand}>
           <button type="button" className={styles.logo} onClick={() => scrollToTarget(0)} aria-label="Back to top">
-            <img src={logos.wordmark} alt={brand.brandName} />
+            <img src={LOGOS.wordmark} alt={brand.brandName} />
           </button>
           <p>{brand.footerTagline}</p>
         </div>

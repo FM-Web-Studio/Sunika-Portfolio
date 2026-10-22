@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { FcGoogle } from 'react-icons/fc';
 import {
   FiAward, FiBookOpen, FiBriefcase, FiEdit3, FiExternalLink, FiGrid, FiHome, FiImage,
-  FiFeather, FiInbox, FiLayers, FiLogOut, FiMail, FiMenu, FiMoon, FiSun, FiUser, FiX,
+  FiInbox, FiLayers, FiLogOut, FiMail, FiMenu, FiMoon, FiSun, FiUser, FiX,
 } from 'react-icons/fi';
 import { useAuth } from '../hooks/useAuth';
 import { usePrefs } from '../hooks/usePrefs';
@@ -19,7 +19,7 @@ import ContactSection from './ContactSection';
 import CopySection from './CopySection';
 import InboxSection from './InboxSection';
 import OverviewSection from './OverviewSection';
-import LogosSection from './LogosSection';
+import { LOGOS } from '../lib/logos';
 import ui from './Admin.module.css';
 
 const SECTIONS = [
@@ -31,7 +31,6 @@ const SECTIONS = [
   { id: 'skills', group: 'About you', title: 'Skills and interests', icon: FiLayers, description: 'What you do and what you love.' },
   { id: 'experience', group: 'About you', title: 'Experience', icon: FiBriefcase, description: 'Jobs, internships and freelance work.' },
   { id: 'education', group: 'About you', title: 'Education', icon: FiBookOpen, description: 'Qualifications and courses.' },
-  { id: 'logos', group: 'Site', title: 'Logos', icon: FiFeather, description: 'The small logo and the full logo used across the site and on the CV.' },
   { id: 'contact', group: 'Site', title: 'Contact details', icon: FiMail, description: 'Email, phone, location and social links.' },
   { id: 'copy', group: 'Site', title: 'Wording', icon: FiEdit3, description: 'Headings, buttons and labels used across the site.' },
 ];
@@ -39,11 +38,11 @@ const SECTIONS = [
 const GROUPS = [...new Set(SECTIONS.map((s) => s.group))];
 
 const Gate = ({ children }) => {
-  const { logos, copy } = useSite();
+  const { copy } = useSite();
   return (
     <div className={ui.gate}>
       <div className={ui.gateCard}>
-        <img src={logos.wordmark} alt={copy.brand.brandName} />
+        <img src={LOGOS.wordmark} alt={copy.brand.brandName} />
         {children}
       </div>
     </div>
@@ -53,7 +52,7 @@ const Gate = ({ children }) => {
 const Admin = () => {
   const { user, loading, isAdmin } = useAuth();
   const { theme, toggleTheme } = usePrefs();
-  const { copy, logos } = useSite();
+  const { copy } = useSite();
   const { notify } = useToast();
   const [view, setView] = useState('overview');
   const [menu, setMenu] = useState(false);
@@ -106,7 +105,6 @@ const Admin = () => {
     skills: <SkillsSection />,
     contact: <ContactSection />,
     copy: <CopySection />,
-    logos: <LogosSection />,
   }[active.id];
 
   return (
@@ -114,7 +112,7 @@ const Admin = () => {
       <header className={ui.top}>
         <button type="button" className={`icon-btn ${ui.menuBtn}`} onClick={() => setMenu(true)} aria-label="Open sections"><FiMenu aria-hidden="true" /></button>
         <Link to="/" className={ui.topBrand}>
-          <img src={logos.mark} alt="" />
+          <img src={LOGOS.mark} alt="" />
           <span>Admin</span>
         </Link>
         <div className={ui.topTools}>

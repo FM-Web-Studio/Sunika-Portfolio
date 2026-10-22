@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { FiArrowRight, FiExternalLink } from 'react-icons/fi';
 import { useSite } from '../context/SiteContext';
 import { getCvPhoto } from '../firebase/profile';
+import { LOGOS } from '../lib/logos';
 import ui from './Admin.module.css';
 
 const OverviewSection = ({ sections, messages, go }) => {
@@ -34,7 +35,7 @@ const OverviewSection = ({ sections, messages, go }) => {
   return (
     <div className={ui.stack}>
       <section className={ui.welcome}>
-        <img src={site.logos.mark} alt="" />
+        <img src={LOGOS.mark} alt="" />
         <div>
           <h2>Hi{site.personal.name ? ` ${site.personal.name.split(' ')[0]}` : ''}</h2>
           <p>Pick a section on the left, make your changes, then press the green Save button. The CV download in the site menu always uses what is saved here.</p>

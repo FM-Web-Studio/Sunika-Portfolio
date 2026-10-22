@@ -229,63 +229,6 @@
   font-size: var(--step--1);
 }
 
-.logoPreviews {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
-}
-
-.logoPreviews figure {
-  display: grid;
-  place-items: center;
-  gap: 8px;
-  margin: 0;
-  padding: 20px;
-  border-radius: var(--r-md);
-  border: 1px solid var(--line);
-}
-
-.logoPreviews img {
-  width: 100%;
-  max-width: 320px;
-  height: 120px;
-  object-fit: contain;
-}
-
-.logoSquare img {
-  max-width: 120px;
-  height: 100px;
-}
-
-.logoPreviews figcaption {
-  font-size: 0.72rem;
-  font-weight: 800;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  opacity: 0.6;
-}
-
-.logoLight {
-  background: #FBF6F1;
-  color: #2A2326;
-}
-
-.logoDark {
-  background: #17131A;
-  color: #F6EFEA;
-}
-
-.logoTools {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-
-.disabled {
-  opacity: 0.55;
-  pointer-events: none;
-}
-
 .cardWarn {
   margin: 0 20px 20px;
   padding: 10px 14px;

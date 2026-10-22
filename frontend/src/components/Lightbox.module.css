@@ -91,6 +91,19 @@
   gap: 6px;
 }
 
+.full {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: var(--step--1);
+  font-weight: 700;
+  color: var(--coral-ink);
+}
+
+.full:hover {
+  text-decoration: underline;
+}
+
 .thumbs {
   display: grid;
   grid-template-columns: repeat(4, 1fr);

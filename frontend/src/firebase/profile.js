@@ -1,7 +1,7 @@
-import { doc, getDoc, setDoc, onSnapshot, serverTimestamp } from 'firebase/firestore';
+import { doc, getDoc, setDoc, onSnapshot } from 'firebase/firestore';
 import { db } from './app';
 import { COLLECTIONS, PROFILE_DOCS, STORAGE_FOLDERS } from './config';
-import { uploadImage, removeImage } from './files';
+import { uploadImage, removeImage, pathFromUrl } from './files';
 
 const profileRef = (id) => doc(db, COLLECTIONS.profile, id);
 
@@ -24,7 +24,7 @@ export const subscribeProfile = (key, cb, onError = () => {}) =>
     onError,
   );
 
-const write = (key, data) => setDoc(profileRef(PROFILE_DOCS[key]), { ...data, updatedAt: serverTimestamp() }, { merge: true });
+const write = (key, data) => setDoc(profileRef(PROFILE_DOCS[key]), data, { merge: true });
 
 export const getCvPhoto = async () => {
   const snap = await getDoc(profileRef(PROFILE_DOCS.cvPhoto));
@@ -38,14 +38,19 @@ export const savePersonal = async (data, photoFile, previous = {}, cvPhoto = '')
     title: data.title.trim(),
     bio: data.bio.trim(),
   };
-  if (photoFile) {
-    const up = await uploadImage(STORAGE_FOLDERS.profile, photoFile);
-    await removeImage(previous.photoPath);
+  const up = photoFile ? await uploadImage(STORAGE_FOLDERS.profile, photoFile) : null;
+  if (up) {
     patch.photoUrl = up.url;
     patch.photoPath = up.path;
   }
-  if (cvPhoto) await write('cvPhoto', { data: cvPhoto });
-  await write('personal', patch);
+  try {
+    await write('personal', patch);
+    if (cvPhoto) await setDoc(profileRef(PROFILE_DOCS.cvPhoto), { data: cvPhoto });
+  } catch (error) {
+    if (up) await removeImage(up.path);
+    throw error;
+  }
+  if (up) await removeImage(previous.photoPath || pathFromUrl(previous.photoUrl));
 };
 
 export const saveInterests = (items) =>

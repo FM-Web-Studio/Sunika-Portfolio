@@ -9,10 +9,21 @@ import Lightbox from '../components/Lightbox';
 import Marquee from '../components/Marquee';
 import ProjectCard from '../components/ProjectCard';
 import SocialLinks from '../components/SocialLinks';
+import { LOGOS } from '../lib/logos';
 import styles from './Home.module.css';
 
 const FEATURED = 5;
 const CHIP_TONES = ['chip-coral', 'chip-teal', 'chip-sun'];
+
+const asViewable = (w) => ({
+  id: `win-${w.id}`,
+  title: w.title,
+  category: w.organisation,
+  year: w.year,
+  description: w.description,
+  coverUrl: w.imageUrl,
+  coverWebUrl: w.imageWebUrl,
+});
 
 const initials = (name = '') => name.split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0].toUpperCase()).join('') || 'S';
 
@@ -51,17 +62,16 @@ const Timeline = ({ label, items, tone }) => (
 );
 
 const Home = () => {
-  const { copy, personal, contact, projects, accomplishments, skills, interests, experience, education, ready, logos } = useSite();
+  const { copy, personal, contact, projects, accomplishments, skills, interests, experience, education, ready } = useSite();
   const t = copy.home;
   const [open, setOpen] = useState(null);
 
   useReveal([ready.projects, ready.personal, projects.length, accomplishments.length, experience.length, education.length]);
 
   const featured = projects.slice(0, FEATURED);
-  const lead = accomplishments.find((a) => a.featured) || accomplishments[0];
-  const otherWins = accomplishments.filter((a) => a !== lead);
+  const wins = [...accomplishments].sort((a, b) => Number(!!b.featured) - Number(!!a.featured));
   const marquee = [...skills.categories.flatMap((c) => c.items), ...interests.items];
-  const hasAbout = accomplishments.length > 0 || skills.categories.length > 0 || interests.items.length > 0;
+  const hasAbout = skills.categories.length > 0 || interests.items.length > 0;
   const live = open ? projects.find((p) => p.id === open.id) || open : null;
 
   return (
@@ -69,7 +79,7 @@ const Home = () => {
       <section className={`container ${styles.hero}`}>
         <div className={styles.heroText}>
           <h1 className={styles.logoTitle} data-reveal>
-            <img src={logos.wordmark} alt={personal.name ? `${personal.name}, ${copy.brand.brandName}` : copy.brand.brandName} />
+            <img src={LOGOS.wordmark} alt={personal.name ? `${personal.name}, ${copy.brand.brandName}` : copy.brand.brandName} />
           </h1>
           {!ready.personal ? (
             <div className={styles.heroSkeleton} aria-hidden="true">
@@ -93,7 +103,7 @@ const Home = () => {
             <SocialLinks socials={contact.socials} />
           </div>
         </div>
-        <Portrait personal={personal} mark={logos.mark} />
+        <Portrait personal={personal} mark={LOGOS.mark} />
       </section>
 
       <Marquee items={marquee} />
@@ -119,73 +129,68 @@ const Home = () => {
         )}
       </section>
 
+      {wins.length > 0 && (
+        <section className={`container ${styles.section}`} id="highlights">
+          <header className={styles.head}>
+            <h2 className="title" data-reveal>{t.winsLabel}</h2>
+          </header>
+          <div className={styles.wins}>
+            {wins.map((w, i) => (
+              <article key={w.id} className={styles.win} data-reveal style={{ '--i': i }}>
+                {w.imageUrl && (
+                  <button type="button" className={styles.winImage} onClick={() => setOpen(asViewable(w))} aria-label={`View the image for ${w.title}`}>
+                    <img src={w.imageWebUrl || w.imageUrl} alt="" loading="lazy" decoding="async" />
+                  </button>
+                )}
+                <div className={styles.winBody}>
+                  {(w.organisation || w.year) && (
+                    <p className={styles.winMeta}>
+                      {w.organisation && <span>{w.organisation}</span>}
+                      {w.year && <span className={styles.winYear}>{w.year}</span>}
+                    </p>
+                  )}
+                  <h3>{w.title}</h3>
+                  {w.description && <p className={styles.winText}>{w.description}</p>}
+                  {w.link && <a href={w.link} target="_blank" rel="noopener noreferrer" className={styles.more}>Read more <FiArrowUpRight aria-hidden="true" /></a>}
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+      )}
+
       {hasAbout && (
         <section className={`container ${styles.section}`} id="about">
           <header className={styles.head}>
             <h2 className="title" data-reveal>{t.aboutTitle}</h2>
           </header>
 
-          <div className={`${styles.about} ${lead ? '' : styles.aboutWide}`}>
-            {lead && (
-              <div className={styles.wins}>
-                <h3 className={styles.colLabel}>{t.winsLabel}</h3>
-                <article className={styles.winLead} data-reveal="pop">
-                  {lead.imageUrl && <img src={lead.imageUrl} alt="" loading="lazy" />}
-                  <div className={styles.winBody}>
-                    <span className="chip chip-coral">{[lead.organisation, lead.year].filter(Boolean).join(', ') || t.winsLabel}</span>
-                    <h4>{lead.title}</h4>
-                    {lead.description && <p>{lead.description}</p>}
-                    {lead.link && <a href={lead.link} target="_blank" rel="noopener noreferrer" className={styles.more}>Read more <FiArrowUpRight aria-hidden="true" /></a>}
-                  </div>
-                </article>
-                {otherWins.length > 0 && (
-                  <ul className={styles.winList}>
-                    {otherWins.map((w, i) => (
-                      <li key={w.id} data-reveal style={{ '--i': i }}>
-                        {w.imageUrl ? <img src={w.imageUrl} alt="" loading="lazy" /> : <span className={styles.winDot} aria-hidden="true" />}
-                        <span className={styles.winText}>
-                          <strong>{w.title}</strong>
-                          <small>{[w.organisation, w.year].filter(Boolean).join(', ')}</small>
-                        </span>
-                        {w.link && (
-                          <a href={w.link} target="_blank" rel="noopener noreferrer" className="icon-btn" aria-label={`Read more about ${w.title}`}>
-                            <FiArrowUpRight aria-hidden="true" />
-                          </a>
-                        )}
-                      </li>
-                    ))}
-                  </ul>
-                )}
+          <div className={styles.craft}>
+            {skills.categories.length > 0 && (
+              <div>
+                <h3 className={styles.colLabel}>{t.makingKicker}</h3>
+                <div className={styles.skillGrid}>
+                  {skills.categories.map((c, i) => (
+                    <div key={c.name || i} className={styles.skillCard} data-reveal style={{ '--i': i }}>
+                      <h4>{c.name}</h4>
+                      <div className={styles.chips}>
+                        {c.items.map((sk) => <span key={sk} className="chip">{sk}</span>)}
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
-
-            <div className={styles.craft}>
-              {skills.categories.length > 0 && (
-                <div>
-                  <h3 className={styles.colLabel}>{t.makingKicker}</h3>
-                  <div className={styles.skillGrid}>
-                    {skills.categories.map((c, i) => (
-                      <div key={c.name || i} className={styles.skillCard} data-reveal style={{ '--i': i }}>
-                        <h4>{c.name}</h4>
-                        <div className={styles.chips}>
-                          {c.items.map((s) => <span key={s} className="chip">{s}</span>)}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+            {interests.items.length > 0 && (
+              <div data-reveal>
+                <h3 className={styles.colLabel}>{t.interestsLabel}</h3>
+                <div className={styles.chips}>
+                  {interests.items.map((it, i) => (
+                    <span key={it} className={`chip ${CHIP_TONES[i % 3]} ${styles.tilt}`} style={{ '--r': `${((i * 37) % 7) - 3}deg` }}>{it}</span>
+                  ))}
                 </div>
-              )}
-              {interests.items.length > 0 && (
-                <div data-reveal>
-                  <h3 className={styles.colLabel}>{t.interestsLabel}</h3>
-                  <div className={styles.chips}>
-                    {interests.items.map((s, i) => (
-                      <span key={s} className={`chip ${CHIP_TONES[i % 3]} ${styles.tilt}`} style={{ '--r': `${((i * 37) % 7) - 3}deg` }}>{s}</span>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
+              </div>
+            )}
           </div>
         </section>
       )}

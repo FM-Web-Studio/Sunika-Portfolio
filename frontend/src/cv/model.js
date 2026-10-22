@@ -2,29 +2,29 @@ import { toExperience, toEducation } from '../lib/journey';
 import { normaliseSocials } from '../lib/socials';
 
 const has = (v) => typeof v === 'string' && v.trim() !== '';
+const tidy = (v) => (has(v) ? v.trim().replace(/[.\s]+$/, '') : '');
+
+export const displayUrl = (url) => tidy(url).replace(/^https?:\/\//i, '').replace(/\/$/, '');
 
 export const buildCvModel = (site) => {
-  const { personal = {}, contact = {}, skills = {}, interests = {}, copy } = site;
+  const { personal = {}, contact = {}, skills = {}, copy } = site;
 
-  const highlights = [...(site.accomplishments || [])]
+  const awards = [...(site.accomplishments || [])]
     .sort((a, b) => Number(!!b.featured) - Number(!!a.featured))
-    .map((a) => ({ id: a.id, title: a.title, meta: [a.organisation, a.year].filter(has).join(', '), text: a.description || '' }));
-
-  const work = (site.projects || []).slice(0, 6).map((p) => ({
-    id: p.id,
-    title: p.title || 'Untitled',
-    meta: [p.category, p.year].filter(has).join(', '),
-  }));
+    .map((a) => ({ id: a.id, title: tidy(a.title), meta: [tidy(a.organisation), tidy(a.year)].filter(Boolean).join(', ') }))
+    .filter((a) => a.title);
 
   const links = normaliseSocials(contact.socials)
     .filter((s) => s.key !== 'email')
     .map((s) => ({ name: s.name, handle: s.handle, href: s.href }));
 
   const reach = [
-    has(contact.email) && { kind: 'mail', text: contact.email, href: `mailto:${contact.email}` },
-    has(contact.phone) && { kind: 'phone', text: contact.phone, href: `tel:${contact.phone.replace(/\s/g, '')}` },
-    has(contact.location) && { kind: 'pin', text: contact.location },
+    has(contact.email) && { kind: 'mail', text: contact.email.trim(), href: `mailto:${contact.email.trim()}` },
+    has(contact.phone) && { kind: 'phone', text: contact.phone.trim(), href: `tel:${contact.phone.replace(/\s/g, '')}` },
+    has(contact.location) && { kind: 'pin', text: contact.location.trim() },
   ].filter(Boolean);
+
+  const portfolioUrl = tidy(copy.cv.portfolioUrl);
 
   return {
     name: personal.name || copy.brand.brandName,
@@ -34,11 +34,10 @@ export const buildCvModel = (site) => {
     labels: copy.cv,
     reach,
     links,
+    portfolio: portfolioUrl ? { href: portfolioUrl, text: displayUrl(portfolioUrl) } : null,
     skills: (skills.categories || []).filter((c) => c.items?.length),
-    interests: interests.items || [],
     experience: (site.experience || []).map(toExperience),
     education: (site.education || []).map(toEducation),
-    highlights,
-    work,
+    awards,
   };
 };

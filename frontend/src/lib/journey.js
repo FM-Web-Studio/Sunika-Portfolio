@@ -9,7 +9,6 @@ const entry = (record, title, org) => ({
   when: dateRange(record),
   current: isCurrent(record),
   text: record.description || '',
-  tags: record.tags || [],
 });
 
 export const toExperience = (x) => entry(x, x.role || x.company, [x.role ? x.company : '', x.type]);
