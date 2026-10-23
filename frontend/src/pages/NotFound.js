@@ -1,21 +1,26 @@
 import { Link } from 'react-router-dom';
 import { FiArrowLeft } from 'react-icons/fi';
 import Botanical from '../components/Botanical';
+import { usePageMeta } from '../hooks/usePageMeta';
 import { LOGOS } from '../lib/logos';
 import styles from './NotFound.module.css';
 
-const NotFound = () => (
-  <div className={`container ${styles.wrap}`}>
-    <div className={styles.art} aria-hidden="true">
-      <span className={styles.digit}>4</span>
-      <img src={LOGOS.mark} alt="" className={styles.fox} />
-      <span className={styles.digit}>4</span>
-      <Botanical variant="sprig" className={styles.sprig} />
+const NotFound = () => {
+  usePageMeta({ title: 'Page not found', noindex: true });
+
+  return (
+    <div className={`container ${styles.wrap}`}>
+      <div className={styles.art} aria-hidden="true">
+        <span className={styles.digit}>4</span>
+        <img src={LOGOS.mark} alt="" className={styles.fox} />
+        <span className={styles.digit}>4</span>
+        <Botanical variant="sprig" className={styles.sprig} />
+      </div>
+      <h1 className={styles.title}>Page not found</h1>
+      <p className="lede">The link may be old, or the page has moved.</p>
+      <Link to="/" className="btn btn-primary"><FiArrowLeft aria-hidden="true" /> Back to the home page</Link>
     </div>
-    <h1 className={styles.title}>Page not found</h1>
-    <p className="lede">The link may be old, or the page has moved.</p>
-    <Link to="/" className="btn btn-primary"><FiArrowLeft aria-hidden="true" /> Back to the home page</Link>
-  </div>
-);
+  );
+};
 
 export default NotFound;

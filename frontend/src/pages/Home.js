@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { FiArrowRight, FiArrowUpRight, FiMail } from 'react-icons/fi';
 import { useSite } from '../context/SiteContext';
+import { usePageMeta } from '../hooks/usePageMeta';
 import { useReveal } from '../hooks/useReveal';
 import { toExperience, toEducation } from '../lib/journey';
 import Botanical from '../components/Botanical';
@@ -66,6 +67,7 @@ const Home = () => {
   const t = copy.home;
   const [open, setOpen] = useState(null);
 
+  usePageMeta();
   useReveal([ready.projects, ready.personal, projects.length, accomplishments.length, experience.length, education.length]);
 
   const featured = projects.slice(0, FEATURED);

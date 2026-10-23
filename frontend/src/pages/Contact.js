@@ -1,5 +1,6 @@
 import { FiMail, FiPhone, FiMapPin } from 'react-icons/fi';
 import { useSite } from '../context/SiteContext';
+import { usePageMeta } from '../hooks/usePageMeta';
 import { useReveal } from '../hooks/useReveal';
 import PageHeader from '../components/PageHeader';
 import ContactForm from '../components/ContactForm';
@@ -9,6 +10,7 @@ import styles from './Contact.module.css';
 const Contact = () => {
   const { copy, contact, ready } = useSite();
   const t = copy.contactPage;
+  usePageMeta({ title: 'Contact' });
   useReveal([ready.contact]);
 
   const details = [

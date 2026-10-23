@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useSite } from '../context/SiteContext';
+import { usePageMeta } from '../hooks/usePageMeta';
 import { useReveal } from '../hooks/useReveal';
 import PageHeader from '../components/PageHeader';
 import ProjectCard from '../components/ProjectCard';
@@ -16,6 +17,7 @@ const Projects = () => {
   const shown = filter ? projects.filter((p) => p.category === filter) : projects;
   const live = open ? projects.find((p) => p.id === open.id) || open : null;
 
+  usePageMeta({ title: 'Projects' });
   useReveal([ready.projects, filter, shown.length]);
 
   return (
