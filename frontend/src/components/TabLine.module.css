@@ -1,0 +1,85 @@
+.line {
+  display: flex;
+  gap: 24px;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  box-shadow: inset 0 -1.5px 0 var(--line);
+}
+
+.line::-webkit-scrollbar {
+  display: none;
+}
+
+.line[data-more='end'] {
+  mask-image: linear-gradient(to right, #000 calc(100% - 48px), transparent);
+}
+
+.line[data-more='start'] {
+  mask-image: linear-gradient(to left, #000 calc(100% - 48px), transparent);
+}
+
+.line[data-more='both'] {
+  mask-image: linear-gradient(to right, transparent, #000 48px, #000 calc(100% - 48px), transparent);
+}
+
+.item {
+  position: relative;
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 2px 12px;
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: var(--step--1);
+  color: var(--ink-3);
+  white-space: nowrap;
+  transition: color var(--t) var(--ease);
+}
+
+.item::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 3px;
+  border-radius: 3px 3px 0 0;
+  background: var(--coral);
+  transform: scaleX(0);
+  transition: transform var(--t) var(--ease-pop);
+}
+
+.item:hover {
+  color: var(--ink);
+}
+
+.item:focus-visible {
+  outline-offset: -3px;
+}
+
+.on {
+  color: var(--ink);
+}
+
+.on::after {
+  transform: scaleX(1);
+}
+
+.count {
+  color: var(--ink-3);
+  font-size: 0.75rem;
+  font-weight: 800;
+}
+
+.on .count {
+  color: var(--coral-ink);
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--sun);
+}

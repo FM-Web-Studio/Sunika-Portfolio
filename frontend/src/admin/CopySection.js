@@ -5,6 +5,7 @@ import { saveContent } from '../firebase/content';
 import { COPY_SCHEMA, overridesOf } from '../content/copy';
 import { useDraft } from './useDraft';
 import SaveBar from './SaveBar';
+import TabLine from '../components/TabLine';
 import ui from './Admin.module.css';
 
 const CopySection = () => {
@@ -24,14 +25,13 @@ const CopySection = () => {
     <div className={ui.stack}>
       <p className={ui.notice}>Change any wording on the site. Clear a field, or press Reset, to go back to the original text.</p>
 
-      <div className={ui.tabs} role="tablist">
-        {COPY_SCHEMA.map((g) => (
-          <button key={g.key} type="button" role="tab" aria-selected={g.key === tab} className={`${ui.tab} ${g.key === tab ? ui.tabOn : ''}`} onClick={() => setTab(g.key)}>
-            {g.label}
-            {changed[g.key] > 0 && <span className={ui.tabDot} aria-label="unsaved changes" />}
-          </button>
-        ))}
-      </div>
+      <TabLine
+        tabs
+        label="Wording sections"
+        value={tab}
+        onChange={setTab}
+        items={COPY_SCHEMA.map((g) => ({ key: g.key, label: g.label, dot: changed[g.key] > 0 && 'unsaved changes' }))}
+      />
 
       <section className={ui.card}>
         <div className={`${ui.cardBody} ${ui.formGrid}`}>

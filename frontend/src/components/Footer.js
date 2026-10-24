@@ -14,12 +14,10 @@ const Footer = () => {
   return (
     <footer className={styles.footer}>
       <div className={`container ${styles.inner}`}>
-        <div className={styles.brand}>
-          <button type="button" className={styles.logo} onClick={() => scrollToTarget(0)} aria-label="Back to top">
-            <img src={LOGOS.wordmark} alt={brand.brandName} />
-          </button>
-          <p>{brand.footerTagline}</p>
-        </div>
+        <button type="button" className={styles.logo} onClick={() => scrollToTarget(0)} aria-label="Back to top">
+          <img src={LOGOS.wordmark} alt={brand.brandName} />
+        </button>
+        <p className={styles.tagline}>{brand.footerTagline}</p>
 
         <nav className={styles.nav} aria-label="Footer">
           {PAGES.map((p) => <Link key={p.to} to={p.to}>{p.label}</Link>)}
@@ -30,15 +28,15 @@ const Footer = () => {
           )}
         </nav>
 
-        <div className={styles.reach}>
-          {contact.email && <a href={`mailto:${contact.email}`}>{contact.email}</a>}
-          {contact.location && <span>{contact.location}</span>}
+        <div className={styles.social}>
           <SocialLinks socials={contact.socials} />
         </div>
       </div>
 
       <div className={`container ${styles.base}`}>
         <span>&copy; {new Date().getFullYear()} {brand.brandName}</span>
+        {contact.email && <a href={`mailto:${contact.email}`}>{contact.email}</a>}
+        {contact.location && <span>{contact.location}</span>}
         <span className={styles.motto}>{brand.motto}</span>
       </div>
     </footer>

@@ -6,27 +6,20 @@
 
 .inner {
   display: grid;
-  grid-template-columns: 1.4fr 1fr 1.2fr;
-  gap: 32px;
-  padding-top: 40px;
-  padding-bottom: 28px;
-}
-
-.brand {
-  display: grid;
-  gap: 12px;
-  align-content: start;
-  max-width: 320px;
-  color: var(--ink-2);
-  font-size: var(--step--1);
+  grid-template-columns: auto minmax(0, 1fr) auto auto;
+  grid-template-areas: 'logo tagline nav social';
+  align-items: center;
+  gap: 16px 32px;
+  padding-top: 22px;
+  padding-bottom: 18px;
 }
 
 .logo {
-  justify-self: start;
+  grid-area: logo;
 }
 
 .logo img {
-  width: 150px;
+  width: 84px;
   height: auto;
   transition: transform var(--t-slow) var(--ease-pop);
 }
@@ -35,10 +28,18 @@
   transform: rotate(-3deg) scale(1.04);
 }
 
+.tagline {
+  grid-area: tagline;
+  max-width: 34ch;
+  color: var(--ink-2);
+  font-size: var(--step--1);
+}
+
 .nav {
-  display: grid;
-  gap: 8px;
-  align-content: start;
+  grid-area: nav;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 22px;
   font-family: var(--font-display);
   font-weight: 500;
 }
@@ -47,7 +48,6 @@
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  justify-self: start;
   background: linear-gradient(var(--coral), var(--coral)) left bottom / 0 2px no-repeat;
   transition: background-size var(--t) var(--ease), color var(--t) var(--ease);
 }
@@ -57,49 +57,65 @@
   background-size: 100% 2px;
 }
 
-.reach {
-  display: grid;
-  gap: 8px;
-  align-content: start;
-  justify-items: start;
-  font-size: var(--step--1);
-  color: var(--ink-2);
-}
-
-.reach a:hover {
-  color: var(--coral-ink);
+.social {
+  grid-area: social;
 }
 
 .base {
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-between;
-  gap: 8px 24px;
-  padding-top: 16px;
-  padding-bottom: 20px;
+  align-items: center;
+  gap: 6px 20px;
+  padding-top: 12px;
+  padding-bottom: 14px;
   border-top: 1px solid var(--line);
   color: var(--ink-3);
   font-size: var(--step--1);
 }
 
+.base a:hover {
+  color: var(--coral-ink);
+}
+
 .motto {
+  margin-left: auto;
   color: var(--teal-ink);
   font-family: var(--font-display);
   letter-spacing: 0.12em;
   text-transform: uppercase;
 }
 
-@media (max-width: 760px) {
+@media (max-width: 960px) {
   .inner {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-areas:
+      'logo tagline social'
+      'nav nav nav';
+  }
+}
+
+@media (max-width: 560px) {
+  .inner {
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-areas:
+      'logo social'
+      'tagline tagline'
+      'nav nav';
+    gap: 12px 16px;
   }
 
-  .brand {
-    grid-column: 1 / -1;
+  .social {
+    justify-self: end;
   }
 
   .base {
     justify-content: center;
+    gap: 4px 14px;
     text-align: center;
+  }
+
+  .motto {
+    flex-basis: 100%;
+    margin-left: 0;
   }
 }

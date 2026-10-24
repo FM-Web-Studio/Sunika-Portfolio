@@ -5,6 +5,7 @@ import { useReveal } from '../hooks/useReveal';
 import PageHeader from '../components/PageHeader';
 import ProjectCard from '../components/ProjectCard';
 import Lightbox from '../components/Lightbox';
+import TabLine from '../components/TabLine';
 import styles from './Projects.module.css';
 
 const Projects = () => {
@@ -25,20 +26,17 @@ const Projects = () => {
       <PageHeader title={t.heading} subtitle={t.subtitle} motif="fern" />
 
       {categories.length > 1 && (
-        <div className={styles.filters} role="group" aria-label="Filter by category">
-          {['', ...categories].map((c) => (
-            <button
-              key={c || 'all'}
-              type="button"
-              className={`${styles.filter} ${filter === c ? styles.on : ''}`}
-              aria-pressed={filter === c}
-              onClick={() => setFilter(c)}
-            >
-              {c || t.allLabel}
-              <span className={styles.count}>{c ? projects.filter((p) => p.category === c).length : projects.length}</span>
-            </button>
-          ))}
-        </div>
+        <TabLine
+          className={styles.filters}
+          label="Filter by category"
+          value={filter}
+          onChange={setFilter}
+          items={['', ...categories].map((c) => ({
+            key: c,
+            label: c || t.allLabel,
+            count: c ? projects.filter((p) => p.category === c).length : projects.length,
+          }))}
+        />
       )}
 
       {failed.projects && <p className={styles.note}>{t.errorText}</p>}
