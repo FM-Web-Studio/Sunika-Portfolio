@@ -4,6 +4,9 @@ import { normaliseSocials } from '../lib/socials';
 const has = (v) => typeof v === 'string' && v.trim() !== '';
 const tidy = (v) => (has(v) ? v.trim().replace(/[.\s]+$/, '') : '');
 
+// Ongoing entries lead; otherwise keep the order set in the admin. Dates are free text, so no date sort.
+const currentFirst = (items) => [...items].sort((a, b) => Number(b.current) - Number(a.current));
+
 export const displayUrl = (url) => tidy(url).replace(/^https?:\/\//i, '').replace(/\/$/, '');
 
 export const buildCvModel = (site) => {
@@ -36,8 +39,8 @@ export const buildCvModel = (site) => {
     links,
     portfolio: portfolioUrl ? { href: portfolioUrl, text: displayUrl(portfolioUrl) } : null,
     skills: (skills.categories || []).filter((c) => c.items?.length),
-    experience: (site.experience || []).map(toExperience),
-    education: (site.education || []).map(toEducation),
+    experience: currentFirst((site.experience || []).map(toExperience)),
+    education: currentFirst((site.education || []).map(toEducation)),
     awards,
   };
 };

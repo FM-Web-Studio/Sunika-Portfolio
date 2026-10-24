@@ -283,6 +283,21 @@ const CvDocument = ({ cv, photo, logo }) => {
           </View>
 
           <View style={s.side}>
+            {cv.awards.length > 0 && (
+              <View style={s.section}>
+                <Heading color={C.sun}>{labels.highlights}</Heading>
+                {cv.awards.map((a) => (
+                  <View key={a.id} style={s.award} wrap={false}>
+                    <View style={s.awardStar}><Star /></View>
+                    <View style={s.awardBody}>
+                      <Text style={s.awardTitle}>{a.title}</Text>
+                      {a.meta ? <Text style={s.awardMeta}>{a.meta}</Text> : null}
+                    </View>
+                  </View>
+                ))}
+              </View>
+            )}
+
             {(cv.portfolio || cv.links.length > 0) && (
               <View style={s.folioCard} wrap={false}>
                 {cv.portfolio && (
@@ -322,21 +337,6 @@ const CvDocument = ({ cv, photo, logo }) => {
                           <Text style={s.skillText}>{item}</Text>
                         </View>
                       ))}
-                    </View>
-                  </View>
-                ))}
-              </View>
-            )}
-
-            {cv.awards.length > 0 && (
-              <View style={s.section}>
-                <Heading color={C.sun}>{labels.highlights}</Heading>
-                {cv.awards.map((a) => (
-                  <View key={a.id} style={s.award} wrap={false}>
-                    <View style={s.awardStar}><Star /></View>
-                    <View style={s.awardBody}>
-                      <Text style={s.awardTitle}>{a.title}</Text>
-                      {a.meta ? <Text style={s.awardMeta}>{a.meta}</Text> : null}
                     </View>
                   </View>
                 ))}

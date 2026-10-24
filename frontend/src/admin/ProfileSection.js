@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { FiUser, FiUploadCloud } from 'react-icons/fi';
 import { useSite } from '../context/SiteContext';
+import { useToast } from '../components/Toast';
+import { tooLarge, tooLargeMessage } from '../lib/uploads';
 import { getCvPhoto, savePersonal } from '../firebase/profile';
 import { makeCvPhoto } from './pdfImages';
 import { useDraft } from './useDraft';
@@ -9,6 +11,7 @@ import ui from './Admin.module.css';
 
 const ProfileSection = () => {
   const { personal } = useSite();
+  const { notify } = useToast();
   const [photo, setPhoto] = useState(null);
   const [preview, setPreview] = useState('');
   const [onCv, setOnCv] = useState(true);
@@ -31,6 +34,7 @@ const ProfileSection = () => {
 
   const pick = (file) => {
     if (!file) return;
+    if (tooLarge(file)) { notify('error', tooLargeMessage(file)); return; }
     setPhoto(file);
     setPreview(URL.createObjectURL(file));
     update({ photo: file.name + file.size });

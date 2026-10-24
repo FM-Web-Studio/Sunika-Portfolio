@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { FiArrowUp, FiEdit2, FiPlus, FiStar, FiTrash2 } from 'react-icons/fi';
 import { useSite } from '../context/SiteContext';
 import { useToast } from '../components/Toast';
+import { saveErrorMessage } from '../lib/uploads';
 import Modal from '../components/Modal';
 import { createRecord, updateRecord, deleteRecord, patchRecord, saveOrder } from '../firebase/records';
 import { RECORDS } from './schemas';
@@ -40,7 +41,7 @@ const RecordsSection = ({ kind }) => {
       setEditing(null);
     } catch (error) {
       console.error(error);
-      notify('error', 'That did not save. Check your connection and try again.');
+      notify('error', saveErrorMessage(error));
     } finally {
       setSaving(false);
     }

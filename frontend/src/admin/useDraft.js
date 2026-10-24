@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useToast } from '../components/Toast';
+import { saveErrorMessage } from '../lib/uploads';
 
 export const useDraft = (source, save) => {
   const { notify } = useToast();
@@ -30,7 +31,7 @@ export const useDraft = (source, save) => {
       notify('success', 'Saved. The site is updated.');
     } catch (error) {
       console.error(error);
-      notify('error', 'That did not save. Check your connection and try again.');
+      notify('error', saveErrorMessage(error));
     } finally {
       setSaving(false);
     }

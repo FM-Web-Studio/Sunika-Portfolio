@@ -1,3 +1,5 @@
+import { tooLarge, tooLargeMessage } from '../lib/uploads';
+
 export const RECORDS = {
   projects: {
     noun: 'project',
@@ -91,10 +93,18 @@ export const toPayload = (fields, values) => {
   return out;
 };
 
+const newFiles = (f, v) => {
+  if (f.type === 'gallery') return v.map((i) => i.file);
+  if (f.type === 'image') return [v.file];
+  return [];
+};
+
 export const validate = (fields, values) => {
   for (const f of fields) {
-    if (!f.required) continue;
     const v = values[f.key];
+    const big = newFiles(f, v).find(tooLarge);
+    if (big) return tooLargeMessage(big);
+    if (!f.required) continue;
     if (f.type === 'gallery' ? !v.length : !String(v).trim()) {
       return f.type === 'gallery' ? 'Please add at least one image.' : `${f.label} is required.`;
     }

@@ -25,6 +25,15 @@ describe('buildCvModel', () => {
     expect(m.education[0]).toMatchObject({ title: 'BA', org: 'Open Window, Design', when: '2022 - 2025', current: false });
   });
 
+  it('puts ongoing entries first and otherwise keeps the admin order', () => {
+    const experience = [
+      { id: 'week', company: 'Bigbox', start: '22 June 2026', end: '26 June 2026' },
+      { id: 'now', company: 'Gallery', start: '2026-05', end: '' },
+      { id: 'old', company: 'Shop', start: '2024', end: '2025' },
+    ];
+    expect(buildCvModel(site({ experience })).experience.map((x) => x.id)).toEqual(['now', 'week', 'old']);
+  });
+
   it('lists awards briefly, featured first, without trailing full stops or descriptions', () => {
     const m = buildCvModel(site());
     expect(m.awards[0]).toEqual({ id: 'b', title: 'Second place in packaging', meta: 'Gold Pack Awards, 2026' });
