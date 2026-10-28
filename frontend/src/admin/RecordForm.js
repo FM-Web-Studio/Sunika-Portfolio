@@ -94,7 +94,7 @@ const Dates = ({ value, onChange }) => {
   );
 };
 
-const RecordForm = ({ fields, record, suggestions = {}, onSubmit, onCancel, saving }) => {
+const RecordForm = ({ fields, record, suggestions = {}, onSubmit, saving }) => {
   const [values, setValues] = useState(() => initialValues(fields, record));
   const [error, setError] = useState('');
   const set = (key) => (value) => setValues((v) => ({ ...v, [key]: value }));
@@ -140,7 +140,6 @@ const RecordForm = ({ fields, record, suggestions = {}, onSubmit, onCancel, savi
       {error && <p className={styles.error} role="alert">{error}</p>}
 
       <div className={styles.actions}>
-        <button type="button" className="btn btn-danger" onClick={onCancel} disabled={saving}>Cancel</button>
         <button type="submit" className="btn btn-confirm" disabled={saving}>{saving ? 'Saving' : record ? 'Save changes' : 'Add'}</button>
       </div>
     </form>

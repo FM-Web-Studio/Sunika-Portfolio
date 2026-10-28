@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { useToast } from '../components/Toast';
 import { saveErrorMessage } from '../lib/uploads';
 
@@ -7,14 +7,6 @@ export const useDraft = (source, save) => {
   const [draft, setDraft] = useState(null);
   const [saving, setSaving] = useState(false);
   const value = draft ?? source;
-  const dirty = draft !== null && JSON.stringify(draft) !== JSON.stringify(source);
-
-  useEffect(() => {
-    if (!dirty) return undefined;
-    const warn = (e) => { e.preventDefault(); e.returnValue = ''; };
-    window.addEventListener('beforeunload', warn);
-    return () => window.removeEventListener('beforeunload', warn);
-  }, [dirty]);
 
   const update = useCallback((change) => {
     setDraft((d) => {
@@ -37,5 +29,5 @@ export const useDraft = (source, save) => {
     }
   };
 
-  return { value, update, dirty, saving, commit, discard: () => setDraft(null) };
+  return { value, update, saving, commit };
 };

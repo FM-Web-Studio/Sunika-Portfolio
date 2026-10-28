@@ -52,7 +52,6 @@ const TabLine = ({ items, value, onChange, label, tabs = false, className = '' }
           >
             {item.label}
             {item.count !== undefined && <span className={styles.count}>{item.count}</span>}
-            {item.dot && <><span className={styles.dot} aria-hidden="true" /><span className="sr-only">{item.dot}</span></>}
           </button>
         );
       })}

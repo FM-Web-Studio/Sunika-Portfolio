@@ -129,7 +129,6 @@ const RecordsSection = ({ kind }) => {
             record={editing.record}
             suggestions={suggestions}
             onSubmit={submit}
-            onCancel={close}
             saving={saving}
           />
         )}

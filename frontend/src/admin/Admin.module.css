@@ -398,31 +398,12 @@
   bottom: 12px;
   z-index: 5;
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 10px 10px 10px 18px;
+  justify-content: flex-end;
+  padding: 10px;
   border-radius: var(--r-lg);
   border: 1px solid var(--line-strong);
   background: var(--card);
   box-shadow: var(--shadow-md);
-  color: var(--ink-3);
-  font-weight: 700;
-  font-size: var(--step--1);
-  transition: border-color var(--t) var(--ease), background-color var(--t) var(--ease);
-}
-
-.saveBarDirty {
-  border-color: var(--sun);
-  background: var(--sun-soft);
-  color: var(--sun-ink);
-  animation: nudge 520ms var(--ease-pop);
-}
-
-.saveTools {
-  display: flex;
-  gap: 8px;
 }
 
 .photoRow {
@@ -628,26 +609,6 @@
   color: var(--coral-ink);
 }
 
-.copyLabel {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-}
-
-.reset {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  color: var(--coral-ink);
-  font-size: 0.75rem;
-  font-weight: 800;
-}
-
-.reset:hover {
-  text-decoration: underline;
-}
-
 .message {
   border-bottom: 1px solid var(--line);
 }
@@ -827,10 +788,6 @@
 
 .scrim {
   display: none;
-}
-
-@keyframes nudge {
-  30% { transform: translateY(-4px); }
 }
 
 @media (max-width: 900px) {

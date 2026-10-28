@@ -22,7 +22,7 @@ const ProfileSection = () => {
     getCvPhoto().then((data) => setOnCv(!!data)).catch(() => setOnCv(true));
   }, []);
 
-  const source = { name: personal.name, title: personal.title, bio: personal.bio, photo: '' };
+  const source = { name: personal.name, title: personal.title, bio: personal.bio };
   const draft = useDraft(source, async (v) => {
     const cvPhoto = photo ? await makeCvPhoto(photo) : '';
     await savePersonal(v, photo, personal, cvPhoto);
@@ -37,10 +37,7 @@ const ProfileSection = () => {
     if (tooLarge(file)) { notify('error', tooLargeMessage(file)); return; }
     setPhoto(file);
     setPreview(URL.createObjectURL(file));
-    update({ photo: file.name + file.size });
   };
-
-  const discard = () => { draft.discard(); setPhoto(null); setPreview(''); };
 
   return (
     <div className={ui.stack}>
@@ -78,7 +75,7 @@ const ProfileSection = () => {
         </div>
       </section>
 
-      <SaveBar draft={{ ...draft, discard }} label="Save profile" />
+      <SaveBar draft={draft} label="Save profile" />
     </div>
   );
 };
