@@ -56,18 +56,17 @@ const s = StyleSheet.create({
   band: { position: 'relative', flexDirection: 'row', alignItems: 'center', paddingTop: '11mm', paddingBottom: '9mm', paddingHorizontal: GUTTER, backgroundColor: C.coralWash, overflow: 'hidden' },
   bandRule: { height: 3, backgroundColor: C.coral },
   bandCircle: { position: 'absolute', right: '-16mm', bottom: '-30mm', width: '70mm', height: '70mm', borderRadius: '35mm', backgroundColor: C.coralTint },
-  bandFern: { position: 'absolute', right: '30mm', bottom: '-6mm', width: '34mm', height: '34mm' },
   photoRing: { width: '31mm', height: '31mm', borderRadius: '15.5mm', padding: 2.5, backgroundColor: C.white, borderWidth: 1.5, borderColor: C.coral },
   photo: { width: '100%', height: '100%', borderRadius: '15mm', objectFit: 'cover' },
   monogram: { width: '100%', height: '100%', borderRadius: '15mm', backgroundColor: C.coralTint, alignItems: 'center', justifyContent: 'center' },
   monogramText: { fontFamily: 'Fredoka', fontWeight: 600, fontSize: 26, color: C.coral },
-  who: { flex: 1, marginLeft: '7mm', paddingRight: '30mm' },
+  who: { flex: 1, marginLeft: '7mm', paddingRight: '42mm' },
   name: { fontFamily: 'Fredoka', fontWeight: 600, fontSize: 27, lineHeight: 1.05, color: C.ink },
   title: { fontFamily: 'Fredoka', fontWeight: 500, fontSize: 12.5, lineHeight: 1.2, color: C.coralInk, marginTop: '1.6mm' },
   reach: { flexDirection: 'row', flexWrap: 'wrap', marginTop: '3.4mm' },
   reachItem: { flexDirection: 'row', alignItems: 'center', marginRight: '5mm', marginTop: '1mm' },
   reachText: { fontSize: 8.3, color: C.ink2, textDecoration: 'none' },
-  logo: { position: 'absolute', top: '8mm', right: GUTTER, width: '27mm', maxHeight: '22mm', objectFit: 'contain' },
+  logo: { position: 'absolute', top: '6mm', right: GUTTER, width: '38mm', maxHeight: '38mm', objectFit: 'contain' },
 
   body: { flexDirection: 'row', paddingHorizontal: GUTTER, paddingTop: '7mm' },
   main: { flex: 1, marginRight: '8mm' },
@@ -124,23 +123,6 @@ const s = StyleSheet.create({
   footerMotto: { fontSize: 7, fontWeight: 700, letterSpacing: 1.4, textTransform: 'uppercase', color: C.tealInk },
   footerUrl: { fontSize: 7.2, color: C.ink3, textDecoration: 'none' },
 });
-
-const LEAF = 'M0 0 C -7 -10 -7 -22 0 -32 C 7 -22 7 -10 0 0 Z';
-
-const Fern = () => (
-  <Svg viewBox="0 0 100 100" style={s.bandFern}>
-    <G stroke={C.coral} strokeWidth={1.6} fill="none" strokeLinecap="round" opacity={0.45}>
-      <Path d="M50 98 C 50 74 44 62 50 44 C 55 30 50 16 50 6" />
-      <G transform="translate(50 76) rotate(40)"><Path d={LEAF} /></G>
-      <G transform="translate(50 76) rotate(-40)"><Path d={LEAF} /></G>
-      <G transform="translate(50 54) rotate(32)"><Path d={LEAF} /></G>
-      <G transform="translate(50 54) rotate(-32)"><Path d={LEAF} /></G>
-      <G transform="translate(50 32) rotate(22)"><Path d={LEAF} /></G>
-      <G transform="translate(50 32) rotate(-22)"><Path d={LEAF} /></G>
-      <Circle cx={50} cy={7} r={3.4} fill={C.coral} />
-    </G>
-  </Svg>
-);
 
 const ICONS = {
   mail: (
@@ -226,7 +208,6 @@ const CvDocument = ({ cv, photo, logo }) => {
       <Page size="A4" style={s.page}>
         <View style={s.band}>
           <View style={s.bandCircle} />
-          <Fern />
           <View style={s.photoRing}>
             {photo
               ? <Image src={photo} style={s.photo} />
