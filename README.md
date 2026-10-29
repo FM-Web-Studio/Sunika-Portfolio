@@ -84,17 +84,21 @@ npm run build    # -> frontend/build
 and mirrored as GitHub Actions secrets. The values end up in the client bundle and
 are not secret; the rules do the real enforcement.
 
+`FIREBASE_APPCHECK_SITE_KEY` (a reCAPTCHA v3 site key) turns on Firebase App Check.
+Leave it unset and App Check stays off. For local work with enforcement on, also set
+`FIREBASE_APPCHECK_DEBUG_TOKEN` to a debug token registered in the console.
+
 ```
 frontend/src
   admin/      the admin: sections, record schemas, forms
   components/ shared UI: nav, footer, cards, lightbox, modal, toasts
-  content/    copy.js, every visitor-facing string with its default
+  content/    copy.js, every visitor-facing string with its default; legal.js, privacy and terms
   context/    SiteContext, one live subscription per collection for the whole app
   cv/         the CV model (tested) and the PDF layout (lazy loaded)
   firebase/   data access, one module per concern
   hooks/      theme and motion preferences, reveal on scroll, momentum scroll
   lib/        small pure helpers, all unit tested
-  pages/      Home, Projects, Contact, NotFound
+  pages/      Home, Projects, Contact, Legal (privacy and terms), NotFound
 ```
 
 Animations respect the visitor's reduced motion setting, and the lightning
@@ -121,3 +125,5 @@ firebase deploy --only functions --project sunika-project
 - The Blaze plan, for the contact form email function.
 - Anonymous sign-in enabled. This site does not use it, but the gallery's ratings
   and likes do, and the setting is project wide.
+- Firestore TTL policies on `portfolioMessages.expireAt` and `galleryMessages.expireAt`.
+  Contact messages carry an `expireAt` 12 months out, which the privacy policies promise.

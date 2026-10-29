@@ -51,6 +51,7 @@ export const COPY_SCHEMA = [
       field('formLabel', 'Form: title', 'Send a message'),
       field('sendLabel', 'Form: button', 'Send'),
       field('sentText', 'Form: after sending', 'Thank you, your message has been sent.'),
+      field('privacyNote', 'Form: privacy note (the policy link follows it)', 'I use what you send only to reply, and it is deleted after 12 months.'),
       field('socialLabel', 'Links: title', 'Online'),
     ],
   },

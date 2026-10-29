@@ -110,9 +110,12 @@ const makeHandler = (site) => async (event) => {
       text: buildText(payload),
       html: buildHtml(payload),
     });
-    logger.info('Notification sent', { label: site.label, id: event.params.id, from: payload.email });
+    logger.info('Notification sent', { label: site.label, id: event.params.id });
   } catch (err) {
-    logger.error('Failed to send notification', { label: site.label, id: event.params.id, error: err && err.message });
+    // SMTP error text can quote addresses, so only the codes are logged.
+    logger.error('Failed to send notification', {
+      label: site.label, id: event.params.id, code: err && err.code, responseCode: err && err.responseCode,
+    });
   }
 };
 

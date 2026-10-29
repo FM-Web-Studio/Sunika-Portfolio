@@ -3,24 +3,29 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
+    // Keep in sync with ADMIN_EMAILS in both frontends and with storage.rules.
     function isAdmin() {
       return request.auth != null
              && request.auth.token.email_verified == true
-             && request.auth.token.email in [
+             && request.auth.token.email.lower() in [
                'francoismeiring0203@gmail.com',
                'lombardsunika@gmail.com'
              ];
     }
 
+    // A contact form message, exactly as both frontends write it.
+    // expireAt feeds the TTL policy that deletes it; the window allows for a visitor's clock being off.
     function isContactMessage() {
-      return request.resource.data.keys().hasOnly(['name', 'email', 'message', 'createdAt'])
-             && request.resource.data.keys().hasAll(['name', 'email', 'message', 'createdAt'])
-             && request.resource.data.name is string
-             && request.resource.data.name.size() <= 200
-             && request.resource.data.email is string
-             && request.resource.data.email.size() <= 320
-             && request.resource.data.message is string
-             && request.resource.data.message.size() <= 5000;
+      let d = request.resource.data;
+      return d.keys().hasOnly(['name', 'email', 'message', 'createdAt', 'expireAt'])
+             && d.keys().hasAll(['name', 'email', 'message', 'createdAt', 'expireAt'])
+             && d.name is string && d.name.size() > 0 && d.name.size() <= 200
+             && d.email is string && d.email.size() <= 320 && d.email.matches('^[^ @]+@[^ @]+[.][^ @]+$')
+             && d.message is string && d.message.size() > 0 && d.message.size() <= 5000
+             && d.createdAt == request.time
+             && d.expireAt is timestamp
+             && d.expireAt > request.time + duration.value(300, 'd')
+             && d.expireAt < request.time + duration.value(400, 'd');
     }
 
     function isVisitor() {
@@ -35,6 +40,12 @@ service cloud.firestore {
       return res.data.get(field, 0);
     }
 
+    // A vote document may only be added or removed together with the matching counter on its artwork.
+    function countMovesBy(artworkId, field, step) {
+      return getAfter(/databases/$(database)/documents/artworks/$(artworkId)).data.get(field, 0)
+             == get(/databases/$(database)/documents/artworks/$(artworkId)).data.get(field, 0) + step;
+    }
+
     match /artworks/{artworkId} {
       allow read: if true;
 
@@ -44,6 +55,8 @@ service cloud.firestore {
           request.resource.data.diff(resource.data).affectedKeys()
             .hasOnly(['ratingSum', 'ratingCount'])
           && isVisitor()
+          && request.resource.data.ratingCount is int
+          && request.resource.data.ratingSum is int
           && request.resource.data.ratingCount == oldCount(resource, 'ratingCount') + 1
           && request.resource.data.ratingSum >= oldCount(resource, 'ratingSum') + 1
           && request.resource.data.ratingSum <= oldCount(resource, 'ratingSum') + 5
@@ -54,15 +67,16 @@ service cloud.firestore {
         || (
           request.resource.data.diff(resource.data).affectedKeys().hasOnly(['likeCount'])
           && isVisitor()
+          && request.resource.data.likeCount is int
           && request.resource.data.likeCount >= 0
           && (
             (request.resource.data.likeCount == oldCount(resource, 'likeCount') + 1
              && !exists(/databases/$(database)/documents/artworks/$(artworkId)/likers/$(request.auth.uid))
-             && getAfter(/databases/$(database)/documents/artworks/$(artworkId)/likers/$(request.auth.uid)) != null)
+             && existsAfter(/databases/$(database)/documents/artworks/$(artworkId)/likers/$(request.auth.uid)))
             ||
             (request.resource.data.likeCount == oldCount(resource, 'likeCount') - 1
              && exists(/databases/$(database)/documents/artworks/$(artworkId)/likers/$(request.auth.uid))
-             && getAfter(/databases/$(database)/documents/artworks/$(artworkId)/likers/$(request.auth.uid)) == null)
+             && !existsAfter(/databases/$(database)/documents/artworks/$(artworkId)/likers/$(request.auth.uid)))
           )
         );
 
@@ -73,7 +87,8 @@ service cloud.firestore {
                       && request.resource.data.value is int
                       && request.resource.data.value >= 1
                       && request.resource.data.value <= 5
-                      && request.resource.data.createdAt == request.time;
+                      && request.resource.data.createdAt == request.time
+                      && countMovesBy(artworkId, 'ratingCount', 1);
         allow update: if false;
         allow delete: if isAdmin();
       }
@@ -82,9 +97,10 @@ service cloud.firestore {
         allow read:   if ownVote(uid) || isAdmin();
         allow create: if ownVote(uid)
                       && request.resource.data.keys().hasOnly(['createdAt'])
-                      && request.resource.data.createdAt == request.time;
+                      && request.resource.data.createdAt == request.time
+                      && countMovesBy(artworkId, 'likeCount', 1);
         allow update: if false;
-        allow delete: if ownVote(uid) || isAdmin();
+        allow delete: if isAdmin() || (ownVote(uid) && countMovesBy(artworkId, 'likeCount', -1));
       }
     }
 

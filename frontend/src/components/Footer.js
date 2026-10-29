@@ -37,6 +37,8 @@ const Footer = () => {
         <span>&copy; {new Date().getFullYear()} {brand.brandName}</span>
         {contact.email && <a href={`mailto:${contact.email}`}>{contact.email}</a>}
         {contact.location && <span>{contact.location}</span>}
+        <Link to="/privacy">Privacy</Link>
+        <Link to="/terms">Terms</Link>
         <span className={styles.motto}>{brand.motto}</span>
       </div>
     </footer>

@@ -43,3 +43,23 @@
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+.trap {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+
+.privacy {
+  color: var(--ink-3);
+  font-size: var(--step--1);
+}
+
+.privacy a {
+  color: var(--coral-ink);
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}

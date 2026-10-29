@@ -1,4 +1,5 @@
 import { initializeApp } from 'firebase/app';
+import { initializeAppCheck, ReCaptchaV3Provider } from 'firebase/app-check';
 import { getFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 import { getAuth, GoogleAuthProvider } from 'firebase/auth';
@@ -14,6 +15,17 @@ const app = initializeApp({
   appId: env.FIREBASE_APP_ID,
   measurementId: env.FIREBASE_MEASUREMENT_ID,
 });
+
+// App Check stays off until a reCAPTCHA v3 site key is set, and must start before Firestore, Storage or Auth.
+export const appCheckOn = !!env.FIREBASE_APPCHECK_SITE_KEY;
+
+if (appCheckOn) {
+  if (env.DEV && env.FIREBASE_APPCHECK_DEBUG_TOKEN) self.FIREBASE_APPCHECK_DEBUG_TOKEN = env.FIREBASE_APPCHECK_DEBUG_TOKEN;
+  initializeAppCheck(app, {
+    provider: new ReCaptchaV3Provider(env.FIREBASE_APPCHECK_SITE_KEY),
+    isTokenAutoRefreshEnabled: true,
+  });
+}
 
 export const db = getFirestore(app);
 export const storage = getStorage(app);
