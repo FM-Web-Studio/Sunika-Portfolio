@@ -145,7 +145,7 @@ const KEEP_DAYS = 365;
 const FIELD_MAX = { name: 200, email: 320, message: 5000 };
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-// Which inbox each site's form writes to. The gallery still writes directly until it moves to this function.
+// Which inbox each site's form writes to.
 const INBOXES = { portfolio: 'portfolioMessages', gallery: 'galleryMessages' };
 
 // A one-way scramble, so no address or IP is ever stored as it is.

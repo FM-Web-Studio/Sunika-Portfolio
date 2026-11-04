@@ -13,21 +13,6 @@ service cloud.firestore {
              ];
     }
 
-    // A contact form message, exactly as the gallery writes it.
-    // expireAt feeds the TTL policy that deletes it; the window allows for a visitor's clock being off.
-    function isContactMessage() {
-      let d = request.resource.data;
-      return d.keys().hasOnly(['name', 'email', 'message', 'createdAt', 'expireAt'])
-             && d.keys().hasAll(['name', 'email', 'message', 'createdAt', 'expireAt'])
-             && d.name is string && d.name.size() > 0 && d.name.size() <= 200
-             && d.email is string && d.email.size() <= 320 && d.email.matches('^[^ @]+@[^ @]+[.][^ @]+$')
-             && d.message is string && d.message.size() > 0 && d.message.size() <= 5000
-             && d.createdAt == request.time
-             && d.expireAt is timestamp
-             && d.expireAt > request.time + duration.value(300, 'd')
-             && d.expireAt < request.time + duration.value(400, 'd');
-    }
-
     function isVisitor() {
       return request.auth != null;
     }
@@ -118,7 +103,7 @@ service cloud.firestore {
     match /experience/{id} { allow read: if true; allow write: if isAdmin(); }
     match /profile/{doc}   { allow read: if true; allow write: if isAdmin(); }
 
-    // The portfolio form posts through the sendMessage function, which checks for spam and
+    // Both contact forms post through the sendMessage function, which checks for spam and
     // writes with admin rights, so nobody may add a message here directly.
     match /portfolioMessages/{doc} {
       allow create: if false;
@@ -126,7 +111,7 @@ service cloud.firestore {
     }
 
     match /galleryMessages/{doc} {
-      allow create: if isContactMessage();
+      allow create: if false;
       allow read, update, delete: if isAdmin();
     }
 

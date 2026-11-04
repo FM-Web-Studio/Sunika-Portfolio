@@ -60,8 +60,8 @@ jobs:
           cd ..
           firebase deploy --only functions --project sunika-project
 
-      # The rules stop the portfolio writing messages directly, so the sendMessage
-      # function has to be live first or the contact form breaks.
+      # The rules stop both sites writing messages directly, so the sendMessage
+      # function has to be live first or the contact forms break.
       - name: Check the contact form function is deployed
         run: |
           # An empty call is treated as a bot and answered with a quiet success, so nothing is saved.

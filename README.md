@@ -120,8 +120,9 @@ button in the nav turns them off for anyone who prefers a still page.
 
 Every push to `main` runs the tests, builds, and deploys hosting plus the Firestore
 and Storage rules. Before deploying, it checks that the `sendMessage` function answers:
-the rules stop the portfolio writing messages directly, so without the function the
-contact form would break. If the check fails, deploy functions first.
+the rules stop both sites writing messages directly, so without the function the
+contact forms would break. Deploy the gallery's new hosting before pushing rules here,
+or the live gallery form (which used to write directly) stops working. If the check fails, deploy functions first.
 
 Cloud Functions are opt in: Actions, Deploy to Firebase Hosting, Run workflow,
 tick `deploy_functions`. The CI service account currently lacks the IAM roles to
