@@ -1,7 +1,14 @@
 const { onDocumentCreated } = require('firebase-functions/v2/firestore');
+const { onCall, HttpsError } = require('firebase-functions/v2/https');
 const { defineString, defineSecret } = require('firebase-functions/params');
 const logger = require('firebase-functions/logger');
 const nodemailer = require('nodemailer');
+const crypto = require('node:crypto');
+const { initializeApp } = require('firebase-admin/app');
+const { getFirestore, FieldValue, Timestamp } = require('firebase-admin/firestore');
+
+initializeApp();
+const db = getFirestore();
 
 const REGION = 'europe-west1';
 
@@ -123,3 +130,106 @@ const opts = (document) => ({ document, region: REGION, secrets: [SMTP_PASSWORD]
 
 exports.onPortfolioMessage = onDocumentCreated(opts('portfolioMessages/{id}'), makeHandler(SITES.portfolioMessages));
 exports.onGalleryMessage = onDocumentCreated(opts('galleryMessages/{id}'), makeHandler(SITES.galleryMessages));
+
+// Spam limits for the contact forms. A sender is one network address.
+const LIMITS = {
+  perSenderShort: { count: 2, ms: 10 * 60 * 1000 },
+  perSenderDay: 5,
+  perEmailDay: 5,
+  everyoneDay: 40,
+  minFillMs: 3000,
+};
+const DAY = 24 * 60 * 60 * 1000;
+// Keep in step with MESSAGE_RETENTION_DAYS in frontend/src/content/legal.js and the privacy policy.
+const KEEP_DAYS = 365;
+const FIELD_MAX = { name: 200, email: 320, message: 5000 };
+const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+// Which inbox each site's form writes to. The gallery still writes directly until it moves to this function.
+const INBOXES = { portfolio: 'portfolioMessages', gallery: 'galleryMessages' };
+
+// A one-way scramble, so no address or IP is ever stored as it is.
+const scramble = (value) => crypto.createHash('sha256').update(`sunika:${value}`).digest('hex').slice(0, 40);
+
+const clientIp = (req) => String(req?.headers?.['x-forwarded-for'] ?? req?.ip ?? 'unknown').split(',')[0].trim();
+
+const text = (v, max) => (typeof v === 'string' ? v.trim().slice(0, max) : '');
+
+// Deletes a few spent rate records each time, so the collection never grows.
+const sweepLimits = async () => {
+  const old = await db.collection('rateLimits').where('expireAt', '<', Timestamp.now()).limit(25).get();
+  if (old.empty) return;
+  const batch = db.batch();
+  old.docs.forEach((d) => batch.delete(d.ref));
+  await batch.commit();
+};
+
+// The contact forms post here. It checks for bots and limits, then saves the message,
+// which fires the matching email trigger above.
+exports.sendMessage = onCall(
+  {
+    region: REGION,
+    maxInstances: 5,
+    cors: [/^https:\/\/sunika-studio(-gallery)?\.(web\.app|firebaseapp\.com)$/, /^https?:\/\/localhost(:\d+)?$/],
+  },
+  async (request) => {
+    const d = request.data ?? {};
+    const site = Object.hasOwn(INBOXES, d.site) ? d.site : null;
+    const name = text(d.name, FIELD_MAX.name);
+    const email = text(d.email, FIELD_MAX.email);
+    const message = text(d.message, FIELD_MAX.message);
+
+    // Bots fill the hidden field or post instantly. They get a quiet fake success.
+    if (text(d.website, 200) || !(Number(d.elapsed) >= LIMITS.minFillMs)) {
+      logger.info('Contact form: dropped a likely bot', { site });
+      return { ok: true };
+    }
+    if (!site || !name || !message || !EMAIL.test(email)) {
+      throw new HttpsError('invalid-argument', 'The name, email or message is missing or not valid.');
+    }
+
+    const now = Date.now();
+    const sender = scramble(clientIp(request.rawRequest));
+    const inbox = scramble(email.toLowerCase());
+    const fingerprint = scramble(`${email.toLowerCase()}|${message.toLowerCase()}`);
+    const day = new Date(now).toISOString().slice(0, 10);
+    const refs = {
+      sender: db.doc(`rateLimits/s-${sender}`),
+      inbox: db.doc(`rateLimits/e-${inbox}`),
+      repeat: db.doc(`rateLimits/m-${fingerprint}`),
+      everyone: db.doc(`rateLimits/day-${site}-${day}`),
+    };
+
+    const verdict = await db.runTransaction(async (tx) => {
+      const [s, e, m, all] = await Promise.all(Object.values(refs).map((r) => tx.get(r)));
+      if (m.exists) return 'repeat';
+      const sentBy = (s.get('times') ?? []).filter((t) => now - t < DAY);
+      const recent = sentBy.filter((t) => now - t < LIMITS.perSenderShort.ms);
+      const sentTo = (e.get('times') ?? []).filter((t) => now - t < DAY);
+      if (recent.length >= LIMITS.perSenderShort.count || sentBy.length >= LIMITS.perSenderDay || sentTo.length >= LIMITS.perEmailDay) return 'sender';
+      if ((all.get('count') ?? 0) >= LIMITS.everyoneDay) return 'everyone';
+
+      const expireAt = Timestamp.fromMillis(now + DAY);
+      tx.set(refs.sender, { times: [...sentBy, now], expireAt });
+      tx.set(refs.inbox, { times: [...sentTo, now], expireAt });
+      tx.set(refs.repeat, { expireAt });
+      tx.set(refs.everyone, { count: FieldValue.increment(1), expireAt: Timestamp.fromMillis(now + 2 * DAY) }, { merge: true });
+      tx.create(db.collection(INBOXES[site]).doc(), {
+        name, email, message,
+        createdAt: FieldValue.serverTimestamp(),
+        expireAt: Timestamp.fromMillis(now + KEEP_DAYS * DAY),
+      });
+      return 'sent';
+    });
+
+    sweepLimits().catch((err) => logger.warn('Rate limit sweep failed', { error: err?.message }));
+
+    // The same message twice is treated as sent, so a double click never shows an error.
+    if (verdict === 'repeat') return { ok: true };
+    if (verdict !== 'sent') {
+      logger.info('Contact form: limit reached', { site, verdict });
+      throw new HttpsError('resource-exhausted', verdict === 'everyone' ? 'everyone' : 'sender');
+    }
+    return { ok: true };
+  },
+);

@@ -4,11 +4,13 @@
       "target": "portfolio",
       "public": "frontend/build",
       "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+      "trailingSlash": false,
       "rewrites": [
-        {
-          "source": "**",
-          "destination": "/index.html"
-        }
+        { "source": "/projects", "destination": "/projects.html" },
+        { "source": "/contact", "destination": "/contact.html" },
+        { "source": "/privacy", "destination": "/privacy.html" },
+        { "source": "/terms", "destination": "/terms.html" },
+        { "source": "/admin", "destination": "/admin.html" }
       ],
       "headers": [
         {
@@ -27,6 +29,14 @@
             { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
             { "key": "Permissions-Policy", "value": "camera=(), microphone=(), geolocation=(), payment=(), usb=()" }
           ]
+        },
+        {
+          "source": "/admin",
+          "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow" }]
+        },
+        {
+          "source": "/admin.html",
+          "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow" }]
         }
       ]
     }

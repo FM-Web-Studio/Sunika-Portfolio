@@ -1,6 +1,6 @@
 {
   "name": "sunika-functions",
-  "description": "Cloud Functions for the Sunika sites, emails on new contact messages",
+  "description": "Cloud Functions for the Sunika sites: the spam-checked contact form and the emails on new messages",
   "type": "commonjs",
   "main": "index.js",
   "private": true,
@@ -13,6 +13,7 @@
     "logs": "firebase functions:log"
   },
   "dependencies": {
+    "firebase-admin": "^13.10.0",
     "firebase-functions": "^6.1.0",
     "nodemailer": "^6.9.16"
   }

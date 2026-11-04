@@ -1,6 +1,6 @@
-export const WEB_MAX = 1600;
+const WEB_MAX = 1600;
 
-export const scaledSize = (width, height, max = WEB_MAX) => {
+const scaledSize = (width, height, max = WEB_MAX) => {
   const scale = Math.min(1, max / Math.max(width, height));
   return { width: Math.round(width * scale), height: Math.round(height * scale) };
 };

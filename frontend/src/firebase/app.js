@@ -6,7 +6,7 @@ import { getAuth, GoogleAuthProvider } from 'firebase/auth';
 
 const env = import.meta.env;
 
-const app = initializeApp({
+export const app = initializeApp({
   apiKey: env.FIREBASE_API_KEY,
   authDomain: env.FIREBASE_AUTH_DOMAIN,
   projectId: env.FIREBASE_PROJECT_ID,

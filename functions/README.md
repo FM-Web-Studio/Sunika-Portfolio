@@ -1,11 +1,10 @@
 # Sunika Cloud Functions
 
-Two functions, one per site's contact form:
-
-| Function | Watches | Sent from |
-| --- | --- | --- |
-| `onPortfolioMessage` | `portfolioMessages/{id}` | the portfolio, sunika-studio |
-| `onGalleryMessage` | `galleryMessages/{id}` | the gallery, sunika-studio-gallery |
+| Function | What it does |
+| --- | --- |
+| `sendMessage` | The portfolio contact form posts here. It drops bots (hidden field filled, or sent within 3 seconds of opening the form), limits each sender to 2 messages per 10 minutes and 5 a day, each email address to 5 a day, and the whole site to 40 a day, ignores exact repeats, then saves the message. Senders and addresses are stored only as one-way hashes in `rateLimits`, deleted after a day. Takes `site: 'portfolio'` or `'gallery'`; the gallery still writes to Firestore directly for now. |
+| `onPortfolioMessage` | Emails Sunika when a `portfolioMessages/{id}` document is created |
+| `onGalleryMessage` | Emails Sunika when a `galleryMessages/{id}` document is created |
 
 When a visitor submits a contact form, a new Firestore document triggers a
 formatted email to the site owner, tinted and titled with the site the enquiry

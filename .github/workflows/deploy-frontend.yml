@@ -52,9 +52,6 @@ jobs:
           echo '${{ secrets.SERVICE_ACCOUNT }}' > "$RUNNER_TEMP/firebase-sa.json"
           echo "GOOGLE_APPLICATION_CREDENTIALS=$RUNNER_TEMP/firebase-sa.json" >> "$GITHUB_ENV"
 
-      - name: Deploy hosting, Firestore and Storage rules
-        run: firebase deploy --only hosting:portfolio,firestore:rules,storage --project sunika-project
-
       - name: Deploy Cloud Functions
         if: ${{ inputs.deploy_functions }}
         run: |
@@ -62,3 +59,17 @@ jobs:
           npm ci
           cd ..
           firebase deploy --only functions --project sunika-project
+
+      # The rules stop the portfolio writing messages directly, so the sendMessage
+      # function has to be live first or the contact form breaks.
+      - name: Check the contact form function is deployed
+        run: |
+          # An empty call is treated as a bot and answered with a quiet success, so nothing is saved.
+          status=$(curl -s -o /dev/null -w '%{http_code}' -X POST -H 'Content-Type: application/json'             -d '{"data":{}}' https://europe-west1-sunika-project.cloudfunctions.net/sendMessage)
+          if [ "$status" != "200" ]; then
+            echo "::error::sendMessage answered $status. Deploy functions first (see README, Deploys), then run this workflow again."
+            exit 1
+          fi
+
+      - name: Deploy hosting, Firestore and Storage rules
+        run: firebase deploy --only hosting:portfolio,firestore:rules,storage --project sunika-project

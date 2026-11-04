@@ -90,16 +90,28 @@ Leave it unset and App Check stays off. For local work with enforcement on, also
 
 ```
 frontend/src
-  admin/      the admin: sections, record schemas, forms
-  components/ shared UI: nav, footer, cards, lightbox, modal, toasts
-  content/    copy.js, every visitor-facing string with its default; legal.js, privacy and terms
+  components/ shared UI, one folder each: Nav/Nav.js, Nav.module.css and an index.js barrel
+  content/    copy.js, every visitor-facing string with its default; legal.js, privacy and terms;
+              seo.js, each page's title, description and link preview
   context/    SiteContext, one live subscription per collection for the whole app
   cv/         the CV model (tested) and the PDF layout (lazy loaded)
   firebase/   data access, one module per concern
-  hooks/      theme and motion preferences, reveal on scroll, momentum scroll
+  hooks/      theme and motion preferences, reveal on scroll, momentum scroll, page meta
   lib/        small pure helpers, all unit tested
-  pages/      Home, Projects, Contact, Legal (privacy and terms), NotFound
+  pages/      one folder per page, lazy loaded through pages/index.js
+    Admin/    the admin: sections/ (one per tab), parts/ (forms, save bar, sorting), hooks/, schemas.js
 ```
+
+Import a component through its folder (`../components/Modal`), not the file inside it.
+
+## Link previews and search
+
+Link preview bots (WhatsApp, LinkedIn, Facebook, Slack) do not run JavaScript, so the
+build writes one HTML file per page with its title, description and preview image
+already in the head, plus `sitemap.xml` and `robots.txt`. All of it comes from
+`src/content/seo.js`; add a page there and a matching rewrite in `firebase.json`.
+The preview image is `frontend/public/og/share.jpg` (1200 x 630). Like the logos,
+a changed image needs a new file name, or apps keep showing the cached one.
 
 Animations respect the visitor's reduced motion setting, and the lightning
 button in the nav turns them off for anyone who prefers a still page.
@@ -107,7 +119,9 @@ button in the nav turns them off for anyone who prefers a still page.
 ## Deploys
 
 Every push to `main` runs the tests, builds, and deploys hosting plus the Firestore
-and Storage rules.
+and Storage rules. Before deploying, it checks that the `sendMessage` function answers:
+the rules stop the portfolio writing messages directly, so without the function the
+contact form would break. If the check fails, deploy functions first.
 
 Cloud Functions are opt in: Actions, Deploy to Firebase Hosting, Run workflow,
 tick `deploy_functions`. The CI service account currently lacks the IAM roles to
@@ -122,7 +136,9 @@ firebase deploy --only functions --project sunika-project
 
 ## Requirements on the Firebase project
 
-- The Blaze plan, for the contact form email function.
+- The Blaze plan, for the contact form functions.
+- Optional: a TTL policy on `rateLimits.expireAt`. The function already deletes spent
+  spam-check records as it goes; the policy only tidies up after quiet periods.
 - Anonymous sign-in enabled. This site does not use it, but the gallery's ratings
   and likes do, and the setting is project wide.
 - Firestore TTL policies on `portfolioMessages.expireAt` and `galleryMessages.expireAt`.

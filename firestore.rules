@@ -13,7 +13,7 @@ service cloud.firestore {
              ];
     }
 
-    // A contact form message, exactly as both frontends write it.
+    // A contact form message, exactly as the gallery writes it.
     // expireAt feeds the TTL policy that deletes it; the window allows for a visitor's clock being off.
     function isContactMessage() {
       let d = request.resource.data;
@@ -118,8 +118,10 @@ service cloud.firestore {
     match /experience/{id} { allow read: if true; allow write: if isAdmin(); }
     match /profile/{doc}   { allow read: if true; allow write: if isAdmin(); }
 
+    // The portfolio form posts through the sendMessage function, which checks for spam and
+    // writes with admin rights, so nobody may add a message here directly.
     match /portfolioMessages/{doc} {
-      allow create: if isContactMessage();
+      allow create: if false;
       allow read, update, delete: if isAdmin();
     }
 
@@ -132,6 +134,9 @@ service cloud.firestore {
       allow read: if true;
       allow write: if isAdmin();
     }
+
+    // Spam-check counters, written only by the sendMessage function.
+    match /rateLimits/{doc} { allow read, write: if false; }
 
     match /{document=**} { allow read, write: if false; }
   }
