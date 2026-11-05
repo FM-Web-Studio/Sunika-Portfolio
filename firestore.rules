@@ -31,61 +31,23 @@ service cloud.firestore {
              == get(/databases/$(database)/documents/artworks/$(artworkId)).data.get(field, 0) + step;
     }
 
+    // Hearts and ratings come only through the voteArtwork function (functions/index.js),
+    // which requires a single-use App Check token and limits votes per network. Visitors can
+    // read their own vote, so the heart and stars show the right state, and nothing else.
     match /artworks/{artworkId} {
       allow read: if true;
-
-      allow create, delete: if isAdmin();
-      allow update: if isAdmin()
-        || (
-          request.resource.data.diff(resource.data).affectedKeys()
-            .hasOnly(['ratingSum', 'ratingCount'])
-          && isVisitor()
-          && request.resource.data.ratingCount is int
-          && request.resource.data.ratingSum is int
-          && request.resource.data.ratingCount == oldCount(resource, 'ratingCount') + 1
-          && request.resource.data.ratingSum >= oldCount(resource, 'ratingSum') + 1
-          && request.resource.data.ratingSum <= oldCount(resource, 'ratingSum') + 5
-          && !exists(/databases/$(database)/documents/artworks/$(artworkId)/raters/$(request.auth.uid))
-          && getAfter(/databases/$(database)/documents/artworks/$(artworkId)/raters/$(request.auth.uid)).data.value
-             == request.resource.data.ratingSum - oldCount(resource, 'ratingSum')
-        )
-        || (
-          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['likeCount'])
-          && isVisitor()
-          && request.resource.data.likeCount is int
-          && request.resource.data.likeCount >= 0
-          && (
-            (request.resource.data.likeCount == oldCount(resource, 'likeCount') + 1
-             && !exists(/databases/$(database)/documents/artworks/$(artworkId)/likers/$(request.auth.uid))
-             && existsAfter(/databases/$(database)/documents/artworks/$(artworkId)/likers/$(request.auth.uid)))
-            ||
-            (request.resource.data.likeCount == oldCount(resource, 'likeCount') - 1
-             && exists(/databases/$(database)/documents/artworks/$(artworkId)/likers/$(request.auth.uid))
-             && !existsAfter(/databases/$(database)/documents/artworks/$(artworkId)/likers/$(request.auth.uid)))
-          )
-        );
+      allow write: if isAdmin();
 
       match /raters/{uid} {
-        allow read:   if ownVote(uid) || isAdmin();
-        allow create: if ownVote(uid)
-                      && request.resource.data.keys().hasOnly(['value', 'createdAt'])
-                      && request.resource.data.value is int
-                      && request.resource.data.value >= 1
-                      && request.resource.data.value <= 5
-                      && request.resource.data.createdAt == request.time
-                      && countMovesBy(artworkId, 'ratingCount', 1);
-        allow update: if false;
+        allow read: if ownVote(uid) || isAdmin();
+        allow create, update: if false;
         allow delete: if isAdmin();
       }
 
       match /likers/{uid} {
-        allow read:   if ownVote(uid) || isAdmin();
-        allow create: if ownVote(uid)
-                      && request.resource.data.keys().hasOnly(['createdAt'])
-                      && request.resource.data.createdAt == request.time
-                      && countMovesBy(artworkId, 'likeCount', 1);
-        allow update: if false;
-        allow delete: if isAdmin() || (ownVote(uid) && countMovesBy(artworkId, 'likeCount', -1));
+        allow read: if ownVote(uid) || isAdmin();
+        allow create, update: if false;
+        allow delete: if isAdmin();
       }
     }
 

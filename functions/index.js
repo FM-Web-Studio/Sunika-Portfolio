@@ -113,7 +113,7 @@ const makeHandler = (site) => async (event) => {
       from: `"Sunika" <${SMTP_USER.value()}>`,
       to: NOTIFY_TO.value() || SMTP_USER.value(),
       replyTo: payload.email || undefined,
-      subject: `New ${site.label} message from ${payload.name}`,
+      subject: `${data.flagged ? '[Likely spam] ' : ''}New ${site.label} message from ${payload.name}`,
       text: buildText(payload),
       html: buildHtml(payload),
     });
@@ -164,6 +164,35 @@ const clientIp = (req) => {
 
 const text = (v, max) => (typeof v === 'string' ? v.trim().slice(0, max) : '');
 
+// ── Spam screening ──────────────────────────────────────────────────────────
+// Two outcomes. Link spam (more than two links, any HTML or BBCode, a link in a name) is
+// dropped with a quiet success - no person writes like that. Everything else that only LOOKS
+// like spam is still saved, but marked flagged with the reasons, so a real enquiry is never
+// lost: flagged messages arrive with "[Likely spam]" in the email subject.
+// Only real tags count as HTML, so "<R500 per night>" or "<3" from a person still gets through.
+const LINK = /(https?:\/\/|www\.|\[url|<a\s|\b[a-z0-9-]+\.(ru|cn|xyz|top|click|link|shop|online|site|info|biz)\b)/gi;
+const HTML = /<\/?(a|p|div|span|img|script|iframe|b|i|u|strong|em|br|font|center)\b[^>]*>|\[\/?url/i;
+const SPAM_WORDS = /\b(crypto|bitcoin|btc|forex|casino|betting|viagra|cialis|porn|escort|seo|backlinks?|guest post|lead generation|first page of google|rank(?:ing)? your (?:site|website)|increase your (?:website )?traffic|web ?design (?:services?|agency)|digital marketing (?:services?|agency)|investment opportunity|make money|click here|telegram|unsubscribe|dear (?:sir|madam))\b/gi;
+const NON_LATIN = /[\u0400-\u04FF\u0600-\u06FF\u0E00-\u0E7F\u3040-\u30FF\u4E00-\u9FFF\uAC00-\uD7AF]/g;
+
+const screen = ({ name = '', body = '', extra = [] }) => {
+  const all = [body, ...extra].filter(Boolean).join(' ');
+  const links = (all.match(LINK) || []).length;
+  if (links > 2 || HTML.test(all) || /(https?:\/\/|www\.)/i.test(name)) return { drop: true, flags: [] };
+
+  const flags = [];
+  const words = [...new Set((all.match(SPAM_WORDS) || []).map((w) => w.toLowerCase()))];
+  if (words.length) flags.push(`spam words: ${words.slice(0, 4).join(', ')}`);
+  if (links === 2) flags.push('two links');
+  if (/[^\s@]+@[^\s@]+\.[^\s@]+|\d{6,}/.test(name)) flags.push('contact details in the name');
+  const letters = all.replace(/[^\p{L}]/gu, '');
+  if (letters.length >= 20 && letters.replace(/[^\p{Lu}]/gu, '').length / letters.length > 0.6) flags.push('mostly capitals');
+  if (/(.)\1{5,}/u.test(all)) flags.push('repeated characters');
+  if (letters.length >= 10 && (all.match(NON_LATIN) || []).length / letters.length > 0.3) flags.push('unexpected alphabet');
+  return { drop: false, flags };
+};
+const flagFields = (flags) => (flags.length ? { flagged: true, flags } : { flagged: false });
+
 // Deletes a few spent rate records each time, so the collection never grows.
 const sweepLimits = async () => {
   const old = await db.collection('rateLimits').where('expireAt', '<', Timestamp.now()).limit(25).get();
@@ -198,6 +227,11 @@ exports.sendMessage = onCall(
     if (!site || !name || !message || !EMAIL.test(email)) {
       throw new HttpsError('invalid-argument', 'The name, email or message is missing or not valid.');
     }
+    const check = screen({ name, body: message });
+    if (check.drop) {
+      logger.info('Contact form: dropped link spam', { site });
+      return { ok: true };
+    }
 
     const now = Date.now();
     const sender = scramble(clientIp(request.rawRequest));
@@ -227,6 +261,7 @@ exports.sendMessage = onCall(
       tx.set(refs.everyone, { count: FieldValue.increment(1), expireAt: Timestamp.fromMillis(now + 2 * DAY) }, { merge: true });
       tx.create(db.collection(INBOXES[site]).doc(), {
         name, email, message,
+        ...flagFields(check.flags),
         createdAt: FieldValue.serverTimestamp(),
         expireAt: Timestamp.fromMillis(now + KEEP_DAYS * DAY),
       });
@@ -242,5 +277,86 @@ exports.sendMessage = onCall(
       throw new HttpsError('resource-exhausted', verdict === 'everyone' ? 'everyone' : 'sender');
     }
     return { ok: true };
+  },
+);
+
+// ── Hearts and ratings (Sunika-Gallery) ────────────────────────────────────
+// Visitors used to write hearts and ratings straight to Firestore, one per anonymous ID. A
+// script could mint anonymous IDs without limit, so every new ID was a fresh vote. Now every
+// vote comes through here:
+//   - a single-use App Check (reCAPTCHA) token is required for each call,
+//   - still one heart and one rating per anonymous ID for each piece,
+//   - at most VOTE_LIMITS.votersPerNetwork different IDs may vote on a piece from one network
+//     (a family on one Wi-Fi is fine, a script minting IDs is not),
+//   - at most VOTE_LIMITS.perHour votes an hour from one network.
+// The network is kept only as a one-way scramble, like the contact form's.
+const VOTE_LIMITS = { perHour: 40, votersPerNetwork: 3 };
+const HOUR = 60 * 60 * 1000;
+const ARTWORK_ID = /^[A-Za-z0-9_-]{1,128}$/;
+
+//   { artworkId, kind: 'like', like: true | false }  ->  { liked, likeCount }
+//   { artworkId, kind: 'rate', value: 1..5 }         ->  { value, alreadyRated? }
+exports.voteArtwork = onCall(
+  {
+    region: REGION,
+    maxInstances: 5,
+    cors: [/^https:\/\/sunika-studio-gallery\.(web\.app|firebaseapp\.com)$/, /^https?:\/\/localhost(:\d+)?$/],
+    enforceAppCheck: true,
+    // Each token works once, so one captured from a browser cannot be replayed in a loop.
+    consumeAppCheckToken: true,
+  },
+  async (request) => {
+    const uid = request.auth?.uid;
+    if (!uid) throw new HttpsError('unauthenticated', 'Sign-in is needed to vote.');
+    const d = request.data ?? {};
+    const artworkId = String(d.artworkId ?? '');
+    const kind = d.kind === 'like' || d.kind === 'rate' ? d.kind : null;
+    const value = Number(d.value);
+    if (!ARTWORK_ID.test(artworkId) || !kind
+      || (kind === 'like' && typeof d.like !== 'boolean')
+      || (kind === 'rate' && !(Number.isInteger(value) && value >= 1 && value <= 5))) {
+      throw new HttpsError('invalid-argument', 'Not a valid vote.');
+    }
+
+    const net = scramble(clientIp(request.rawRequest));
+    const artwork = db.doc(`artworks/${artworkId}`);
+    const mine = artwork.collection(kind === 'like' ? 'likers' : 'raters').doc(uid);
+    const voters = db.doc(`rateLimits/v-${kind}-${net}-${artworkId}`);
+    const hourly = db.doc(`rateLimits/v-h-${net}`);
+
+    return db.runTransaction(async (tx) => {
+      const [art, own, net0, hour] = await Promise.all([artwork, mine, voters, hourly].map((r) => tx.get(r)));
+      if (!art.exists) throw new HttpsError('not-found', 'That piece is not available.');
+
+      const likeCount = Math.max(0, Number(art.get('likeCount')) || 0);
+      // Already in the state asked for: nothing changes, and it costs nothing against the limits.
+      if (kind === 'rate' && own.exists) return { value: Number(own.get('value')) || value, alreadyRated: true };
+      if (kind === 'like' && own.exists === d.like) return { liked: own.exists, likeCount };
+
+      const now = Date.now();
+      const adding = kind === 'rate' || d.like;
+      const ids = net0.get('uids') ?? [];
+      if (adding && !ids.includes(uid) && ids.length >= VOTE_LIMITS.votersPerNetwork) {
+        throw new HttpsError('resource-exhausted', 'network');
+      }
+      const recent = (hour.get('times') ?? []).filter((t) => now - t < HOUR);
+      if (recent.length >= VOTE_LIMITS.perHour) throw new HttpsError('resource-exhausted', 'sender');
+
+      tx.set(hourly, { times: [...recent, now], expireAt: Timestamp.fromMillis(now + DAY) });
+      if (adding && !ids.includes(uid)) {
+        tx.set(voters, { uids: [...ids, uid], expireAt: Timestamp.fromMillis(now + KEEP_DAYS * DAY) });
+      }
+
+      if (kind === 'rate') {
+        tx.create(mine, { value, createdAt: FieldValue.serverTimestamp() });
+        tx.update(artwork, { ratingSum: FieldValue.increment(value), ratingCount: FieldValue.increment(1) });
+        return { value };
+      }
+      const next = d.like ? likeCount + 1 : Math.max(0, likeCount - 1);
+      if (d.like) tx.create(mine, { createdAt: FieldValue.serverTimestamp() });
+      else tx.delete(mine);
+      tx.update(artwork, { likeCount: next });
+      return { liked: d.like, likeCount: next };
+    });
   },
 );
