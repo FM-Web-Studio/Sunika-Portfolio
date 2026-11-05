@@ -30,6 +30,17 @@ jobs:
         working-directory: frontend
         run: npx vitest run
 
+      # The sendMessage function refuses calls without App Check, so a build without the key
+      # would ship a contact form that always fails.
+      - name: Check the App Check key is set
+        run: |
+          if [ -z "$FIREBASE_APPCHECK_SITE_KEY" ]; then
+            echo "::error::Secret FIREBASE_APPCHECK_SITE_KEY is empty. Add the reCAPTCHA Enterprise site key (Google Cloud > Fraud Defense), then run this workflow again."
+            exit 1
+          fi
+        env:
+          FIREBASE_APPCHECK_SITE_KEY: ${{ secrets.FIREBASE_APPCHECK_SITE_KEY }}
+
       - name: Build
         working-directory: frontend
         run: npm run build
@@ -64,9 +75,10 @@ jobs:
       # function has to be live first or the contact forms break.
       - name: Check the contact form function is deployed
         run: |
-          # An empty call is treated as a bot and answered with a quiet success, so nothing is saved.
+          # This call carries no App Check token, so a live function refuses it with 401 and saves
+          # nothing. 404 means it is not deployed; 5xx means it is broken.
           status=$(curl -s -o /dev/null -w '%{http_code}' -X POST -H 'Content-Type: application/json'             -d '{"data":{}}' https://europe-west1-sunika-project.cloudfunctions.net/sendMessage)
-          if [ "$status" != "200" ]; then
+          if [ "$status" != "401" ] && [ "$status" != "200" ]; then
             echo "::error::sendMessage answered $status. Deploy functions first (see README, Deploys), then run this workflow again."
             exit 1
           fi
