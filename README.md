@@ -1,7 +1,8 @@
 # Suni Designs
 
 Sunika Lombard's design and illustration portfolio: a compact home page, a project
-gallery with a lightbox, a contact form, and a one-click PDF CV. Everything on the
+gallery with a lightbox, a mirrored sketchbook visitors can draw in, a contact form,
+and a one-click PDF CV. Everything on the
 site, including every heading and button label, is edited from `/admin`.
 
 Live at https://sunika-studio.web.app
@@ -112,6 +113,12 @@ already in the head, plus `sitemap.xml` and `robots.txt`. All of it comes from
 `src/content/seo.js`; add a page there and a matching rewrite in `firebase.json`.
 The preview image is `frontend/public/og/share.jpg` (1200 x 630). Like the logos,
 a changed image needs a new file name, or apps keep showing the cached one.
+
+The opening animation lives in `frontend/index.html`, so it shows before the app has
+loaded, and `src/hooks/useIntro.js` lifts it once the content is ready (at least 2.3 s,
+at most 5 s, or straight away on a click, key or scroll). It plays at most once every
+12 hours per browser (`suni.intro` in localStorage) and never on `/admin`. Its logo is
+`public/intro-wordmark.webp`, a small copy of the wordmark.
 
 Animations respect the visitor's reduced motion setting, and the lightning
 button in the nav turns them off for anyone who prefers a still page.

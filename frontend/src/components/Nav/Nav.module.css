@@ -42,6 +42,7 @@
 }
 
 .links {
+  position: relative;
   display: flex;
   gap: 4px;
   margin-left: auto;
@@ -52,6 +53,7 @@
 
 .link {
   position: relative;
+  z-index: 1;
   padding: 7px 16px;
   border-radius: var(--r-pill);
   font-family: var(--font-display);
@@ -66,9 +68,40 @@
 }
 
 .active {
-  background: var(--card);
   color: var(--coral-ink);
+}
+
+.pill {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  left: 0;
+  width: 0;
+  border-radius: var(--r-pill);
+  background: var(--card);
   box-shadow: var(--shadow-sm);
+  opacity: 0;
+}
+
+.pill[data-ready] {
+  transition: transform 420ms var(--ease-pop), width 420ms var(--ease-pop), opacity var(--t) var(--ease);
+}
+
+.progress {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--coral), var(--sun), var(--teal));
+  transform: scaleX(0);
+  transform-origin: left center;
+  opacity: 0;
+  transition: opacity var(--t) var(--ease);
+}
+
+.scrolled .progress {
+  opacity: 1;
 }
 
 .tools {

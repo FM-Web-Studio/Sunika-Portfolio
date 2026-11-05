@@ -77,6 +77,31 @@
   justify-self: center;
   width: min(100%, 400px);
   aspect-ratio: 4 / 5;
+  perspective: 1000px;
+}
+
+.depth {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  transform: rotateX(calc(var(--ny, 0) * -9deg)) rotateY(calc(var(--nx, 0) * 12deg));
+  transition: transform 900ms var(--ease-pop);
+}
+
+.hero:global(.is-tilting) .depth {
+  transition: none;
+}
+
+.sheen {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -80%;
+  width: 260%;
+  pointer-events: none;
+  background: linear-gradient(115deg, rgba(255, 255, 255, 0) 40%, rgba(255, 255, 255, 0.16) 50%, rgba(255, 255, 255, 0) 60%);
+  transform: translateX(calc(var(--nx, 0) * -18%));
+  opacity: var(--h, 0);
 }
 
 .frame {
@@ -88,6 +113,7 @@
   box-shadow: var(--shadow-lg);
   border: 6px solid var(--card);
   z-index: 2;
+  translate: 0 0 24px;
 }
 
 .frame img {
@@ -124,6 +150,7 @@
   top: 2%;
   background: var(--coral);
   opacity: 0.9;
+  translate: 0 0 -70px;
 }
 
 .shapeTeal {
@@ -133,6 +160,7 @@
   bottom: 6%;
   border-radius: 50% 50% 0 50%;
   background: var(--teal);
+  translate: 0 0 -36px;
   --r: 20deg;
   animation-delay: -2s;
   animation-duration: 8s;
@@ -144,6 +172,7 @@
   left: 4%;
   top: 6%;
   background: var(--sun);
+  translate: 0 0 48px;
   animation-delay: -4s;
   animation-duration: 6s;
 }
@@ -159,6 +188,7 @@
   border-radius: 50%;
   background: var(--card);
   box-shadow: var(--shadow-md);
+  translate: 0 0 70px;
   transform: rotate(-10deg);
   transition: transform var(--t-slow) var(--ease-pop);
 }
@@ -252,6 +282,7 @@
 }
 
 .win {
+  position: relative;
   display: grid;
   margin-bottom: 20px;
   overflow: hidden;
@@ -260,6 +291,22 @@
   background: var(--card);
   border: 1px solid var(--line);
   box-shadow: var(--shadow-sm);
+  transform: perspective(1100px) rotateX(calc(var(--ny, 0) * -3deg)) rotateY(calc(var(--nx, 0) * 3deg));
+}
+
+.win::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  border-radius: inherit;
+  background: radial-gradient(circle at var(--gx, 50%) var(--gy, 50%), rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0) 50%);
+  opacity: 0;
+}
+
+.win:global(.is-tilting)::after {
+  opacity: var(--h, 0);
 }
 
 .winImage {
@@ -480,6 +527,21 @@
   background: var(--coral);
   color: #fff;
   isolation: isolate;
+  transform: perspective(1400px) rotateX(calc(var(--ny, 0) * -2.5deg)) rotateY(calc(var(--nx, 0) * 2.5deg));
+}
+
+.closing::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(circle at var(--gx, 50%) var(--gy, 50%), rgba(255, 255, 255, 0.24), rgba(255, 255, 255, 0) 45%);
+  opacity: 0;
+}
+
+.closing:global(.is-tilting)::before {
+  opacity: var(--h, 0);
 }
 
 .closing h2 {
@@ -558,5 +620,55 @@
   .head {
     flex-direction: column;
     align-items: flex-start;
+  }
+}
+
+@keyframes drift-text {
+  to { transform: translateY(60px); }
+}
+
+@keyframes drift-portrait {
+  to { transform: translateY(120px); }
+}
+
+@keyframes settle {
+  from { transform: perspective(1600px) rotateX(18deg) translateY(40px) scale(0.95); }
+  to { transform: none; }
+}
+
+@keyframes draw {
+  from { transform: scaleY(0); }
+  to { transform: scaleY(1); }
+}
+
+@supports (animation-timeline: view()) {
+  html[data-motion='full'] .heroText {
+    animation: drift-text linear both;
+    animation-timeline: scroll(root);
+    animation-range: 0 90vh;
+  }
+
+  html[data-motion='full'] .portrait {
+    animation: drift-portrait linear both;
+    animation-timeline: scroll(root);
+    animation-range: 0 90vh;
+  }
+
+  html[data-motion='full'] .bento {
+    transform-origin: 50% 100%;
+    animation: settle linear both;
+    animation-timeline: view();
+    animation-range: entry 0% entry 100%;
+  }
+
+  html[data-motion='full'] .timeline ol {
+    view-timeline: --journey block;
+  }
+
+  html[data-motion='full'] .timeline ol::before {
+    transform-origin: top center;
+    animation: draw linear both;
+    animation-timeline: --journey;
+    animation-range: entry 20% cover 60%;
   }
 }

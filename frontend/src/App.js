@@ -2,6 +2,8 @@ import { Suspense, useEffect } from 'react';
 import { Outlet, Route, Routes, useLocation } from 'react-router-dom';
 import { usePrefs } from './hooks/usePrefs';
 import { useMomentumScroll, scrollToTarget } from './hooks/useMomentumScroll';
+import { useInteractions } from './hooks/useInteractions';
+import { useIntro } from './hooks/useIntro';
 import ErrorBoundary from './components/ErrorBoundary';
 import Footer from './components/Footer';
 import Loading from './components/Loading';
@@ -13,6 +15,8 @@ const PublicLayout = () => {
   const { pathname } = useLocation();
   const { reduceMotion } = usePrefs();
   useMomentumScroll(!reduceMotion);
+  useInteractions(!reduceMotion);
+  useIntro();
 
   useEffect(() => {
     scrollToTarget(0, { immediate: true });

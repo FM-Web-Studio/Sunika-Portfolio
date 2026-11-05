@@ -10,6 +10,8 @@ const ProjectCard = ({ project, onOpen, index = 0, size = 'normal' }) => {
       className={`${styles.card} ${styles[size] || ''}`}
       onClick={() => onOpen(project)}
       data-reveal="pop"
+      data-tilt
+      data-ripple
       style={{ '--i': index % 6 }}
       aria-label={`Open ${project.title || 'project'}`}
     >

@@ -64,7 +64,7 @@
 
   --shadow-sm: 0 1px 2px rgba(74, 38, 48, 0.06), 0 2px 8px rgba(74, 38, 48, 0.05);
   --shadow-md: 0 6px 24px rgba(74, 38, 48, 0.1);
-  --shadow-lg: 0 18px 50px rgba(74, 38, 48, 0.16);
+  --shadow-lg: 0 2px 4px rgba(74, 38, 48, 0.04), 0 12px 24px rgba(74, 38, 48, 0.08), 0 30px 60px -10px rgba(74, 38, 48, 0.18);
   --nav-bg: rgba(251, 246, 241, 0.82);
 
   --btn-confirm: #2F8A5B;
@@ -100,7 +100,7 @@
 
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
   --shadow-md: 0 8px 26px rgba(0, 0, 0, 0.35);
-  --shadow-lg: 0 20px 60px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 2px 4px rgba(0, 0, 0, 0.25), 0 14px 28px rgba(0, 0, 0, 0.3), 0 32px 64px -10px rgba(0, 0, 0, 0.55);
   --nav-bg: rgba(23, 19, 26, 0.8);
 
   --btn-confirm: #4CC488;

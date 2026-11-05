@@ -12,6 +12,10 @@
   color: #0E2622;
 }
 
+.lean {
+  will-change: transform;
+}
+
 .rail {
   display: flex;
   width: max-content;

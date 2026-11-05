@@ -10,7 +10,24 @@
   text-align: left;
   isolation: isolate;
   box-shadow: var(--shadow-sm);
-  transition: box-shadow var(--t) var(--ease), transform var(--t) var(--ease-pop);
+  --ripple: #fff;
+  transform:
+    perspective(1400px)
+    rotateX(calc(var(--ny, 0) * -5deg))
+    rotateY(calc(var(--nx, 0) * 5deg))
+    translateY(calc(var(--h, 0) * -6px))
+    scale(var(--press, 1));
+  transition: box-shadow var(--t) var(--ease), transform var(--tf, var(--t) var(--ease-pop));
+}
+
+.card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: radial-gradient(circle at var(--gx, 50%) var(--gy, 50%), rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0) 55%);
+  opacity: 0;
 }
 
 .media {
@@ -22,6 +39,7 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+  transform: scale(calc(1 + var(--h, 0) * 0.08)) translate(calc(var(--nx, 0) * -2%), calc(var(--ny, 0) * -2%));
   transition: transform 900ms var(--ease);
 }
 
@@ -46,8 +64,7 @@
   gap: 10px;
   padding: 10px 10px 10px 14px;
   border-radius: var(--r-md);
-  background: color-mix(in srgb, var(--card) 92%, transparent);
-  backdrop-filter: blur(8px);
+  background: var(--card);
   box-shadow: var(--shadow-sm);
   transform: translateY(calc(100% + 14px));
   transition: transform 420ms var(--ease-pop);
@@ -106,13 +123,20 @@
 
 .card:hover,
 .card:focus-visible {
+  --h: 1;
   box-shadow: var(--shadow-lg);
-  transform: translateY(-4px) rotate(-0.4deg);
 }
 
-.card:hover .media img,
-.card:focus-visible .media img {
-  transform: scale(1.06);
+.card:global(.is-tilting)::after {
+  opacity: var(--h, 0);
+}
+
+.card:global(.is-tilting) .media img {
+  transition: none;
+}
+
+.card:active {
+  --press: 0.98;
 }
 
 .card:hover .info,
@@ -128,4 +152,8 @@
   .info {
     transform: none;
   }
+}
+
+.card :global(.ripple) {
+  z-index: 1;
 }

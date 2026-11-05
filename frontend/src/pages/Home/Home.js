@@ -9,6 +9,7 @@ import Botanical from '../../components/Botanical';
 import Lightbox from '../../components/Lightbox';
 import Marquee from '../../components/Marquee';
 import ProjectCard from '../../components/ProjectCard';
+import Sketchbook from '../../components/Sketchbook';
 import SocialLinks from '../../components/SocialLinks';
 import { LOGOS } from '../../lib/logos';
 import styles from './Home.module.css';
@@ -32,15 +33,18 @@ const Portrait = ({ personal, mark }) => {
   const [broken, setBroken] = useState(false);
   return (
     <div className={styles.portrait} data-reveal="right">
-      <span className={`${styles.shape} ${styles.shapeCoral}`} aria-hidden="true" />
-      <span className={`${styles.shape} ${styles.shapeTeal}`} aria-hidden="true" />
-      <span className={`${styles.shape} ${styles.shapeSun}`} aria-hidden="true" />
-      <div className={styles.frame}>
-        {personal.photoUrl && !broken
-          ? <img src={personal.photoUrl} alt={personal.name} onError={() => setBroken(true)} />
-          : <span className={styles.initials}>{initials(personal.name)}</span>}
+      <div className={styles.depth}>
+        <span className={`${styles.shape} ${styles.shapeCoral}`} aria-hidden="true" />
+        <span className={`${styles.shape} ${styles.shapeTeal}`} aria-hidden="true" />
+        <span className={`${styles.shape} ${styles.shapeSun}`} aria-hidden="true" />
+        <div className={styles.frame}>
+          {personal.photoUrl && !broken
+            ? <img src={personal.photoUrl} alt={personal.name} onError={() => setBroken(true)} />
+            : <span className={styles.initials}>{initials(personal.name)}</span>}
+          <span className={styles.sheen} aria-hidden="true" />
+        </div>
+        <img src={mark} alt="" className={styles.sticker} />
       </div>
-      <img src={mark} alt="" className={styles.sticker} />
     </div>
   );
 };
@@ -77,7 +81,7 @@ const Home = () => {
 
   return (
     <div className={styles.home}>
-      <section className={`container ${styles.hero}`}>
+      <section className={`container ${styles.hero}`} data-tilt>
         <div className={styles.heroText}>
           <h1 className={styles.logoTitle} data-reveal>
             <img src={LOGOS.wordmark} alt={personal.name ? `${personal.name}, ${copy.brand.brandName}` : copy.brand.brandName} />
@@ -137,7 +141,7 @@ const Home = () => {
           </header>
           <div className={styles.wins}>
             {wins.map((w, i) => (
-              <article key={w.id} className={styles.win} data-reveal style={{ '--i': i }}>
+              <article key={w.id} className={styles.win} data-reveal data-tilt style={{ '--i': i }}>
                 {w.imageUrl && (
                   <button type="button" className={styles.winImage} onClick={() => setOpen(asViewable(w))} aria-label={`View the image for ${w.title}`}>
                     <img src={w.imageWebUrl || w.imageUrl} alt="" loading="lazy" decoding="async" />
@@ -208,8 +212,17 @@ const Home = () => {
         </section>
       )}
 
+      <section className={`container ${styles.section}`} id="play">
+        <header className={styles.head}>
+          <h2 className="title" data-reveal>{t.playTitle}</h2>
+        </header>
+        <div data-reveal>
+          <Sketchbook copy={t} />
+        </div>
+      </section>
+
       <section className="container">
-        <div className={styles.closing} data-reveal>
+        <div className={styles.closing} data-reveal data-tilt>
           <Botanical variant="sprig" className={styles.closingSprig} />
           <div>
             <h2>{t.contactTitle}</h2>

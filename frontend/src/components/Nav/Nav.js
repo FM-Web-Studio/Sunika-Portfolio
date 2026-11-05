@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import { FiMenu, FiX, FiMoon, FiSun, FiZap, FiZapOff } from 'react-icons/fi';
@@ -33,16 +33,59 @@ const Nav = () => {
   const { pathname } = useLocation();
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const linksRef = useRef(null);
+  const pillRef = useRef(null);
+  const progressRef = useRef(null);
+
+  const placePill = useCallback((link) => {
+    const pill = pillRef.current;
+    if (!pill) return;
+    if (!link) {
+      pill.style.opacity = '0';
+      return;
+    }
+    pill.style.opacity = '1';
+    pill.style.width = `${link.offsetWidth}px`;
+    pill.style.transform = `translateX(${link.offsetLeft}px)`;
+    if (!pill.dataset.ready) requestAnimationFrame(() => { pill.dataset.ready = 'true'; });
+  }, []);
+
+  const placeOnActive = useCallback(() => {
+    placePill(linksRef.current?.querySelector('[aria-current="page"]'));
+  }, [placePill]);
 
   useEffect(() => setOpen(false), [pathname]);
 
   useEffect(() => {
+    placeOnActive();
+    const links = linksRef.current;
+    if (!links) return undefined;
+    const resize = new ResizeObserver(placeOnActive);
+    resize.observe(links);
+    document.fonts?.ready.then(placeOnActive);
+    return () => resize.disconnect();
+  }, [pathname, placeOnActive]);
+
+  useEffect(() => {
     let queued = false;
-    const measure = () => { queued = false; setScrolled(window.scrollY > 12); };
+    let room = 0;
+    const measure = () => {
+      queued = false;
+      setScrolled(window.scrollY > 12);
+      if (progressRef.current) progressRef.current.style.transform = `scaleX(${room > 0 ? Math.min(1, window.scrollY / room) : 0})`;
+    };
+    const resize = new ResizeObserver(() => {
+      room = document.documentElement.scrollHeight - window.innerHeight;
+      measure();
+    });
+    resize.observe(document.body);
     const onScroll = () => { if (!queued) { queued = true; requestAnimationFrame(measure); } };
     measure();
     window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      resize.disconnect();
+    };
   }, []);
 
   useEffect(() => {
@@ -60,7 +103,16 @@ const Nav = () => {
           <span>{copy.brand.brandName}</span>
         </Link>
 
-        <nav className={styles.links} aria-label="Main">
+        <nav
+          ref={linksRef}
+          className={styles.links}
+          aria-label="Main"
+          onPointerOver={(e) => { const link = e.target.closest('a'); if (link) placePill(link); }}
+          onPointerLeave={placeOnActive}
+          onFocus={(e) => { const link = e.target.closest('a'); if (link) placePill(link); }}
+          onBlur={placeOnActive}
+        >
+          <span ref={pillRef} className={styles.pill} aria-hidden="true" />
           {PAGES.map((p) => (
             <NavLink key={p.to} to={p.to} end={p.end} className={({ isActive }) => `${styles.link} ${isActive ? styles.active : ''}`}>
               {p.label}
@@ -76,6 +128,7 @@ const Nav = () => {
           </button>
         </div>
       </div>
+      <span ref={progressRef} className={styles.progress} aria-hidden="true" />
 
       {open && createPortal(
         <div className={styles.sheetBackdrop} onClick={() => setOpen(false)}>

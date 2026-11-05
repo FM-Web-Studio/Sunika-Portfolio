@@ -2,6 +2,12 @@ import { useEffect } from 'react';
 import Lenis from 'lenis';
 
 let instance = null;
+const velocityListeners = new Set();
+
+export const onScrollVelocity = (fn) => {
+  velocityListeners.add(fn);
+  return () => velocityListeners.delete(fn);
+};
 
 export const scrollToTarget = (target, options = {}) => {
   if (instance) {
@@ -21,8 +27,11 @@ export const scrollToTarget = (target, options = {}) => {
 export const useMomentumScroll = (enabled) => {
   useEffect(() => {
     if (!enabled) return undefined;
-    const lenis = new Lenis({ lerp: 0.1, smoothWheel: true, wheelMultiplier: 1 });
+    const lenis = new Lenis({ lerp: 0.14, smoothWheel: true, wheelMultiplier: 1 });
     instance = lenis;
+    const offScroll = lenis.on('scroll', ({ velocity }) => {
+      velocityListeners.forEach((fn) => fn(velocity));
+    });
     let frame = requestAnimationFrame(function loop(time) {
       lenis.raf(time);
       frame = requestAnimationFrame(loop);
@@ -32,6 +41,8 @@ export const useMomentumScroll = (enabled) => {
     return () => {
       cancelAnimationFrame(frame);
       resize.disconnect();
+      offScroll();
+      velocityListeners.forEach((fn) => fn(0));
       lenis.destroy();
       if (instance === lenis) instance = null;
     };
