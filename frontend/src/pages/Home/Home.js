@@ -35,7 +35,6 @@ const Portrait = ({ personal, mark }) => {
       <span className={`${styles.shape} ${styles.shapeCoral}`} aria-hidden="true" />
       <span className={`${styles.shape} ${styles.shapeTeal}`} aria-hidden="true" />
       <span className={`${styles.shape} ${styles.shapeSun}`} aria-hidden="true" />
-      <Botanical variant="fern" className={styles.portraitFern} />
       <div className={styles.frame}>
         {personal.photoUrl && !broken
           ? <img src={personal.photoUrl} alt={personal.name} onError={() => setBroken(true)} />

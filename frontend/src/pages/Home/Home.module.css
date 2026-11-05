@@ -148,17 +148,6 @@
   animation-duration: 6s;
 }
 
-.portraitFern {
-  position: absolute;
-  right: -10%;
-  bottom: -4%;
-  z-index: 3;
-  width: 42%;
-  color: var(--teal-ink);
-  transform-origin: bottom left;
-  animation: sway 6s var(--ease) infinite;
-}
-
 .sticker {
   position: absolute;
   left: -2%;
