@@ -95,8 +95,9 @@ jobs:
           echo "Deploying as: $(node -e "console.log(require(process.argv[1]).client_email)" "$RUNNER_TEMP/firebase-sa.json")"
 
       # functions/.env is not in git (the repo is public), so the deploy writes it from secrets:
-      # SMTP_USER (the Gmail that sends) and NOTIFY_TO (where notifications land) are required;
-      # SMTP_HOST and SMTP_PORT are optional and default to Gmail's in functions/index.js.
+      # SMTP_USER (the Gmail that sends) and NOTIFY_TO (where notifications land) are required.
+      # SMTP_HOST and SMTP_PORT secrets are optional; without them Gmail's are written here,
+      # because a non-interactive deploy will not fall back to the defaults in functions/index.js.
       - name: Deploy Cloud Functions
         if: steps.functions.outputs.deploy == 'true'
         env:
@@ -111,6 +112,8 @@ jobs:
               exit 1
             fi
           done
+          SMTP_HOST="${SMTP_HOST:-smtp.gmail.com}"
+          SMTP_PORT="${SMTP_PORT:-465}"
           : > functions/.env
           for k in SMTP_HOST SMTP_PORT SMTP_USER NOTIFY_TO; do
             if [ -n "${!k}" ]; then printf '%s=%s\n' "$k" "${!k}" >> functions/.env; fi
