@@ -72,7 +72,11 @@ const Admin = () => {
       <Gate>
         <h1>Admin</h1>
         <p>Sign in with the Google account that manages the site.</p>
-        <button type="button" className="btn" onClick={() => signInWithGoogle().catch(() => notify('error', 'Sign in did not work. Please try again.'))}>
+        <button type="button" className="btn" onClick={() => signInWithGoogle().catch((e) => {
+          if (e?.code === 'auth/popup-closed-by-user' || e?.code === 'auth/cancelled-popup-request') return;
+          console.error(e);
+          notify('error', `Sign in did not work (${e?.code || 'unknown error'}).`);
+        })}>
           <FcGoogle aria-hidden="true" /> Sign in with Google
         </button>
         <Link to="/" className={ui.gateLink}>Back to the site</Link>

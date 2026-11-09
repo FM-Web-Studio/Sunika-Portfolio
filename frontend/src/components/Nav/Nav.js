@@ -1,11 +1,12 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { Link, NavLink, useLocation } from 'react-router-dom';
+import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { FiMenu, FiX, FiMoon, FiSun, FiZap, FiZapOff } from 'react-icons/fi';
 import { usePrefs } from '../../hooks/usePrefs';
 import { useSite } from '../../context/SiteContext';
 import CvButton from '../CvButton';
 import { LOGOS } from '../../lib/logos';
+import { createTapCounter } from '../../lib/secretTaps';
 import styles from './Nav.module.css';
 
 export const PAGES = [
@@ -36,6 +37,14 @@ const Nav = () => {
   const linksRef = useRef(null);
   const pillRef = useRef(null);
   const progressRef = useRef(null);
+  const navigate = useNavigate();
+  // Five quick clicks on the logo open the admin. Not security: the admin still checks the account.
+  const [secretTap] = useState(() => createTapCounter(5, 2000));
+  const onBrandClick = (e) => {
+    if (!secretTap()) return;
+    e.preventDefault();
+    navigate('/admin');
+  };
 
   const placePill = useCallback((link) => {
     const pill = pillRef.current;
@@ -98,7 +107,7 @@ const Nav = () => {
   return (
     <header className={`${styles.bar} ${scrolled ? styles.scrolled : ''}`}>
       <div className={`container ${styles.inner}`}>
-        <Link to="/" className={styles.brand} aria-label={`${copy.brand.brandName}, home`}>
+        <Link to="/" className={styles.brand} aria-label={`${copy.brand.brandName}, home`} onClick={onBrandClick}>
           <img src={LOGOS.mark} alt="" />
           <span>{copy.brand.brandName}</span>
         </Link>
