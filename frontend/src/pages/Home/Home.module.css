@@ -623,10 +623,6 @@
   }
 }
 
-@keyframes drift-text {
-  to { transform: translateY(60px); }
-}
-
 @keyframes drift-portrait {
   to { transform: translateY(120px); }
 }
@@ -642,16 +638,14 @@
 }
 
 @supports (animation-timeline: view()) {
-  html[data-motion='full'] .heroText {
-    animation: drift-text linear both;
-    animation-timeline: scroll(root);
-    animation-range: 0 90vh;
-  }
-
-  html[data-motion='full'] .portrait {
-    animation: drift-portrait linear both;
-    animation-timeline: scroll(root);
-    animation-range: 0 90vh;
+  /* The hero text holds the buttons, so it never drifts: any drift pushes them
+     under the marquee. The portrait drifts only beside the text, not above it. */
+  @media (min-width: 901px) {
+    html[data-motion='full'] .portrait {
+      animation: drift-portrait linear both;
+      animation-timeline: scroll(root);
+      animation-range: 0 90vh;
+    }
   }
 
   html[data-motion='full'] .bento {
